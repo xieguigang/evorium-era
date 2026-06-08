@@ -1,5 +1,7 @@
 ﻿Public Class Cell
     Public Property ID As Guid = Guid.NewGuid()
+    Public Property ParentID As Guid? = Nothing
+    Public Property Generation As Integer = 0
     Public Property Position As (X As Integer, Y As Integer, Z As Integer)
     Public Property Genome As Replicon
     Public Property Plasmids As List(Of Replicon) = New List(Of Replicon)

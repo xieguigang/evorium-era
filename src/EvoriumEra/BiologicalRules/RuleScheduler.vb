@@ -1,11 +1,16 @@
 ﻿Public Interface IBiochemicalRule
+    ''' <summary>
+    ''' 该规则负责处理的基因功能
+    ''' </summary>
+    ReadOnly Property SupportedFunctions As List(Of GeneFunction)
+
     Sub Execute(cell As Cell, env As Environment3D, rng As Random)
 End Interface
 
 
-
 Public Class RuleScheduler
     Public Property Rules As List(Of IBiochemicalRule) = New List(Of IBiochemicalRule)
+    Dim _functionMap As Dictionary(Of GeneFunction, List(Of IBiochemicalRule))
 
     Public Sub New()
         ' 按顺序添加所有规则
@@ -19,6 +24,8 @@ Public Class RuleScheduler
         Rules.Add(New MutationRule())
         Rules.Add(New QuorumSensingAndBiofilmRule())
         Rules.Add(New DiffusionRule())
+
+        BuildFunctionMap()
     End Sub
 
     Public Sub ApplyAll(cell As Cell, env As Environment3D, rng As Random)
@@ -31,6 +38,30 @@ Public Class RuleScheduler
                     ' 记录异常但继续执行
                 End Try
             End If
+        Next
+    End Sub
+
+    Private Sub BuildFunctionMap()
+        _functionMap = New Dictionary(Of GeneFunction, List(Of IBiochemicalRule))
+
+        For Each rule In _Rules
+            For Each f In rule.SupportedFunctions
+                If Not _functionMap.ContainsKey(f) Then
+                    _functionMap(f) = New List(Of IBiochemicalRule)
+                End If
+                _functionMap(f).Add(rule)
+            Next
+        Next
+    End Sub
+
+    ''' <summary>
+    ''' 执行指定的基因功能
+    ''' </summary>
+    Public Sub ExecuteFunction(func As GeneFunction, cell As Cell, env As Environment3D, rng As Random)
+        If Not _functionMap.ContainsKey(func) Then Return
+
+        For Each rule In _functionMap(func)
+            rule.Execute(cell, env, rng)
         Next
     End Sub
 End Class

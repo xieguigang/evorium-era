@@ -81,68 +81,6 @@ Public Class GeneExpressionRule : Implements IBiochemicalRule
     End Sub
 End Class
 
-Public Class ReplicationAndDivisionRule : Implements IBiochemicalRule
-    Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
-        ' DNA复制（需要n*9 * 2个核苷酸）
-        Dim totalGenes = cell.Genome.Genes.Count + cell.Plasmids.Sum(Function(p) p.Genes.Count)
-        Dim requiredNucleotides = totalGenes * 9 * 2
-
-        If cell.Proteins.ContainsKey(GeneFunction.ReplicateDNA) AndAlso
-           cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso
-           cell.InternalMolecules(MoleculeType.Nucleotide) >= requiredNucleotides Then
-
-            cell.InternalMolecules(MoleculeType.Nucleotide) -= requiredNucleotides
-            ' 复制DNA（简化：标记已复制）
-            ConsumeBasicResources(cell)
-        End If
-
-        ' 细胞分裂
-        If cell.Proteins.ContainsKey(GeneFunction.CellDivision) Then
-            Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
-            Dim neighbors = env.GetNeighbors(voxel).Where(Function(v) v.Occupant Is Nothing).ToList()
-
-            If neighbors.Any() AndAlso cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso
-               cell.InternalMolecules(MoleculeType.Nucleotide) >= requiredNucleotides Then
-
-                ' 6:4分配
-                Dim newCell As New Cell With {
-                    .Position = (neighbors(rng.Next(neighbors.Count)).X,
-                                neighbors(rng.Next(neighbors.Count)).Y,
-                                neighbors(rng.Next(neighbors.Count)).Z),
-                    .Genome = CloneReplicon(cell.Genome),
-                    .Plasmids = cell.Plasmids.Select(Function(p) CloneReplicon(p)).ToList()
-                }
-
-                ' 分配分子（简化）
-                DistributeMolecules(cell, newCell)
-                env.Grid(newCell.Position.X, newCell.Position.Y, newCell.Position.Z).Occupant = newCell
-                ConsumeBasicResources(cell)
-            End If
-        End If
-    End Sub
-
-    Private Function CloneReplicon(r As Replicon) As Replicon
-        Return New Replicon With {.Genes = r.Genes.Select(Function(g) New Gene With {.FunctionTag = g.FunctionTag}).ToList()}
-    End Function
-
-    Private Sub DistributeMolecules(parent As Cell, child As Cell)
-        ' 简化：按6:4分配所有分子
-        For Each kvp In parent.InternalMolecules.ToList()
-            Dim parentAmount = CInt(kvp.Value * 0.6)
-            Dim childAmount = kvp.Value - parentAmount
-            parent.InternalMolecules(kvp.Key) = parentAmount
-            child.InternalMolecules(kvp.Key) = childAmount
-        Next
-    End Sub
-
-    Private Sub ConsumeBasicResources(cell As Cell)
-        If cell.InternalMolecules.ContainsKey(MoleculeType.Water) Then
-            cell.InternalMolecules(MoleculeType.Water) -= 1
-        End If
-        cell.ATP -= 1
-    End Sub
-End Class
-
 Public Class TransportRule : Implements IBiochemicalRule
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
@@ -266,6 +204,43 @@ Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
         End If
         cell.ATP -= 1
     End Sub
+
+    Private Sub SecondaryMetaboliteKinetics(cell As Cell)
+        Const Vmax As Integer = 3
+        Const Km As Integer = 10
+
+        Dim acetate = cell.InternalMolecules.GetValueOrDefault(MoleculeType.Acetate, 0)
+        Dim glu = cell.InternalMolecules.GetValueOrDefault(MoleculeType.AminoMixGluFamily, 0)
+
+        If acetate < 2 OrElse glu < 1 Then Return
+
+        Dim rate = CInt(Vmax * acetate / (Km + acetate))
+        rate = Math.Min(rate, Math.Min(acetate \ 2, glu))
+
+        MoleculeUtils.AddMolecule(cell, MoleculeType.Acetate, -2 * rate)
+        MoleculeUtils.AddMolecule(cell, MoleculeType.AminoMixGluFamily, -rate)
+        MoleculeUtils.AddMolecule(cell, MoleculeType.SecondaryMetabolite, rate)
+    End Sub
+
+    Private Sub BiofilmKinetics(cell As Cell, env As Environment3D)
+        Const rho As Double = 1.0
+        Const KN As Double = 50.0
+        Const KA As Double = 10.0
+
+        Dim N = cell.InternalMolecules.GetValueOrDefault(MoleculeType.NitrogenSource, 0)
+        Dim A = cell.InternalMolecules.GetValueOrDefault(MoleculeType.AminoMixAspFamily, 0)
+
+        Dim prob = rho * (N / (KN + N)) * (A / (KA + A))
+
+        If cell.ATP < 1 OrElse prob < 0.5 Then Return
+
+        MoleculeUtils.AddMolecule(cell, MoleculeType.NitrogenSource, -10)
+        MoleculeUtils.AddMolecule(cell, MoleculeType.AminoMixAspFamily, -5)
+        cell.ATP -= 1
+
+        Dim v = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
+        v.HasBiofilm = True
+    End Sub
 End Class
 
 Public Class EnvironmentalResponseRule : Implements IBiochemicalRule
@@ -388,6 +363,19 @@ Public Class MutationRule : Implements IBiochemicalRule
 End Class
 
 Public Class QuorumSensingAndBiofilmRule : Implements IBiochemicalRule
+
+
+    Public ReadOnly Property SupportedFunctions As List(Of GeneFunction) Implements IBiochemicalRule.SupportedFunctions
+        Get
+            Return New List(Of GeneFunction) From {
+                GeneFunction.QuorumSensing,
+                GeneFunction.SignalMoleculeSynthesis,
+                GeneFunction.SecondaryMetaboliteSynthesis,
+                GeneFunction.BiofilmSynthesis
+            }
+        End Get
+    End Property
+
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 信号分子合成
         If cell.Proteins.ContainsKey(GeneFunction.SignalMoleculeSynthesis) AndAlso
@@ -452,6 +440,16 @@ Public Class QuorumSensingAndBiofilmRule : Implements IBiochemicalRule
         End If
         cell.ATP -= 1
     End Sub
+
+    Private Function QuorumProbability(cell As Cell) As Double
+        Const n As Double = 2.0   ' Hill系数
+        Const K As Double = 100.0 ' 半饱和常数
+
+        Dim S = cell.InternalMolecules.GetValueOrDefault(MoleculeType.SignalMolecule, 0)
+        Return Math.Pow(S, n) / (Math.Pow(K, n) + Math.Pow(S, n))
+    End Function
+
+
 End Class
 
 Public Class DiffusionRule : Implements IBiochemicalRule
