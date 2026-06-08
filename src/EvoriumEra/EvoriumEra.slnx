@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/framework/">
+    <Project Path="../../../GCModeller/src/runtime/sciBASIC#/Microsoft.VisualBasic.Core/src/Core.vbproj" />
+  </Folder>
+  <Project Path="EvoriumEra.vbproj" />
+</Solution>
