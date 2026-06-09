@@ -1,5 +1,8 @@
 ﻿Namespace Models
 
+    ''' <summary>
+    ''' 基础分子对象，包括小分子代谢物和生物大分子
+    ''' </summary>
     Public Class Molecule
 
         Public Property Type As MoleculeType
