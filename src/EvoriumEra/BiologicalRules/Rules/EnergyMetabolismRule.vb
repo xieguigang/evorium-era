@@ -39,24 +39,36 @@ Namespace BiologicalRules.Rules
                 Dim acetate = cell.GetMoleculeAmount(MoleculeType.Acetate)
                 Dim oxygen = cell.GetMoleculeAmount(MoleculeType.Oxygen)
 
-                If acetate > 0 AndAlso oxygen < 10 Then
-                    If ConsumeBasicResources(cell, exemptATP:=True) Then
-                        cell.AddMoleculeInternal(MoleculeType.Acetate, -1)
-                        cell.ATP = Math.Min(cell.ATP + 5, 1000)
-                        env.AddMolecule(cell, MoleculeType.CarbonDioxide, 2)
-                        env.AddMolecule(cell, MoleculeType.HydrogenIon, 2)
+                If oxygen < 10 Then
+                    If acetate > 0 Then
+                        If ConsumeBasicResources(cell, exemptATP:=True) Then
+                            cell.AddMoleculeInternal(MoleculeType.Acetate, -1)
+                            cell.ATP = Math.Min(cell.ATP + 5, 1000)
+                            env.AddMolecule(cell, MoleculeType.CarbonDioxide, 2)
+                            env.AddMolecule(cell, MoleculeType.HydrogenIon, 2)
+                        End If
                     End If
-                End If
 
-                Dim carbon = cell.GetMoleculeAmount(MoleculeType.CarbonSource)
-                oxygen = cell.GetMoleculeAmount(MoleculeType.Oxygen)
+                    Dim carbon = cell.GetMoleculeAmount(MoleculeType.CarbonSource)
 
-                If carbon > 0 AndAlso oxygen < 10 Then
-                    If ConsumeBasicResources(cell, exemptATP:=True) Then
-                        cell.AddMoleculeInternal(MoleculeType.CarbonSource, -1)
-                        cell.ATP = Math.Min(cell.ATP + 3, 1000)
-                        env.AddMolecule(cell, MoleculeType.CarbonDioxide, 1)
-                        env.AddMolecule(cell, MoleculeType.HydrogenIon, 1)
+                    If carbon > 0 Then
+                        If ConsumeBasicResources(cell, exemptATP:=True) Then
+                            cell.AddMoleculeInternal(MoleculeType.CarbonSource, -1)
+                            cell.ATP = Math.Min(cell.ATP + 3, 1000)
+                            env.AddMolecule(cell, MoleculeType.CarbonDioxide, 1)
+                            env.AddMolecule(cell, MoleculeType.HydrogenIon, 1)
+                        End If
+                    End If
+
+                    Dim glucose = cell.GetMoleculeAmount(MoleculeType.Glucose)
+
+                    If glucose > 0 Then
+                        If ConsumeBasicResources(cell, exemptATP:=True) Then
+                            cell.AddMoleculeInternal(MoleculeType.Glucose, -1)
+                            cell.ATP = Math.Min(cell.ATP + 6, 1000)
+                            env.AddMolecule(cell, MoleculeType.CarbonDioxide, 6)
+                            env.AddMolecule(cell, MoleculeType.HydrogenIon, 6)
+                        End If
                     End If
                 End If
             End If
