@@ -4,9 +4,17 @@ Imports Microsoft.VisualBasic.Imaging
 Namespace Data
 
     Public Class CellSnapshot
-        ' 标识信息
+
+        ''' <summary>
+        ''' 标识信息
+        ''' </summary>
+        ''' <returns></returns>
         Public Property ID As Guid
-        Public Property ParentID As Guid? ' 母细胞ID（用于追踪谱系）
+        ''' <summary>
+        ''' 母细胞ID（用于追踪谱系）
+        ''' </summary>
+        ''' <returns></returns>
+        Public Property ParentID As Guid?
         Public Property Generation As Integer
         ' 位置与状态
         Public Property Position As SpatialIndex3D
@@ -34,7 +42,10 @@ Namespace Data
         ''' <returns></returns>
         Public Property DivisionCount As Integer
 
-        ' 计算属性
+        ''' <summary>
+        ''' 计算属性
+        ''' </summary>
+        ''' <returns></returns>
         Public ReadOnly Property EnergyCharge As Double
             Get
                 If ATP <= 0 Then Return 0

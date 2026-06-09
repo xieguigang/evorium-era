@@ -43,10 +43,10 @@ Namespace Data
             Dim snapshot As New Snapshot With {
                 .Iteration = simulation.CurrentIteration,
                 .Timestamp = DateTime.Now,
-                .EnvironmentDimensions = simulation.Env.Dimensions,
-                .Voxels = New List(Of VoxelSnapshot)(),
-                .Cells = New List(Of CellSnapshot)()
+                .EnvironmentDimensions = simulation.Env.Dimensions
             }
+            Dim voxels As New List(Of VoxelSnapshot)
+            Dim cells As New List(Of CellSnapshot)
 
             ' 遍历所有体素
             For x As Integer = 0 To simulation.Env.Dimensions.Width - 1
@@ -63,7 +63,7 @@ Namespace Data
                             .TotalMolecules = voxel.ExternalMolecules.Values.Sum(),
                             .SnapshotTime = DateTime.Now
                         }
-                        snapshot.Voxels.Add(voxelSnap)
+                        voxels.Add(voxelSnap)
 
                         ' 创建细胞快照
                         If voxel.Occupant IsNot Nothing Then
@@ -79,11 +79,14 @@ Namespace Data
                                 .GenomeSize = cell.Genome.NucleotideLength,
                                 .PlasmidCount = cell.Plasmids.Count
                             }
-                            snapshot.Cells.Add(cellSnap)
+                            cells.Add(cellSnap)
                         End If
                     Next
                 Next
             Next
+
+            snapshot.Voxels = voxels.ToArray
+            snapshot.Cells = cells.ToArray
 
             Return snapshot
         End Function
