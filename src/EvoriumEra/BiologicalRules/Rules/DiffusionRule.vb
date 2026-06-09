@@ -37,11 +37,12 @@ Namespace BiologicalRules.Rules
                 MoleculeType.Antibiotic, MoleculeType.Siderophore,
                 MoleculeType.AminoMixGluFamily, MoleculeType.AminoMixAspFamily, MoleculeType.AminoMixSerGly
             }
+            Dim dims = env.Dimensions
 
             ' 遍历所有格子进行扩散
-            For x As Integer = 0 To env.Width - 1
-                For y As Integer = 0 To env.Height - 1
-                    For z As Integer = 0 To env.Depth - 1
+            For x As Integer = 0 To dims.Width - 1
+                For y As Integer = 0 To dims.Height - 1
+                    For z As Integer = 0 To dims.Depth - 1
                         Dim voxel = env.Grid(x, y, z)
                         Dim neighbors = env.GetNeighbors(voxel)
 

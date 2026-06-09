@@ -1,5 +1,6 @@
 ﻿Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
+Imports Microsoft.VisualBasic.Imaging
 Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules.Rules
@@ -40,15 +41,17 @@ Namespace BiologicalRules.Rules
         End Sub
 
         Private Sub ReplenishOxygenGradient(env As NaturalEnvironment, config As Configs)
+            Dim dims = env.Dimensions
+
             ' 氧气浓度随Z轴（深度）递减
             ' 表层（z=0）最富氧，底层（z=max）最缺氧
-            For x As Integer = 0 To env.Width - 1
-                For y As Integer = 0 To env.Height - 1
-                    For z As Integer = 0 To env.Depth - 1
+            For x As Integer = 0 To dims.Width - 1
+                For y As Integer = 0 To dims.Height - 1
+                    For z As Integer = 0 To dims.Depth - 1
                         Dim voxel = env.Grid(x, y, z)
 
                         ' 计算该深度的目标氧气浓度
-                        Dim depthFraction = CDbl(z) / Math.Max(1, env.Depth - 1)
+                        Dim depthFraction = CDbl(z) / Math.Max(1, dims.Depth - 1)
                         Dim targetOxygen = CInt(config.SurfaceOxygenLevel * (1.0 - depthFraction * config.OxygenGradientDecay))
 
                         ' 向目标浓度缓慢趋近
@@ -97,11 +100,13 @@ Namespace BiologicalRules.Rules
         End Sub
 
         Private Sub ReplenishGlobalNutrients(env As NaturalEnvironment, config As Configs)
+            Dim dims = env.Dimensions
+
             ' 每迭代向随机位置补充少量基础营养
             For i As Integer = 0 To 9
-                Dim x = rng.Next(env.Width)
-                Dim y = rng.Next(env.Height)
-                Dim z = rng.Next(env.Depth)
+                Dim x = rng.Next(dims.Width)
+                Dim y = rng.Next(dims.Height)
+                Dim z = rng.Next(dims.Depth)
                 Dim voxel = env.Grid(x, y, z)
 
                 If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.CarbonSource) Then
@@ -122,17 +127,17 @@ Namespace BiologicalRules.Rules
 
         Private Function GenerateHotspotPositions(env As NaturalEnvironment, count As Integer) As List(Of SpatialIndex3D)
             Dim positions = New List(Of SpatialIndex3D)()
-
+            Dim dims = env.Dimensions
             ' 均匀分布热点
-            Dim gridSize = Math.Max(env.Width, env.Height)
+            Dim gridSize = Math.Max(dims.Width, dims.Height)
             Dim spacing = gridSize / Math.Sqrt(count)
 
             Dim idx = 0
-            For x As Double = spacing / 2 To env.Width - 1 Step spacing
-                For y As Double = spacing / 2 To env.Height - 1 Step spacing
+            For x As Double = spacing / 2 To dims.Width - 1 Step spacing
+                For y As Double = spacing / 2 To dims.Height - 1 Step spacing
                     If idx >= count Then Exit For
                     ' 热点主要在表层和中层
-                    Dim z = rng.Next(CInt(env.Depth * 0.7))
+                    Dim z = rng.Next(CInt(dims.Depth * 0.7))
                     positions.Add(New SpatialIndex3D(CInt(x), CInt(y), z))
                     idx += 1
                 Next

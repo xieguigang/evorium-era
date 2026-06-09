@@ -1,6 +1,5 @@
 ﻿Imports EvoriumEra.BiologicalRules
 Imports EvoriumEra.BiologicalRules.Rules
-Imports EvoriumEra.Data
 Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
 Imports Microsoft.VisualBasic.Imaging
@@ -38,23 +37,27 @@ Public Class NaturalEvolution
     Public Property TotalMutations As Long = 0
     Public Property TotalLysis As Long = 0
 
-    Public Sub Initialize(config As Configs)
+    Sub New(config As Configs)
         Me.Config = config
+    End Sub
 
-        Env = New NaturalEnvironment(config.gridW, config.gridH, config.gridD)
+    Public Function Initialize() As NaturalEvolution
+        Env = New NaturalEnvironment(Config)
         Scheduler = New RuleScheduler()
 
         ' 初始化环境
         InitializeEnvironment()
 
         ' 初始化细胞
-        InitializeCells(config.InitCellNumbers)
+        InitializeCells(Config.InitCellNumbers)
 
         ' 初始化营养热点
         InitializeNutrientHotspots()
 
         CurrentIteration = 0
-    End Sub
+
+        Return Me
+    End Function
 
     Public Sub RunIteration()
         CurrentIteration += 1
@@ -269,10 +272,12 @@ Public Class NaturalEvolution
     End Sub
 
     Private Sub InitializeEnvironment()
+        Dim dims = Env.Dimensions
+
         ' 基础环境分子
-        For x As Integer = 0 To Env.Width - 1
-            For y As Integer = 0 To Env.Height - 1
-                For z As Integer = 0 To Env.Depth - 1
+        For x As Integer = 0 To dims.Width - 1
+            For y As Integer = 0 To dims.Height - 1
+                For z As Integer = 0 To dims.Depth - 1
                     Dim voxel = Env.Grid(x, y, z)
 
                     ' 氧气梯度：表层多，深层少
@@ -342,14 +347,15 @@ Public Class NaturalEvolution
             GeneOntology.NucleicAcidDegradation,
             GeneOntology.ProteinDegradation
         }
+        Dim dims = Env.Dimensions
 
         For i As Integer = 1 To count
             Dim cell = New Cell()
 
             ' 随机位置
-            Dim x = RNG.NextInteger(5, Env.Width - 5)
-            Dim y = RNG.NextInteger(5, Env.Height - 5)
-            Dim z = RNG.NextInteger(0, CInt(Env.Depth * 0.7)) ' 主要在表层和中层
+            Dim x = RNG.NextInteger(5, dims.Width - 5)
+            Dim y = RNG.NextInteger(5, dims.Height - 5)
+            Dim z = RNG.NextInteger(0, CInt(dims.Depth * 0.7)) ' 主要在表层和中层
             cell.Position = New SpatialIndex3D(x, y, z)
 
             ' 构建基因组
@@ -368,9 +374,9 @@ Public Class NaturalEvolution
             Next
 
             ' 添加随机可选基因（每个30-60%概率）
-            For Each optional In optionalGenes
+            For Each [optional] As GeneOntology In optionalGenes
                 If RNG.NextDouble() < RNG.NextDouble() * 0.4 + 0.2 Then
-                    genes.Add(New Gene With {.FunctionOntology = optional})
+                    genes.Add(New Gene With {.FunctionOntology = [optional]})
                 End If
             Next
 

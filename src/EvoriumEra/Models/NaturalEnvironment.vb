@@ -139,7 +139,7 @@ Namespace Models
         ''' <param name="y"></param>
         ''' <param name="z"></param>
         ''' <returns></returns>
-        Private Function IsValidCoordinate(x As Integer, y As Integer, z As Integer) As Boolean
+        Public Function IsValidCoordinate(x As Integer, y As Integer, z As Integer) As Boolean
             Return x >= 0 AndAlso x < Dimensions.Width AndAlso
                y >= 0 AndAlso y < Dimensions.Height AndAlso
                z >= 0 AndAlso z < Dimensions.Depth

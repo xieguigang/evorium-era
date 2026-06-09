@@ -63,6 +63,7 @@
 
     ''' <summary>初始基因组最大基因数</summary>
     Public Property InitGenomeMaxGenes As Integer = 15
+    Public Property OxygenGradientDecay As Double = 10
 
     Public Shared Function [Default]() As Configs
         Return New Configs
