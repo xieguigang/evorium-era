@@ -1,4 +1,6 @@
-﻿Public Class ReplicationAndDivisionRule : Implements IBiochemicalRule
+﻿Imports Microsoft.VisualBasic.Imaging
+
+Public Class ReplicationAndDivisionRule : Implements IBiochemicalRule
     Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) _
         Implements IBiochemicalRule.SupportedFunctions
         Get
@@ -25,16 +27,17 @@
         ' 细胞分裂
         If cell.Proteins.ContainsKey(GeneOntology.CellDivision) Then
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
-            Dim neighbors = env.GetNeighbors(voxel).Where(Function(v) v.Occupant Is Nothing).ToList()
+            Dim emptyNeighbors = env.GetNeighbors(voxel).Where(Function(v) v.Occupant Is Nothing).ToList()
 
-            If neighbors.Any() AndAlso cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso
+            If emptyNeighbors.Any() AndAlso cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso
                cell.InternalMolecules(MoleculeType.Nucleotide) >= requiredNucleotides Then
 
                 ' 6:4分配
+                ' 将新的细胞随机放置在旁边的任意一个空格中
                 Dim newCell As New Cell With {
-                    .Position = (neighbors(rng.Next(neighbors.Count)).X,
-                                neighbors(rng.Next(neighbors.Count)).Y,
-                                neighbors(rng.Next(neighbors.Count)).Z),
+                    .Position = New SpatialIndex3D(emptyNeighbors(rng.Next(emptyNeighbors.Count)).Position.X,
+                                emptyNeighbors(rng.Next(emptyNeighbors.Count)).Position.Y,
+                                emptyNeighbors(rng.Next(emptyNeighbors.Count)).Position.Z),
                     .Genome = CloneReplicon(cell.Genome),
                     .Plasmids = cell.Plasmids.Select(Function(p) CloneReplicon(p)).ToList(),
                     .ParentID = cell.ID,

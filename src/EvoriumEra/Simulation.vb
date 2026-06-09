@@ -1,4 +1,6 @@
-﻿Public Class Simulation
+﻿Imports Microsoft.VisualBasic.Imaging
+
+Public Class Simulation
     ' ===== 静态引用（供 MoleculeUtils / 规则使用）=====
     Public Shared CurrentEnvironment As Environment3D
 
@@ -66,7 +68,7 @@
         If empty Is Nothing Then Return
 
         Dim cell = New Cell()
-        cell.Position = (empty.X, empty.Y, empty.Z)
+        cell.Position = New SpatialIndex3D(empty.Position)
 
         ' 随机基因组
         cell.Genome = RandomGenome(RNG.Next(5, 15))
