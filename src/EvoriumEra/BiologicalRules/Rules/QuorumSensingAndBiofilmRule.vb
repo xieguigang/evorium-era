@@ -3,21 +3,18 @@ Imports EvoriumEra.Models.Container
 
 Namespace BiologicalRules.Rules
 
-    Public Class QuorumSensingAndBiofilmRule : Implements IBiochemicalRule
-
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class QuorumSensingAndBiofilmRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {
+            Call MyBase.New(
                 GeneOntology.QuorumSensing,
                 GeneOntology.SignalMoleculeSynthesis,
                 GeneOntology.SecondaryMetaboliteSynthesis,
                 GeneOntology.BiofilmSynthesis
-            }
+            )
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' 信号分子合成
             If cell.HasFunction(GeneOntology.SignalMoleculeSynthesis) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.CarbonSource) AndAlso

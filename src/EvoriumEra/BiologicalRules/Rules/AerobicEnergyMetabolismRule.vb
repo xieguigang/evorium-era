@@ -6,15 +6,13 @@ Namespace BiologicalRules.Rules
     ''' <summary>
     ''' 有氧能量代谢规则
     ''' </summary>
-    Public Class AerobicEnergyMetabolismRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class AerobicEnergyMetabolismRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {GeneOntology.AerobicEnergyMetabolismATP}
+            Call MyBase.New(GeneOntology.AerobicEnergyMetabolismATP)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             If cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso
                 cell.InternalMolecules.ContainsKey(MoleculeType.Oxygen) AndAlso
                 cell.HasFunction(GeneOntology.AerobicEnergyMetabolismATP) Then

@@ -3,15 +3,13 @@ Imports EvoriumEra.Models.Container
 
 Namespace BiologicalRules.Rules
 
-    Public Class EnergyMetabolismRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class EnergyMetabolismRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {GeneOntology.AerobicEnergyMetabolismATP, GeneOntology.AnaerobicEnergyMetabolismATP}
+            Call MyBase.New(GeneOntology.AerobicEnergyMetabolismATP, GeneOntology.AnaerobicEnergyMetabolismATP)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' 需氧能量代谢
             If cell.HasFunction(GeneOntology.AerobicEnergyMetabolismATP) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso

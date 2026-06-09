@@ -3,15 +3,13 @@ Imports EvoriumEra.Models.Container
 
 Namespace BiologicalRules.Rules
 
-    Public Class GeneExpressionRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class GeneExpressionRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {GeneOntology.GeneTranscription, GeneOntology.ProteinTranslation}
+            Call MyBase.New(GeneOntology.GeneTranscription, GeneOntology.ProteinTranslation)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' 基因转录（需要9个核苷酸）
             If cell.HasFunction(GeneOntology.GeneTranscription) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso

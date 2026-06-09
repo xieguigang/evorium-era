@@ -5,17 +5,13 @@ Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules.Rules
 
-    Public Class ReplicationAndDivisionRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class ReplicationAndDivisionRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {
-                GeneOntology.CellDivision
-            }
+            Call MyBase.New(GeneOntology.CellDivision)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' DNA复制（需要n*9 * 2个核苷酸）
             Dim totalGenes = cell.Genome.Genes.Count + cell.Plasmids.Sum(Function(p) p.Genes.Count)
             Dim requiredNucleotides = totalGenes * 9 * 2

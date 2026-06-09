@@ -3,15 +3,13 @@ Imports EvoriumEra.Models.Container
 
 Namespace BiologicalRules.Rules
 
-    Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class SynthesisAndDegradationRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {GeneOntology.DegradeMacromolecule, GeneOntology.SynthesizeAntibiotic, GeneOntology.DegradeAntibiotic}
+            Call MyBase.New(GeneOntology.DegradeMacromolecule, GeneOntology.SynthesizeAntibiotic, GeneOntology.DegradeAntibiotic)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' 降解大分子
             If cell.HasFunction(GeneOntology.DegradeMacromolecule) Then
                 ' 降解细胞内大分子

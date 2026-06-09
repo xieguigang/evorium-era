@@ -5,15 +5,13 @@ Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules.Rules
 
-    Public Class MotionAndHGTRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class MotionAndHGTRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {GeneOntology.FlagellarMovement}
+            Call MyBase.New(GeneOntology.FlagellarMovement)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' 细胞鞭毛运动
             If cell.HasFunction(GeneOntology.FlagellarMovement) Then
                 Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)

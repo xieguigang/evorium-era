@@ -4,15 +4,13 @@ Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules.Rules
 
-    Public Class MutationRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class MutationRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {GeneOntology.ReplicateDNA}
+            Call MyBase.New(GeneOntology.ReplicateDNA)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' DNA复制时突变（简化：每次复制有1%突变率）
             If cell.HasFunction(GeneOntology.ReplicateDNA) AndAlso rng.NextDouble() < 0.01 Then
                 Dim replicons = New List(Of Replicon) From {cell.Genome}

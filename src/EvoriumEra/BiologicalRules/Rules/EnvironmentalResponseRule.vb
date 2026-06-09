@@ -3,15 +3,13 @@ Imports EvoriumEra.Models.Container
 
 Namespace BiologicalRules.Rules
 
-    Public Class EnvironmentalResponseRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class EnvironmentalResponseRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {GeneOntology.AcidMetabolism, GeneOntology.BaseMetabolism}
+            Call MyBase.New(GeneOntology.AcidMetabolism, GeneOntology.BaseMetabolism)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' 酸代谢
             If cell.HasFunction(GeneOntology.AcidMetabolism) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.HydrogenIon) AndAlso

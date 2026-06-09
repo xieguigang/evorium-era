@@ -3,15 +3,13 @@ Imports EvoriumEra.Models.Container
 
 Namespace BiologicalRules.Rules
 
-    Public Class TransportRule : Implements IBiochemicalRule
-
-        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class TransportRule : Inherits IBiochemicalRule
 
         Sub New()
-            SupportedFunctions = {GeneOntology.Endocytosis, GeneOntology.Exocytosis}
+            Call MyBase.New(GeneOntology.Endocytosis, GeneOntology.Exocytosis)
         End Sub
 
-        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
             ' 物质内吞
