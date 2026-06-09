@@ -62,10 +62,10 @@ Public Class Configs
     Public Property StarvationDeathIterations As Integer = 10
 
     ''' <summary>初始基因组最小基因数</summary>
-    Public Property InitGenomeMinGenes As Integer = 5
+    Public Property InitGenomeMinGenes As Integer = 6
 
     ''' <summary>初始基因组最大基因数</summary>
-    Public Property InitGenomeMaxGenes As Integer = 15
+    Public Property InitGenomeMaxGenes As Integer = 20
     Public Property OxygenGradientDecay As Double = 10
 
     ' ===== v3.0 温度配置 =====
