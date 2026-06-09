@@ -25,15 +25,18 @@ Namespace BiologicalRules.Rules
             ' DNA复制
             Dim totalGenes = cell.Genome.Genes.Count + cell.Plasmids.Sum(Function(p) p.Genes.Count)
             Dim requiredNucleotides = totalGenes * 9 * 2
+            Dim currentNucleotides = cell.GetMoleculeAmount(MoleculeType.Nucleotide)
 
-            If Not cell.HasFunction(GeneOntology.ReplicateDNA) Then Return
-            If cell.GetMoleculeAmount(MoleculeType.Nucleotide) < requiredNucleotides Then Return
-            If cell.ATP < 300 Then Return
-            If cell.TotalMolecules < 500 Then Return
+            If currentNucleotides < requiredNucleotides Then
+                Return
+            End If
 
             ' 年龄影响分裂概率
             Dim divisionProb = Math.Max(0.1, 1.0 - cell.Age * 0.02)
-            If rng.NextDouble() > divisionProb Then Return
+
+            If rng.NextDouble() > divisionProb Then
+                Return
+            End If
 
             ' 消耗核苷酸和ATP
             cell.AddMoleculeInternal(MoleculeType.Nucleotide, -requiredNucleotides)
