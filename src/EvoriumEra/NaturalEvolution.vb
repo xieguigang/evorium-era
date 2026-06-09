@@ -41,6 +41,10 @@ Public Class NaturalEvolution
     ' ===== v3.0 统计 =====
     Public Property AverageTemperature As Double = 0
     Public Property AverageIonStrength As Double = 0
+    ''' <summary>
+    ''' 蛋白质变性事件计数
+    ''' </summary>
+    ''' <returns></returns>
     Public Property DenaturationEvents As Long = 0
 
     ''' <summary>

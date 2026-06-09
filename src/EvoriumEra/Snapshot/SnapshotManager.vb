@@ -2,6 +2,7 @@
 Imports System.IO.Compression
 Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
+Imports Microsoft.VisualBasic.Serialization
 Imports Microsoft.VisualBasic.Serialization.JSON
 
 Namespace Data
@@ -19,38 +20,42 @@ Namespace Data
             Directory.CreateDirectory(_basePath)
         End Sub
 
+        Private Shared Sub writeJSON(Of T)(zip As ZipArchive, data As T, file As String)
+            Dim entry As ZipArchiveEntry = zip.CreateEntry(file)
+            Dim jsonstr As String = data.GetJson
+
+            Using writer = New StreamWriter(entry.Open())
+                Call writer.Write(jsonstr)
+            End Using
+        End Sub
+
         Public Sub SaveSnapshot(simulation As NaturalEvolution)
             Dim snapshot As (frame As Snapshot, voxels As VoxelSnapshot(), cells As CellSnapshot()) = CreateSnapshot(simulation)
-            Dim json As String = snapshot.frame.GetJson
-
             ' 保存为ZIP
             Dim zipPath = Path.Combine(_basePath, $"iter_{simulation.CurrentIteration:D8}.zip")
 
+            If zipPath.FileExists Then
+                Call zipPath.DeleteFile
+            End If
+
             Using zip = ZipFile.Open(zipPath, ZipArchiveMode.Create)
                 ' 主快照文件
-                Dim entry = zip.CreateEntry("snapshot.json")
-                Using writer = New StreamWriter(entry.Open())
-                    writer.Write(json)
-                End Using
-
-                entry = zip.CreateEntry("voxels.json")
-
-                Using writer = New StreamWriter(entry.Open())
-                    writer.Write(snapshot.voxels.GetJson)
-                End Using
-
-                entry = zip.CreateEntry("cells.json")
-
-                Using writer = New StreamWriter(entry.Open())
-                    writer.Write(snapshot.cells.GetJson)
-                End Using
+                Call writeJSON(zip, snapshot.frame, "snapshot.json")
+                Call writeJSON(zip, snapshot.voxels, "voxels.json")
+                Call writeJSON(zip, snapshot.cells, "cells.json")
 
                 ' 附加元数据文件
                 Dim metaEntry = zip.CreateEntry("metadata.txt")
+
                 Using writer = New StreamWriter(metaEntry.Open())
                     writer.WriteLine($"Iteration: {simulation.CurrentIteration}")
                     writer.WriteLine($"Timestamp: {DateTime.Now}")
                     writer.WriteLine($"Cells: {simulation.LivingCellCount}")
+                    writer.WriteLine($"DeadCells: {simulation.DeadCellCount}")
+                    writer.WriteLine($"CrossFeeding: {simulation.CrossFeedingEvents}")
+                    writer.WriteLine($"Temperature: {simulation.AverageTemperature}")
+                    writer.WriteLine($"IonStrength: {simulation.AverageIonStrength}")
+                    writer.WriteLine($"Denaturation: {simulation.DenaturationEvents}")
                 End Using
             End Using
         End Sub
