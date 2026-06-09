@@ -52,6 +52,7 @@ Public Class NaturalEvolution
     ''' </summary>
     ''' <returns></returns>
     Public Property DenaturationEvents As Long = 0
+    Public Property AverageEnergyLevel As Double = 0
 
     ''' <summary>
     ''' ===== 快照系统 =====
@@ -115,7 +116,7 @@ Public Class NaturalEvolution
         IsRunning = True
 
         While CInt(CurrentIteration) < maxSteps AndAlso IsRunning AndAlso App.Running
-            Call VBDebugger.EchoLine($"[{CInt(CurrentIteration)}] living_cells: {LivingCellCount}; temperature[environment_avg]: {AverageTemperature:F2}℃")
+            Call VBDebugger.EchoLine($"[{CInt(CurrentIteration)}] living_cells: {LivingCellCount}; energy_level[ATP]:{AverageEnergyLevel:F3}; temperature[environment_avg]: {AverageTemperature:F2}℃")
             Call RunIteration(++CurrentIteration)
         End While
     End Sub
@@ -495,6 +496,10 @@ Public Class NaturalEvolution
 
         LivingCellCount = cells.Count(Function(c) c.IsAlive)
         DeadCellCount = cells.Count(Function(c) Not c.IsAlive)
+
+        If LivingCellCount > 0 Then
+            AverageEnergyLevel = cells.Where(Function(c) c.IsAlive).Average(Function(c) c.ATP)
+        End If
 
         ' [v3.0] 更新温度和离子统计
         Dim tempSum = 0.0
