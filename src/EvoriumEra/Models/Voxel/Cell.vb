@@ -72,7 +72,7 @@ Namespace Models.Container
 
         Public ReadOnly Property PH As Double
             Get
-                Return PHHelper.EstimatePH(Me)
+                Return PHHelper.EstimatePH(Me, temperatureC:=InternalTemperature)
             End Get
         End Property
 
