@@ -10,49 +10,16 @@
         End Function
     End Class
 
-    ''' <summary>
-    ''' 基因：组成复制子的基础功能单元
-    ''' </summary>
-    Public Class Gene
+    Public Class ProteinMolecule : Inherits Molecule
 
-        Public Property FunctionOntology As GeneOntology
-
-        Public Const LengthInNucleotides As Integer = 9
-
-        Sub New()
-        End Sub
-
-        Sub New(clone As Gene)
-            FunctionOntology = clone.FunctionOntology
-        End Sub
-
-        Public Overrides Function ToString() As String
-            Return FunctionOntology.Description
-        End Function
+        Public Property Protein As GeneOntology
 
     End Class
 
-    ''' <summary>
-    ''' 复制子：一个复制子就是若干个基因的集合
-    ''' </summary>
-    Public Class Replicon
+    Public Class DNAMolecule : Inherits Molecule
 
-        Public Property Genes As New List(Of Gene)
-        Public Property IsPlasmid As Boolean = False
+        Public Property Genes As Gene()
 
-        Public ReadOnly Property NucleotideLength As Integer
-            Get
-                Return Genes.Count * Gene.LengthInNucleotides
-            End Get
-        End Property
-
-        Public Function Clone() As Replicon
-            Return New Replicon With {
-                .Genes = New List(Of Gene)(From g As Gene
-                                           In Genes
-                                           Select New Gene(clone:=g)),
-                .IsPlasmid = IsPlasmid
-            }
-        End Function
     End Class
+
 End Namespace

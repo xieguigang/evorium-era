@@ -60,7 +60,7 @@ Namespace Models
             voxel.Occupant = Nothing
 
             If debug Then
-                Call VBDebugger.EchoLine($"[lyse_cell, {reason}] {cell.ToString}")
+                Call VBDebugger.warning($"[lyse_cell, {reason}] {cell.ToString}")
             End If
         End Sub
     End Class

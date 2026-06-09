@@ -1,6 +1,5 @@
 ﻿Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
-Imports Microsoft.VisualBasic.Imaging
 Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules.Rules
@@ -79,13 +78,8 @@ Namespace BiologicalRules.Rules
                 .ID = Guid.NewGuid(),
                 .ParentID = parent.ID,
                 .Generation = parent.Generation + 1,
-                .Genome = New Replicon With {
-                    .Genes = parent.Genome.Genes.Select(Function(g) New Gene With {.FunctionOntology = g.FunctionOntology}).ToList()
-                },
-                .Plasmids = parent.Plasmids.Select(Function(p) New Replicon With {
-                    .IsPlasmid = True,
-                    .Genes = p.Genes.Select(Function(g) New Gene With {.FunctionOntology = g.FunctionOntology}).ToList()
-                }).ToList(),
+                .Genome = parent.Genome.Clone,
+                .Plasmids = New List(Of Replicon)(parent.Plasmids.Select(Function(p) p.Clone)),
                 .ATP = 100,
                 .Age = 0,
                 .DivisionCount = 0

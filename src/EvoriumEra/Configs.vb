@@ -8,7 +8,7 @@ Public Class Configs
     Public Property gridD As Integer = 30
     Public Property SnapshotInterval As Integer = 1
 
-    Public Property InitCellNumbers As Integer = 80
+    Public Property InitCellNumbers As Integer = 1000
     Public Property MaxVoxelActions As Integer = 5
     Public Property MaxCellActions As Integer = 12
 
@@ -59,7 +59,7 @@ Public Class Configs
     Public Property MaxATP As Integer = 1000
 
     ''' <summary>连续无ATP死亡迭代数</summary>
-    Public Property StarvationDeathIterations As Integer = 5
+    Public Property StarvationDeathIterations As Integer = 10
 
     ''' <summary>初始基因组最小基因数</summary>
     Public Property InitGenomeMinGenes As Integer = 5

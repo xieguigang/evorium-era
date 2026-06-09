@@ -4,6 +4,7 @@ Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
 Imports Microsoft.VisualBasic.Imaging
 Imports Microsoft.VisualBasic.Language
+Imports Microsoft.VisualBasic.Serialization.JSON
 Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
 ''' <summary>
@@ -80,6 +81,11 @@ Public Class NaturalEvolution
 
     Public Function Initialize() As NaturalEvolution
         Call VBDebugger.EchoLine("setup the natural evolution simulation system...")
+
+        If debug Then
+            Call "inspect of the experiment configs:".debug
+            Call Config.GetJson.debug
+        End If
 
         Env = New NaturalEnvironment(Config, debug:=debug)
         Scheduler = New RuleScheduler()
