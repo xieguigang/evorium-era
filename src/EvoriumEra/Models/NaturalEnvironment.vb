@@ -123,10 +123,13 @@ Namespace Models
         ''' <summary>
         ''' 返回环境中所有存活的细胞
         ''' </summary>
+        ''' 
+        <MethodImpl(MethodImplOptions.AggressiveInlining)>
         Public Function AllCells() As IEnumerable(Of Cell)
-            Return AllVoxels() _
-            .Where(Function(v) v.Occupant IsNot Nothing AndAlso v.Occupant.IsAlive) _
-            .Select(Function(v) v.Occupant)
+            Return From v As Voxel
+                   In AllVoxels()
+                   Where v.Occupant IsNot Nothing AndAlso v.Occupant.IsAlive
+                   Select v.Occupant
         End Function
 
         ' ===== 随机空体素 =====
@@ -135,8 +138,8 @@ Namespace Models
         ''' </summary>
         Public Function GetRandomEmptyVoxel() As Voxel
             Dim emptyVoxels = AllVoxels() _
-            .Where(Function(v) v.Occupant Is Nothing) _
-            .ToList()
+                .Where(Function(v) v.Occupant Is Nothing) _
+                .ToList()
 
             If emptyVoxels.Count = 0 Then Return Nothing
 

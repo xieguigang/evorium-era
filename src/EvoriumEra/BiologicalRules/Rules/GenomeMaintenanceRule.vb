@@ -22,11 +22,10 @@ Namespace BiologicalRules.Rules
         End Sub
 
         Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
-            If Not cell.IsAlive Then Return
-
             ' 计算总基因数
             Dim totalGenes = cell.Genome.Genes.Count
-            For Each plasmid In cell.Plasmids
+
+            For Each plasmid As Replicon In cell.Plasmids
                 totalGenes += plasmid.Genes.Count
             Next
 

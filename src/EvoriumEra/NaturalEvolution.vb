@@ -530,7 +530,8 @@ Public Class NaturalEvolution
     End Sub
 
     Private Sub UpdateStatistics()
-        Dim cells = Env.AllCells()
+        Dim cells = Env.AllCells().ToArray
+
         LivingCellCount = cells.Count(Function(c) c.IsAlive)
         DeadCellCount = cells.Count(Function(c) Not c.IsAlive)
 

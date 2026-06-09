@@ -48,7 +48,7 @@ Namespace BiologicalRules
         End Sub
 
         Public Sub ExecuteFunction(func As GeneOntology, cell As Cell, env As NaturalEnvironment)
-            If _functionMap.ContainsKey(func) Then
+            If _functionMap.ContainsKey(func) AndAlso cell.IsAlive Then
                 For Each rule As IBiochemicalRule In _functionMap(func)
                     rule.Execute(cell, env)
                 Next
@@ -59,11 +59,13 @@ Namespace BiologicalRules
         ''' [v2.0] 执行所有非基因功能驱动的全局规则
         ''' </summary>
         Public Sub ExecuteGlobalRules(cell As Cell, env As NaturalEnvironment)
-            For Each rule As IBiochemicalRule In BiologicalRules
-                If rule.SupportedFunctions.IsNullOrEmpty Then
-                    rule.Execute(cell, env)
-                End If
-            Next
+            If cell.IsAlive Then
+                For Each rule As IBiochemicalRule In BiologicalRules
+                    If rule.SupportedFunctions.IsNullOrEmpty Then
+                        rule.Execute(cell, env)
+                    End If
+                Next
+            End If
         End Sub
 
         ''' <summary>

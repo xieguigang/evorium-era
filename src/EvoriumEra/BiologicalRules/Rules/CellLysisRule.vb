@@ -17,8 +17,6 @@ Namespace BiologicalRules.Rules
         End Sub
 
         Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
-            If cell.IsAlive Then Return
-
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
             ' 释放所有内部分子到环境中

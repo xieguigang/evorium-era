@@ -38,8 +38,6 @@ Namespace BiologicalRules.Rules
         End Sub
 
         Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
-            If Not cell.IsAlive Then Return
-
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
             Dim externalIon = voxel.ExternalIonStrength
             Dim internalIon = cell.InternalIonStrength
