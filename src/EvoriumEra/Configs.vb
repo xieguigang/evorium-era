@@ -3,7 +3,7 @@
     Public Property gridW As Integer = 60
     Public Property gridH As Integer = 60
     Public Property gridD As Integer = 30
-    Public Property SnapshotInterval As Integer = 5
+    Public Property SnapshotInterval As Integer = 1
 
     Public Property InitCellNumbers As Integer = 80
     Public Property MaxVoxelActions As Integer = 5
