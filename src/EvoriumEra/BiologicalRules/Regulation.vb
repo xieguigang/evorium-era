@@ -20,7 +20,7 @@ Namespace BiologicalRules
             End Get
         End Property
 
-        Public ReadOnly Property Expression As WeightedFunction?
+        Public ReadOnly Property Phenotype As WeightedFunction?
             Get
                 If candidates.Count = 0 Then
                     Return Nothing

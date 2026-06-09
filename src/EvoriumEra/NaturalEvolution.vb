@@ -223,7 +223,7 @@ Public Class NaturalEvolution
             Return Nothing
         Else
             Dim rank = New Regulation(cell).RankProteins(Env)
-            Dim best = rank.Expression
+            Dim best = rank.Phenotype
 
             If best Is Nothing Then
                 Return Nothing
