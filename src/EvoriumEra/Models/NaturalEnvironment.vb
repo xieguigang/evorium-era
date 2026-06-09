@@ -48,6 +48,7 @@ Namespace Models
             Dimensions = (w, h, d)
             Grid = New Voxel(w - 1, h - 1, d - 1) {}
             configs = config
+            moleculeUtils = New MoleculeUtils(configs, Me)
 
             For X As Integer = 0 To w - 1
                 For Y As Integer = 0 To h - 1

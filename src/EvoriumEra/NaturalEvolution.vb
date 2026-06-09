@@ -1,5 +1,6 @@
 ﻿Imports EvoriumEra.BiologicalRules
 Imports EvoriumEra.BiologicalRules.Rules
+Imports EvoriumEra.Data
 Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
 Imports Microsoft.VisualBasic.Imaging
@@ -37,8 +38,32 @@ Public Class NaturalEvolution
     Public Property TotalMutations As Long = 0
     Public Property TotalLysis As Long = 0
 
-    Sub New(config As Configs)
+    ''' <summary>
+    ''' ===== 快照系统 =====
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property SnapshotManager As SnapshotManager
+
+    ''' <summary>
+    ''' 每 N 步存一次
+    ''' </summary>
+    ''' <returns></returns>
+    Public ReadOnly Property SnapshotInterval As Integer
+        Get
+            Return Config.SnapshotInterval
+        End Get
+    End Property
+
+    ''' <summary>
+    ''' ===== 初始化 =====
+    ''' </summary>
+    ''' <param name="config"></param>
+    ''' <param name="snapshotRoot">
+    ''' A temp dir path for save the snapshot temp data and result zip package file
+    ''' </param>
+    Public Sub New(config As Configs, snapshotRoot As String)
         Me.Config = config
+        Me.SnapshotManager = New SnapshotManager(snapshotRoot)
     End Sub
 
     Public Function Initialize() As NaturalEvolution
@@ -58,6 +83,14 @@ Public Class NaturalEvolution
 
         Return Me
     End Function
+
+    Public Sub Run(Optional maxSteps As Long = 9999)
+        IsRunning = True
+
+        While CurrentIteration < maxSteps AndAlso IsRunning AndAlso App.Running
+            Call RunIteration()
+        End While
+    End Sub
 
     Public Sub RunIteration()
         CurrentIteration += 1
@@ -102,6 +135,10 @@ Public Class NaturalEvolution
 
         ' 5. 更新统计
         UpdateStatistics()
+
+        If CurrentIteration Mod SnapshotInterval = 0 Then
+            SnapshotManager.SaveSnapshot(Me)
+        End If
     End Sub
 
     ''' <summary>
