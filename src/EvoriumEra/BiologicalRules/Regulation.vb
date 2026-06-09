@@ -123,5 +123,9 @@ Namespace BiologicalRules
         Dim func As GeneOntology
         Dim weight As Double
 
+        Public Overrides Function ToString() As String
+            Return $"({func.Description}, weight={weight:F3})"
+        End Function
+
     End Structure
 End Namespace
