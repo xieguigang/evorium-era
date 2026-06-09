@@ -165,7 +165,7 @@ Namespace BiologicalRules.Rules
         ''' 阶段3：降解环境中已失活的蛋白质
         ''' 
         ''' 环境中具有DegradeMacromolecule或ProteinDegradation功能的活性蛋白质
-        ''' 可以降解环境中已失活的蛋白质（ViabilityDuration <= 0）。
+        ''' 可以降解环境中已失活的蛋白质（ViabilityDuration &lt;= 0）。
         ''' 每个活性降解酶每周期最多降解1个失活蛋白质。
         ''' 降解产物为氨基酸，释放到环境中。
         ''' </summary>
