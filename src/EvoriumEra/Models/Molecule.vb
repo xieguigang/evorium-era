@@ -43,9 +43,16 @@
         End Operator
     End Class
 
+    ''' <summary>
+    ''' 主要用于存储环境中的蛋白质对象，这些蛋白质对象在环境中可能还会继续发挥功能活性
+    ''' </summary>
     Public Class ProteinMolecule : Inherits Molecule
 
-        Public Property Protein As GeneOntology
+        ''' <summary>
+        ''' proteins in environment
+        ''' </summary>
+        ''' <returns></returns>
+        Public Property Proteins As New Dictionary(Of GeneOntology, Integer)
 
         Sub New()
             Call MyBase.New(MoleculeType.Protein)
@@ -53,9 +60,15 @@
 
     End Class
 
+    ''' <summary>
+    ''' 主要用于表示释放到环境之中或者被细胞内吞到细胞内的外源DNA片段
+    ''' 
+    ''' 1. 细胞死亡裂解后，DNA片段释放到环境中，可能会被环境中有活性的裂解酶降解掉，或者等待被其他的细胞吞噬
+    ''' 2. 细胞内吞环境中的DNA后，在细胞内这些外源DNA片段有两个命运：被整合到基因组上或者被裂解掉
+    ''' </summary>
     Public Class DNAMolecule : Inherits Molecule
 
-        Public Property Genes As Gene()
+        Public Property DNAFragments As New List(Of Replicon)
 
         Sub New()
             Call MyBase.New(MoleculeType.DNA)
