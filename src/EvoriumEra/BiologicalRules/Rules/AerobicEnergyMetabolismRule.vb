@@ -1,4 +1,7 @@
 ﻿Public Class AerobicEnergyMetabolismRule : Implements IBiochemicalRule
+
+    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         If cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Oxygen) Then

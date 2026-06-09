@@ -1,5 +1,8 @@
 ﻿
 Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
+
+    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 降解大分子
         If cell.Proteins.ContainsKey(GeneOntology.DegradeMacromolecule) Then

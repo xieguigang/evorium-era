@@ -1,6 +1,7 @@
 ﻿Imports Microsoft.VisualBasic.Imaging
 
 Public Class Cell : Implements IVoxel
+
     Public Property ID As Guid = Guid.NewGuid()
     Public Property ParentID As Guid? = Nothing
     Public Property Generation As Integer = 0
@@ -14,6 +15,6 @@ Public Class Cell : Implements IVoxel
     Public Property ATP As Integer = 100
     Public Property ConsecutiveNoATP As Integer = 0
     Public Property TotalMolecules As Integer = 0
-    Public Const MaxCapacity As Integer = 10000
+
 End Class
 

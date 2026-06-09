@@ -1,5 +1,8 @@
 ﻿
 Public Class EnvironmentalResponseRule : Implements IBiochemicalRule
+
+    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 酸代谢
         If cell.Proteins.ContainsKey(GeneOntology.AcidMetabolism) AndAlso

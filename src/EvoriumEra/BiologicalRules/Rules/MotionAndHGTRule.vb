@@ -2,7 +2,12 @@
 
 
 
+Imports Microsoft.VisualBasic.Imaging
+
 Public Class MotionAndHGTRule : Implements IBiochemicalRule
+
+    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 细胞鞭毛运动
         If cell.Proteins.ContainsKey(GeneOntology.FlagellarMovement) Then
@@ -11,8 +16,8 @@ Public Class MotionAndHGTRule : Implements IBiochemicalRule
 
             If neighbors.Any() Then
                 Dim target = neighbors(rng.Next(neighbors.Count))
-                env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z).Occupant = Nothing
-                cell.Position = (target.X, target.Y, target.Z)
+                env(cell).Occupant = Nothing
+                cell.Position = New SpatialIndex3D(target.Position)
                 target.Occupant = cell
                 ConsumeBasicResources(cell)
             End If

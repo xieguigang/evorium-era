@@ -1,6 +1,9 @@
 ﻿
 
 Public Class MutationRule : Implements IBiochemicalRule
+
+    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' DNA复制时突变（简化：每次复制有1%突变率）
         If cell.Proteins.ContainsKey(GeneOntology.ReplicateDNA) AndAlso rng.NextDouble() < 0.01 Then

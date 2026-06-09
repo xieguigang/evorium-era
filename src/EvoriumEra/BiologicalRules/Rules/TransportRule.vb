@@ -1,4 +1,7 @@
 ﻿Public Class TransportRule : Implements IBiochemicalRule
+
+    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
 

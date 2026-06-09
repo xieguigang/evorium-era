@@ -1,4 +1,6 @@
 ﻿
+Imports Microsoft.VisualBasic.Imaging
+
 Public Class Environment3D
 
     ''' <summary>
@@ -7,6 +9,12 @@ Public Class Environment3D
     ''' <returns></returns>
     Public Property Grid As Voxel(,,)
     Public Property Dimensions As (Width As Integer, Height As Integer, Depth As Integer)
+
+    Default Public ReadOnly Property Voxel(ref As IVoxel) As Voxel
+        Get
+            Return _Grid(ref.Position.X, ref.Position.Y, ref.Position.Z)
+        End Get
+    End Property
 
     Default Public ReadOnly Property Voxel(x As Integer, y As Integer, z As Integer) As Voxel
         Get
@@ -19,14 +27,10 @@ Public Class Environment3D
         Dimensions = (w, h, d)
         Grid = New Voxel(w - 1, h - 1, d - 1) {}
 
-        For x = 0 To w - 1
-            For y = 0 To h - 1
-                For z = 0 To d - 1
-                    Grid(x, y, z) = New Voxel With {
-                        .X = x,
-                        .Y = y,
-                        .Z = z
-                    }
+        For X As Integer = 0 To w - 1
+            For Y As Integer = 0 To h - 1
+                For z As Integer = 0 To d - 1
+                    Grid(X, Y, z) = New Voxel(X, Y, z)
                 Next
             Next
         Next
@@ -47,9 +51,10 @@ Public Class Environment3D
         }
 
         For Each dir As (Integer, Integer, Integer) In directions
-            Dim nx = v.X + dir.Item1
-            Dim ny = v.Y + dir.Item2
-            Dim nz = v.Z + dir.Item3
+            Dim pos As SpatialIndex3D = v.Position
+            Dim nx = pos.X + dir.Item1
+            Dim ny = pos.Y + dir.Item2
+            Dim nz = pos.Z + dir.Item3
 
             If IsValidCoordinate(nx, ny, nz) Then
                 neighbors.Add(Grid(nx, ny, nz))
@@ -64,10 +69,10 @@ Public Class Environment3D
     ''' 返回环境中所有体素的扁平枚举
     ''' </summary>
     Public Iterator Function AllVoxels() As IEnumerable(Of Voxel)
-        For x = 0 To Dimensions.Width - 1
-            For y = 0 To Dimensions.Height - 1
-                For z = 0 To Dimensions.Depth - 1
-                    Yield Grid(x, y, z)
+        For x As Integer = 0 To Dimensions.Width - 1
+            For Y As Integer = 0 To Dimensions.Height - 1
+                For z As Integer = 0 To Dimensions.Depth - 1
+                    Yield Grid(x, Y, z)
                 Next
             Next
         Next
@@ -117,9 +122,11 @@ Public Class Environment3D
     ''' <param name="v2"></param>
     ''' <returns></returns>
     Public Function ManhattanDistance(v1 As Voxel, v2 As Voxel) As Integer
-        Return Math.Abs(v1.X - v2.X) +
-               Math.Abs(v1.Y - v2.Y) +
-               Math.Abs(v1.Z - v2.Z)
+        Dim d = v1.Position - v2.Position
+
+        Return Math.Abs(d.X) +
+               Math.Abs(d.Y) +
+               Math.Abs(d.Z)
     End Function
 
     ''' <summary>
@@ -128,22 +135,20 @@ Public Class Environment3D
     ''' <param name="center"></param>
     ''' <param name="radius"></param>
     ''' <returns></returns>
-    Public Function GetVoxelsInRadius(center As Voxel, radius As Integer) As List(Of Voxel)
-        Dim result = New List(Of Voxel)()
+    Public Iterator Function GetVoxelsInRadius(center As Voxel, radius As Integer) As IEnumerable(Of Voxel)
+        Dim centerPos As SpatialIndex3D = center.Position
 
-        For x = center.X - radius To center.X + radius
-            For y = center.Y - radius To center.Y + radius
-                For z = center.Z - radius To center.Z + radius
-                    If IsValidCoordinate(x, y, z) Then
-                        Dim v = Grid(x, y, z)
+        For X As Integer = centerPos.X - radius To centerPos.X + radius
+            For Y As Integer = centerPos.Y - radius To centerPos.Y + radius
+                For z As Integer = centerPos.Z - radius To centerPos.Z + radius
+                    If IsValidCoordinate(X, Y, z) Then
+                        Dim v = Grid(X, Y, z)
                         If ManhattanDistance(center, v) <= radius Then
-                            result.Add(v)
+                            Yield v
                         End If
                     End If
                 Next
             Next
         Next
-
-        Return result
     End Function
 End Class

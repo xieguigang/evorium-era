@@ -9,6 +9,8 @@
     Public Property MaxVoxelActions As Integer = 5
     Public Property MaxCellActions As Integer = 10
 
+    Public Property MaxCellContentCapacity As Integer = 10000
+
     Public Shared Function [Default]() As Configs
         Return New Configs
     End Function
