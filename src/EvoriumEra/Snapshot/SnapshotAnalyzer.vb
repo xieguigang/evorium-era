@@ -19,13 +19,21 @@ Namespace Data
             For Each file In files
                 Using zip = ZipFile.OpenRead(file)
                     Dim entry = zip.GetEntry("snapshot.json")
-                    Using reader = New StreamReader(entry.Open())
-                        Dim json = reader.ReadToEnd()
-                        Dim snapshot = json.LoadJSON(Of Snapshot)
+                    Dim entry2 = zip.GetEntry("voxels.json")
+                    Dim entry3 = zip.GetEntry("cells.json")
+                    Dim meta As Snapshot
 
+                    Using reader = New StreamReader(entry.Open)
+                        Dim json = reader.ReadToEnd()
+                        meta = json.LoadJSON(Of Snapshot)
+                    End Using
+
+                    Using reader = New StreamReader(entry2.Open())
+                        Dim json = reader.ReadToEnd()
+                        Dim snapshot = json.LoadJSON(Of VoxelSnapshot())
                         Dim voxels = If(voxelFilter Is Nothing,
-                                   snapshot.Voxels,
-                                   snapshot.Voxels.Where(voxelFilter))
+                                   snapshot,
+                                   snapshot.Where(voxelFilter))
 
                         Dim total = voxels.Sum(Function(v)
                                                    If v.ExternalMolecules.ContainsKey(moleculeType) Then
@@ -35,7 +43,7 @@ Namespace Data
                                                    End If
                                                End Function)
 
-                        results.Add((snapshot.Iteration, total))
+                        results.Add((meta.Iteration, total))
                     End Using
                 End Using
             Next
