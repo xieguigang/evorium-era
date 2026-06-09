@@ -1,4 +1,4 @@
-﻿Public Class Cell
+﻿Public Class Cell : Implements IVoxel
     Public Property ID As Guid = Guid.NewGuid()
     Public Property ParentID As Guid? = Nothing
     Public Property Generation As Integer = 0

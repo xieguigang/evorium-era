@@ -1,4 +1,4 @@
-﻿Public Class Voxel
+﻿Public Class Voxel : Implements IVoxel
     Public Property X As Integer
     Public Property Y As Integer
     Public Property Z As Integer
