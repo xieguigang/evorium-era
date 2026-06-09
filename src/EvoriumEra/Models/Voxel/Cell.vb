@@ -62,6 +62,7 @@ Namespace Models.Container
 
         ''' <summary>胞内渗透压状态：-1=低渗, 0=等渗, 1=高渗</summary>
         Public Property OsmoticState As Integer = 0
+        Public Property ColdShockMitigation As Double
 
         Public Function HasFunction(go As GeneOntology) As Boolean
             Return Proteins.ContainsKey(go) AndAlso Proteins(go) > 0

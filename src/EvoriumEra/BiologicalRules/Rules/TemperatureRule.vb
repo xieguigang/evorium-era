@@ -1,6 +1,5 @@
 ﻿Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
-Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules.Rules
 
@@ -27,7 +26,7 @@ Namespace BiologicalRules.Rules
     ''' 
     ''' 5. 蛋白质温度响应：
     '''    - 高温失活（不可逆）：T > DenaturationTemp时，非耐热蛋白逐步失活
-    '''    - 低温活性降低（可逆）：T < ColdShockTemp时，蛋白活性下降
+    '''    - 低温活性降低（可逆）：T &lt; ColdShockTemp时，蛋白活性下降
     '''    - 耐热蛋白(Thermotolerance)保护其他蛋白
     '''    - 冷休克响应(ColdShockResponse)缓解低温影响
     ''' 
@@ -105,11 +104,12 @@ Namespace BiologicalRules.Rules
             ' 1. 计算当前昼夜温度偏移
             Dim diurnalOffset = config.DiurnalTemperatureAmplitude *
                                 Math.Sin(2.0 * Math.PI * iteration / config.DiurnalPeriod)
+            Dim dims = env.Dimensions
 
             ' 2. 更新每个格子的环境基线温度
-            For x = 0 To env.Width - 1
-                For y = 0 To env.Height - 1
-                    For z = 0 To env.Depth - 1
+            For x As Integer = 0 To dims.Width - 1
+                For y As Integer = 0 To dims.Height - 1
+                    For z As Integer = 0 To dims.Depth - 1
                         Dim voxel = env.Grid(x, y, z)
 
                         ' 环境基线 = 基础温度 + 昼夜偏移 - 深度衰减
@@ -128,10 +128,11 @@ Namespace BiologicalRules.Rules
         Private Sub ExecuteHeatDiffusion(env As NaturalEnvironment, config As Configs)
             ' 收集温度变化量，避免就地修改影响计算
             Dim tempChanges = New Dictionary(Of (Integer, Integer, Integer), Double)
+            Dim dims = env.Dimensions
 
-            For x = 0 To env.Width - 1
-                For y = 0 To env.Height - 1
-                    For z = 0 To env.Depth - 1
+            For x As Integer = 0 To dims.Width - 1
+                For y As Integer = 0 To dims.Height - 1
+                    For z As Integer = 0 To dims.Depth - 1
                         Dim voxel = env.Grid(x, y, z)
                         Dim neighbors = env.GetNeighbors(voxel)
 
