@@ -13,15 +13,26 @@
 
     ' ===== 快照系统 =====
     Public Property SnapshotManager As SnapshotManager
-    Public Property SnapshotInterval As Integer = 1   ' 每 N 步存一次
+    ''' <summary>
+    ''' 每 N 步存一次
+    ''' </summary>
+    ''' <returns></returns>
+    Public ReadOnly Property SnapshotInterval As Integer
+        Get
+            Return configs.SnapshotInterval
+        End Get
+    End Property
 
     ' ===== 统计 =====
     Public Property LivingCellCount As Integer = 0
     Public Property DeadCellCount As Integer = 0
 
+    Friend ReadOnly configs As Configs
+
     ' ===== 初始化 =====
-    Public Sub New(gridW As Integer, gridH As Integer, gridD As Integer, snapshotRoot As String)
-        Env = New Environment3D(gridW, gridH, gridD)
+    Public Sub New(config As Configs, snapshotRoot As String)
+        Env = New Environment3D(config.gridW, config.gridH, config.gridD)
+        configs = config
         CurrentEnvironment = Env
         Scheduler = New RuleScheduler()
         SnapshotManager = New SnapshotManager(snapshotRoot)
@@ -35,8 +46,7 @@
         Next
 
         ' 初始化细胞
-        Dim cellCount = 50
-        For i = 1 To cellCount
+        For i As Integer = 1 To configs.InitCellNumbers
             SpawnRandomCell()
         Next
 
@@ -96,8 +106,8 @@
         Dim voxels = Env.AllVoxels().OrderBy(Function(v) RNG.Next()).ToList()
 
         ' 2. 每个格子最多执行 5 次操作
-        For Each v In voxels
-            For op = 1 To 5
+        For Each v As Voxel In voxels
+            For op As Integer = 1 To configs.MaxVoxelActions
                 ProcessVoxel(v)
             Next
         Next
@@ -171,7 +181,7 @@
         End If
 
         ' ===== 轮盘赌选择功能（规则 26）=====
-        For i = 1 To 10
+        For i As Integer = 1 To configs.MaxCellActions
             Dim func = RouletteSelect(cell)
             If func.HasValue Then
                 Scheduler.ExecuteFunction(func.Value, cell, Env, RNG)
