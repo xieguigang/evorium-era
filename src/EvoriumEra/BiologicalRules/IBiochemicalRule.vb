@@ -39,6 +39,7 @@ Namespace BiologicalRules
 
         ''' <summary>
         ''' 检查并消耗基础资源（1 ATP + 1 水），能量代谢功能豁免ATP消耗
+        ''' 
         ''' [v3.0] 增加温度活性修正：蛋白活性低时功能执行概率降低
         ''' </summary>
         Protected Shared Function ConsumeBasicResources(cell As Cell, Optional exemptATP As Boolean = False) As Boolean
