@@ -79,6 +79,8 @@ Public Class NaturalEvolution
     End Sub
 
     Public Function Initialize() As NaturalEvolution
+        Call VBDebugger.EchoLine("setup the natural evolution simulation system...")
+
         Env = New NaturalEnvironment(Config)
         Scheduler = New RuleScheduler()
         CurrentIteration = 0
@@ -102,6 +104,7 @@ Public Class NaturalEvolution
         IsRunning = True
 
         While CInt(CurrentIteration) < maxSteps AndAlso IsRunning AndAlso App.Running
+            Call VBDebugger.EchoLine($"[{CInt(CurrentIteration)}] living_cells: {LivingCellCount}; environment_avg_temperature: {AverageTemperature}")
             Call RunIteration(++CurrentIteration)
         End While
     End Sub
