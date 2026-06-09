@@ -30,7 +30,7 @@
     ''' </summary>
     Public Class Replicon
 
-        Public Property Genes As List(Of Gene) = New List(Of Gene)
+        Public Property Genes As New List(Of Gene)
         Public Property IsPlasmid As Boolean = False
 
         Public ReadOnly Property NucleotideLength As Integer

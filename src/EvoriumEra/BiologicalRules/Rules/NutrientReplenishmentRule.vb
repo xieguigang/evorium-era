@@ -15,11 +15,17 @@ Namespace BiologicalRules.Rules
     ''' 
     ''' 这些机制确保环境不会完全耗尽，维持群落的持续演化。
     ''' 氧气梯度是好氧/厌氧分层和交叉喂养链形成的前提。
+    ''' 
+    ''' [v3.0 改进] 营养补充与环境梯度规则
+    ''' 
+    ''' v3.0改进：
+    ''' 1. 增加离子补充（Na+, K+, Cl-, phosphate, sulfate, Fe2+/Fe3+）
+    ''' 2. 增加温度梯度初始化
     ''' </summary>
     Public Class NutrientReplenishmentRule : Inherits IBiochemicalRule
 
         Sub New()
-            Call MyBase.New() ' 全局规则
+            Call MyBase.New()
         End Sub
 
         Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
@@ -30,14 +36,17 @@ Namespace BiologicalRules.Rules
         ''' 环境级别的营养补充
         ''' </summary>
         Public Sub ExecuteEnvironment(env As NaturalEnvironment, config As Configs)
-            ' 1. 氧气梯度补充
+            ' 1. 氧气梯度
             ReplenishOxygenGradient(env, config)
 
-            ' 2. 营养热点补充
+            ' 2. 营养热点
             ReplenishNutrientHotspots(env, config)
 
-            ' 3. 全局基础营养补充
+            ' 3. 全局营养补充
             ReplenishGlobalNutrients(env, config)
+
+            ' 4. [v3.0] 离子补充
+            ReplenishIons(env, config)
         End Sub
 
         Private Sub ReplenishOxygenGradient(env As NaturalEnvironment, config As Configs)
@@ -62,6 +71,7 @@ Namespace BiologicalRules.Rules
                             If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.Oxygen) Then
                                 voxel.ExternalMolecules(MoleculeType.Oxygen) = 0
                             End If
+
                             voxel.ExternalMolecules(MoleculeType.Oxygen) = Math.Max(0, currentOxygen + delta)
                         End If
                     Next
@@ -70,27 +80,27 @@ Namespace BiologicalRules.Rules
         End Sub
 
         Private Sub ReplenishNutrientHotspots(env As NaturalEnvironment, config As Configs)
+            Dim hotspots = GenerateHotspotPositions(env, config.NutrientHotspotCount)
+
             ' 使用确定性种子生成固定位置的营养热点
             ' 热点位置基于网格尺寸均匀分布
-            Dim hotspotPositions = GenerateHotspotPositions(env, config.NutrientHotspotCount)
 
-            For Each pos In hotspotPositions
+            For Each pos In hotspots
                 If env.IsValidCoordinate(pos.X, pos.Y, pos.Z) Then
                     Dim voxel = env.Grid(pos.X, pos.Y, pos.Z)
 
-                    ' 补充碳源
                     If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.CarbonSource) Then
                         voxel.ExternalMolecules(MoleculeType.CarbonSource) = 0
                     End If
-                    voxel.ExternalMolecules(MoleculeType.CarbonSource) += config.NutrientHotspotStrength
-
-                    ' 补充氮源
                     If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.NitrogenSource) Then
                         voxel.ExternalMolecules(MoleculeType.NitrogenSource) = 0
                     End If
+
+                    ' 补充碳源/补充氮源
+                    voxel.ExternalMolecules(MoleculeType.CarbonSource) += config.NutrientHotspotStrength
                     voxel.ExternalMolecules(MoleculeType.NitrogenSource) += config.NutrientHotspotStrength \ 2
 
-                    ' 补充葡萄糖
+                    ' [v3.0] 热点也补充glucose
                     If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.Glucose) Then
                         voxel.ExternalMolecules(MoleculeType.Glucose) = 0
                     End If
@@ -125,10 +135,43 @@ Namespace BiologicalRules.Rules
             Next
         End Sub
 
+        ''' <summary>
+        ''' [v3.0] 离子补充
+        ''' </summary>
+        Private Sub ReplenishIons(env As NaturalEnvironment, config As Configs)
+            Dim dims = env.Dimensions
+
+            For X As Integer = 0 To dims.Width - 1 Step 5
+                For Y As Integer = 0 To dims.Height - 1 Step 5
+                    For z As Integer = 0 To dims.Depth - 1 Step 5
+                        Dim voxel = env.Grid(X, Y, z)
+
+                        ' 确保基础离子浓度
+                        EnsureMolecule(voxel, MoleculeType.SodiumIon, config.InitialSaltIonLevel \ 5)
+                        EnsureMolecule(voxel, MoleculeType.PotassiumIon, config.InitialSaltIonLevel \ 10)
+                        EnsureMolecule(voxel, MoleculeType.ChlorideIon, config.InitialSaltIonLevel \ 5)
+                        EnsureMolecule(voxel, MoleculeType.Phosphate, config.InitialPhosphateLevel \ 10)
+                        EnsureMolecule(voxel, MoleculeType.Sulfate, config.InitialSulfateLevel \ 10)
+                        EnsureMolecule(voxel, MoleculeType.IronII, config.InitialIronLevel \ 10)
+                        EnsureMolecule(voxel, MoleculeType.MagnesiumIon, 5)
+                        EnsureMolecule(voxel, MoleculeType.CalciumIon, 3)
+                    Next
+                Next
+            Next
+        End Sub
+
+        Private Sub EnsureMolecule(voxel As Container.Voxel, type As MoleculeType, minAmount As Integer)
+            If Not voxel.ExternalMolecules.ContainsKey(type) Then
+                voxel.ExternalMolecules(type) = 0
+            End If
+            If voxel.ExternalMolecules(type) < minAmount Then
+                voxel.ExternalMolecules(type) = minAmount
+            End If
+        End Sub
+
         Private Function GenerateHotspotPositions(env As NaturalEnvironment, count As Integer) As List(Of SpatialIndex3D)
             Dim positions = New List(Of SpatialIndex3D)()
             Dim dims = env.Dimensions
-            ' 均匀分布热点
             Dim gridSize = Math.Max(dims.Width, dims.Height)
             Dim spacing = gridSize / Math.Sqrt(count)
 
@@ -136,7 +179,6 @@ Namespace BiologicalRules.Rules
             For x As Double = spacing / 2 To dims.Width - 1 Step spacing
                 For y As Double = spacing / 2 To dims.Height - 1 Step spacing
                     If idx >= count Then Exit For
-                    ' 热点主要在表层和中层
                     Dim z = rng.Next(CInt(dims.Depth * 0.7))
                     positions.Add(New SpatialIndex3D(CInt(x), CInt(y), z))
                     idx += 1

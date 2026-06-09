@@ -21,6 +21,22 @@ Namespace Models.Container
         ' [v2.0] 新增属性
         Public Property Age As Integer = 0
         Public Property DivisionCount As Integer = 0
+        Public Property LastDivisionIteration As Long = 0
+
+        ' [v3.0] 温度相关
+        ''' <summary>细胞内当前温度（°C），受环境温度和代谢产热影响</summary>
+        Public Property InternalTemperature As Double = 37.0
+
+        ''' <summary>蛋白质活性修正因子（0.0-1.0），受温度和离子强度影响</summary>
+        Public Property ProteinActivityFactor As Double = 1.0
+
+        ' [v3.0] 渗透压相关
+        ''' <summary>胞内离子强度（mM当量），影响渗透压</summary>
+        Public ReadOnly Property InternalIonStrength As Double
+            Get
+                Return CalculateIonStrength()
+            End Get
+        End Property
 
         ''' <summary>
         ''' 细胞内基因总数（基因组+所有质粒）
@@ -43,6 +59,9 @@ Namespace Models.Container
                 Return CInt(Math.Ceiling(TotalGeneCount * 0.5))
             End Get
         End Property
+
+        ''' <summary>胞内渗透压状态：-1=低渗, 0=等渗, 1=高渗</summary>
+        Public Property OsmoticState As Integer = 0
 
         Public Function HasFunction(go As GeneOntology) As Boolean
             Return Proteins.ContainsKey(go) AndAlso Proteins(go) > 0
@@ -80,6 +99,33 @@ Namespace Models.Container
             InternalMolecules(type) += amount
             If InternalMolecules(type) < 0 Then InternalMolecules(type) = 0
         End Sub
+
+        ''' <summary>
+        ''' [v3.0] 计算胞内离子强度
+        ''' 离子强度 I = 0.5 * Σ(c_i * z_i^2)
+        ''' 简化：每种离子按其价态平方加权
+        ''' </summary>
+        Private Function CalculateIonStrength() As Double
+            Dim ionContributions As Double = 0.0
+
+            ' 1价离子：Na+, K+, Cl-, H+
+            ionContributions += GetMoleculeAmount(MoleculeType.SodiumIon) * 1.0
+            ionContributions += GetMoleculeAmount(MoleculeType.PotassiumIon) * 1.0
+            ionContributions += GetMoleculeAmount(MoleculeType.ChlorideIon) * 1.0
+            ionContributions += GetMoleculeAmount(MoleculeType.HydrogenIon) * 1.0
+
+            ' 2价离子：Ca2+, Mg2+, Fe2+, SO4 2-
+            ionContributions += GetMoleculeAmount(MoleculeType.CalciumIon) * 4.0
+            ionContributions += GetMoleculeAmount(MoleculeType.MagnesiumIon) * 4.0
+            ionContributions += GetMoleculeAmount(MoleculeType.IronII) * 4.0
+            ionContributions += GetMoleculeAmount(MoleculeType.Sulfate) * 4.0
+
+            ' 3价离子：Fe3+
+            ionContributions += GetMoleculeAmount(MoleculeType.IronIII) * 9.0
+
+            ' 相容溶质不贡献离子强度（这正是其生物学意义）
+            Return ionContributions * 0.5
+        End Function
 
     End Class
 
