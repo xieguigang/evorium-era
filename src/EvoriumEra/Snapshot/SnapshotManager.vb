@@ -20,8 +20,8 @@ Namespace Data
         End Sub
 
         Public Sub SaveSnapshot(simulation As NaturalEvolution)
-            Dim snapshot = CreateSnapshot(simulation)
-            Dim json As String = snapshot.GetJson
+            Dim snapshot As (frame As Snapshot, voxels As VoxelSnapshot(), cells As CellSnapshot()) = CreateSnapshot(simulation)
+            Dim json As String = snapshot.frame.GetJson
 
             ' 保存为ZIP
             Dim zipPath = Path.Combine(_basePath, $"iter_{simulation.CurrentIteration:D8}.zip")
@@ -31,6 +31,18 @@ Namespace Data
                 Dim entry = zip.CreateEntry("snapshot.json")
                 Using writer = New StreamWriter(entry.Open())
                     writer.Write(json)
+                End Using
+
+                entry = zip.CreateEntry("voxels.json")
+
+                Using writer = New StreamWriter(entry.Open())
+                    writer.Write(snapshot.voxels.GetJson)
+                End Using
+
+                entry = zip.CreateEntry("cells.json")
+
+                Using writer = New StreamWriter(entry.Open())
+                    writer.Write(snapshot.cells.GetJson)
                 End Using
 
                 ' 附加元数据文件
@@ -43,7 +55,7 @@ Namespace Data
             End Using
         End Sub
 
-        Private Function CreateSnapshot(simulation As NaturalEvolution) As Snapshot
+        Private Function CreateSnapshot(simulation As NaturalEvolution) As (Snapshot, VoxelSnapshot(), CellSnapshot())
             Dim snapshot As New Snapshot With {
                 .Iteration = simulation.CurrentIteration,
                 .Timestamp = DateTime.Now,
@@ -89,10 +101,7 @@ Namespace Data
                 Next
             Next
 
-            snapshot.Voxels = voxels.ToArray
-            snapshot.Cells = cells.ToArray
-
-            Return snapshot
+            Return (snapshot, voxels.ToArray, cells.ToArray)
         End Function
     End Class
 End Namespace
