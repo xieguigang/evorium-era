@@ -17,4 +17,7 @@
   <Project Path="EvoriumEra/EvoriumEra.vbproj">
     <Platform Solution="*|x64" Project="x64" />
   </Project>
+  <Project Path="test/test.vbproj" Id="9eb1f618-81f2-44a8-b79f-a178acf694de">
+    <Platform Solution="Debug|x64" Project="x64" />
+  </Project>
 </Solution>

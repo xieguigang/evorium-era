@@ -10,6 +10,10 @@ Namespace Data
 
         Private _basePath As String
 
+        ''' <summary>
+        ''' 
+        ''' </summary>
+        ''' <param name="basePath">A temp dir path</param>
         Public Sub New(basePath As String)
             _basePath = basePath
             Directory.CreateDirectory(_basePath)

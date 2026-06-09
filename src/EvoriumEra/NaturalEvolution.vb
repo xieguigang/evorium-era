@@ -46,7 +46,13 @@ Public Class NaturalEvolution
     Friend ReadOnly configs As Configs
     Friend ReadOnly moleculeUtils As MoleculeUtils
 
-    ' ===== 初始化 =====
+    ''' <summary>
+    ''' ===== 初始化 =====
+    ''' </summary>
+    ''' <param name="config"></param>
+    ''' <param name="snapshotRoot">
+    ''' A temp dir path for save the snapshot temp data and result zip package file
+    ''' </param>
     Public Sub New(config As Configs, snapshotRoot As String)
         Env = New NaturalEnvironment(config)
         configs = config
