@@ -1,5 +1,6 @@
 ﻿Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
+Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules.Rules
 
@@ -110,7 +111,7 @@ Namespace BiologicalRules.Rules
                 ' 无细胞壁的细胞可能裂解
                 If Not cell.HasCellWall Then
                     Dim lysisPressure = Math.Abs(osmoticDiff) / 500.0
-                    If New Random().NextDouble() < lysisPressure Then
+                    If rng.NextDouble() < lysisPressure Then
                         ' 细胞因低渗裂解
                         cell.IsAlive = False
                         cell.ConsecutiveNoATP = 999 ' 标记为死亡

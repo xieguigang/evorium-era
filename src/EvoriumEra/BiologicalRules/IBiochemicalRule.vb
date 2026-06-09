@@ -1,5 +1,6 @@
 ﻿Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
+Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules
 
@@ -48,7 +49,7 @@ Namespace BiologicalRules
 
             ' [v3.0] 温度活性修正：蛋白活性低时，功能执行有概率失败
             If cell.ProteinActivityFactor < 1.0 Then
-                Dim r = New Random().NextDouble()
+                Dim r = rng.NextDouble()
                 If r > cell.ProteinActivityFactor Then
                     ' 蛋白活性不足，功能执行失败，但仍消耗ATP
                     If Not exemptATP Then cell.ATP -= 1
