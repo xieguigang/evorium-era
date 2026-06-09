@@ -18,9 +18,16 @@
     Public Property PlasmidCount As Integer
     Public Property GeneCounts As Dictionary(Of GeneOntology, Integer)
 
-    ' 统计指标
-    Public Property Age As Integer ' 存活了多少个迭代
-    Public Property DivisionCount As Integer ' 分裂次数
+    ''' <summary>
+    ''' 存活了多少个迭代
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property Age As Integer
+    ''' <summary>
+    ''' 分裂次数
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property DivisionCount As Integer
 
     ' 计算属性
     Public ReadOnly Property EnergyCharge As Double
