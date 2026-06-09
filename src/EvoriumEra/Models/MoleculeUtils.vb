@@ -1,4 +1,13 @@
-﻿Public Module MoleculeUtils
+﻿Public Class MoleculeUtils
+
+    ReadOnly config As Configs
+    ReadOnly env As Environment3D
+
+    Sub New(config As Configs, env As Environment3D)
+        Me.env = env
+        Me.config = config
+        Me.env.moleculeUtils = Me
+    End Sub
 
     ''' <summary>
     ''' 向容器中添加或移除分子
@@ -36,7 +45,7 @@
         If cell.TotalMolecules < 0 Then cell.TotalMolecules = 0
 
         ' 检查容量限制（规则17）
-        If cell.TotalMolecules > Cell.MaxCapacity Then
+        If cell.TotalMolecules > config.MaxCellContentCapacity Then
             ' 细胞破裂死亡
             cell.IsAlive = False
             LyseCell(cell)
@@ -56,7 +65,7 @@
 
     Public Sub LyseCell(cell As Cell)
         ' 将细胞内所有物质释放到当前格子
-        Dim voxel = Simulation.CurrentEnvironment(cell.Position.X, cell.Position.Y, cell.Position.Z)
+        Dim voxel = env(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
         For Each kvp In cell.InternalMolecules
             AddToVoxel(voxel, kvp.Key, kvp.Value)
@@ -67,4 +76,4 @@
         cell.TotalMolecules = 0
         voxel.Occupant = Nothing
     End Sub
-End Module
+End Class

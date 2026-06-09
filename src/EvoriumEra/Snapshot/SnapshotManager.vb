@@ -1,6 +1,6 @@
 ﻿Imports System.IO
 Imports System.IO.Compression
-Imports System.Xml
+Imports Microsoft.VisualBasic.Serialization.JSON
 
 Public Class SnapshotManager
     Private _basePath As String
@@ -12,7 +12,7 @@ Public Class SnapshotManager
 
     Public Sub SaveSnapshot(simulation As Simulation)
         Dim snapshot = CreateSnapshot(simulation)
-        Dim json = JsonConvert.SerializeObject(snapshot, Formatting.Indented)
+        Dim json As String = snapshot.GetJson
 
         ' 保存为ZIP
         Dim zipPath = Path.Combine(_basePath, $"iter_{simulation.CurrentIteration:D8}.zip")

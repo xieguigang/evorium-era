@@ -1,4 +1,5 @@
 ﻿
+Imports System.Runtime.CompilerServices
 Imports Microsoft.VisualBasic.Imaging
 
 Public Class Environment3D
@@ -22,10 +23,18 @@ Public Class Environment3D
         End Get
     End Property
 
+    Friend ReadOnly configs As Configs
+    Friend moleculeUtils As MoleculeUtils
+
     ' ===== 构造函数 =====
-    Public Sub New(w As Integer, h As Integer, d As Integer)
+    Public Sub New(config As Configs)
+        Dim w As Integer = config.gridW
+        Dim h As Integer = config.gridH
+        Dim d As Integer = config.gridD
+
         Dimensions = (w, h, d)
         Grid = New Voxel(w - 1, h - 1, d - 1) {}
+        configs = config
 
         For X As Integer = 0 To w - 1
             For Y As Integer = 0 To h - 1
@@ -34,6 +43,18 @@ Public Class Environment3D
                 Next
             Next
         Next
+    End Sub
+
+    ''' <summary>
+    ''' 向容器中添加或移除分子
+    ''' </summary>
+    ''' <param name="container">可以是Cell或Voxel</param>
+    ''' <param name="moleculeType">分子类型</param>
+    ''' <param name="amount">正数增加，负数减少</param>
+    ''' 
+    <MethodImpl(MethodImplOptions.AggressiveInlining)>
+    Public Sub AddMolecule(container As IVoxel, moleculeType As MoleculeType, amount As Integer)
+        Call moleculeUtils.AddMolecule(container, moleculeType, amount)
     End Sub
 
     ' ===== 邻居查找（6邻域）=====

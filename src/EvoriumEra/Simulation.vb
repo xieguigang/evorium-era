@@ -1,8 +1,8 @@
 ﻿Imports Microsoft.VisualBasic.Imaging
 
 Public Class Simulation
-    ' ===== 静态引用（供 MoleculeUtils / 规则使用）=====
-    Public Shared CurrentEnvironment As Environment3D
+
+    Public Property CurrentEnvironment As Environment3D
 
     ' ===== 核心成员 =====
     Public Property Env As Environment3D
@@ -30,14 +30,17 @@ Public Class Simulation
     Public Property DeadCellCount As Integer = 0
 
     Friend ReadOnly configs As Configs
+    Friend ReadOnly moleculeUtils As MoleculeUtils
 
     ' ===== 初始化 =====
     Public Sub New(config As Configs, snapshotRoot As String)
-        Env = New Environment3D(config.gridW, config.gridH, config.gridD)
+        Env = New Environment3D(config)
         configs = config
         CurrentEnvironment = Env
         Scheduler = New RuleScheduler()
         SnapshotManager = New SnapshotManager(snapshotRoot)
+        moleculeUtils = New MoleculeUtils(configs, Env)
+
         InitializeWorld()
     End Sub
 
@@ -153,8 +156,8 @@ Public Class Simulation
         If Not fromV.ExternalMolecules.ContainsKey(mol) Then Return
         If fromV.ExternalMolecules(mol) < amount Then Return
 
-        MoleculeUtils.AddMolecule(fromV, mol, -amount)
-        MoleculeUtils.AddMolecule(toV, mol, amount)
+        moleculeUtils.AddMolecule(fromV, mol, -amount)
+        moleculeUtils.AddMolecule(toV, mol, amount)
     End Sub
 
     Private Sub CellUpdate(cell As Cell)
@@ -177,7 +180,7 @@ Public Class Simulation
         End If
 
         ' ===== 容量破裂（规则 17）=====
-        If cell.TotalMolecules > Cell.MaxCapacity Then
+        If cell.TotalMolecules > configs.MaxCellContentCapacity Then
             KillCell(cell)
             Return
         End If
@@ -209,7 +212,7 @@ Public Class Simulation
 
     Private Sub KillCell(cell As Cell)
         cell.IsAlive = False
-        MoleculeUtils.LyseCell(cell)
+        moleculeUtils.LyseCell(cell)
         DeadCellCount += 1
     End Sub
 
@@ -229,8 +232,8 @@ Public Class Simulation
 
                     Dim transfer = CInt(delta * 0.05)
                     If transfer > 0 Then
-                        MoleculeUtils.AddMolecule(v, mol, -transfer)
-                        MoleculeUtils.AddMolecule(target, mol, transfer)
+                        moleculeUtils.AddMolecule(v, mol, -transfer)
+                        moleculeUtils.AddMolecule(target, mol, transfer)
                     End If
                 End If
             Next

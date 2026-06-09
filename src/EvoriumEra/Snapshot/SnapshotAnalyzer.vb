@@ -1,5 +1,6 @@
 ﻿Imports System.IO
 Imports System.IO.Compression
+Imports Microsoft.VisualBasic.Serialization.JSON
 
 Public Class SnapshotAnalyzer
     ''' <summary>
@@ -17,7 +18,7 @@ Public Class SnapshotAnalyzer
                 Dim entry = zip.GetEntry("snapshot.json")
                 Using reader = New StreamReader(entry.Open())
                     Dim json = reader.ReadToEnd()
-                    Dim snapshot = JsonConvert.DeserializeObject(Of Snapshot)(json)
+                    Dim snapshot = json.LoadJSON(Of Snapshot)
 
                     Dim voxels = If(voxelFilter Is Nothing,
                                    snapshot.Voxels,

@@ -12,7 +12,7 @@
                 cell.InternalMolecules(MoleculeType.Glucose) -= 1
                 cell.InternalMolecules(MoleculeType.Oxygen) -= 1
                 cell.ATP = Math.Min(cell.ATP + 12, 1000)
-                AddMolecule(cell, MoleculeType.CarbonDioxide, 6)
+                env.AddMolecule(cell, MoleculeType.CarbonDioxide, 6)
             End If
         End If
     End Sub

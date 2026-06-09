@@ -1,10 +1,12 @@
-﻿Public Class CellSnapshot
+﻿Imports Microsoft.VisualBasic.Imaging
+
+Public Class CellSnapshot
     ' 标识信息
     Public Property ID As Guid
     Public Property ParentID As Guid? ' 母细胞ID（用于追踪谱系）
     Public Property Generation As Integer
     ' 位置与状态
-    Public Property Position As (X As Integer, Y As Integer, Z As Integer)
+    Public Property Position As SpatialIndex3D
     Public Property IsAlive As Boolean
     Public Property HasCellWall As Boolean
 

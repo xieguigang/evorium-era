@@ -59,7 +59,7 @@ Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
         cell.ATP -= 1
     End Sub
 
-    Private Sub SecondaryMetaboliteKinetics(cell As Cell)
+    Private Sub SecondaryMetaboliteKinetics(cell As Cell, env As Environment3D)
         Const Vmax As Integer = 3
         Const Km As Integer = 10
 
@@ -71,9 +71,9 @@ Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
         Dim rate = CInt(Vmax * acetate / (Km + acetate))
         rate = Math.Min(rate, Math.Min(acetate \ 2, glu))
 
-        MoleculeUtils.AddMolecule(cell, MoleculeType.Acetate, -2 * rate)
-        MoleculeUtils.AddMolecule(cell, MoleculeType.AminoMixGluFamily, -rate)
-        MoleculeUtils.AddMolecule(cell, MoleculeType.SecondaryMetabolite, rate)
+        env.AddMolecule(cell, MoleculeType.Acetate, -2 * rate)
+        env.AddMolecule(cell, MoleculeType.AminoMixGluFamily, -rate)
+        env.AddMolecule(cell, MoleculeType.SecondaryMetabolite, rate)
     End Sub
 
     Private Sub BiofilmKinetics(cell As Cell, env As Environment3D)
@@ -88,8 +88,8 @@ Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
 
         If cell.ATP < 1 OrElse prob < 0.5 Then Return
 
-        MoleculeUtils.AddMolecule(cell, MoleculeType.NitrogenSource, -10)
-        MoleculeUtils.AddMolecule(cell, MoleculeType.AminoMixAspFamily, -5)
+        env.AddMolecule(cell, MoleculeType.NitrogenSource, -10)
+        env.AddMolecule(cell, MoleculeType.AminoMixAspFamily, -5)
         cell.ATP -= 1
 
         Dim v = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)

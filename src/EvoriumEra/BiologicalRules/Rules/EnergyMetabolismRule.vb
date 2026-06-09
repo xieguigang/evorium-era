@@ -15,7 +15,7 @@ Public Class EnergyMetabolismRule : Implements IBiochemicalRule
                 cell.InternalMolecules(MoleculeType.Glucose) -= 1
                 cell.InternalMolecules(MoleculeType.Oxygen) -= 1
                 cell.ATP = Math.Min(cell.ATP + 12, 1000)
-                AddMolecule(cell, MoleculeType.CarbonDioxide, 6)
+                env.AddMolecule(cell, MoleculeType.CarbonDioxide, 6)
                 ConsumeBasicResources(cell)
             End If
         End If
@@ -29,8 +29,8 @@ Public Class EnergyMetabolismRule : Implements IBiochemicalRule
 
                 cell.InternalMolecules(MoleculeType.Acetate) -= 1
                 cell.ATP = Math.Min(cell.ATP + 5, 1000)
-                AddMolecule(cell, MoleculeType.CarbonDioxide, 2)
-                AddMolecule(cell, MoleculeType.HydrogenIon, 2)
+                env.AddMolecule(cell, MoleculeType.CarbonDioxide, 2)
+                env.AddMolecule(cell, MoleculeType.HydrogenIon, 2)
                 ConsumeBasicResources(cell)
             End If
         End If
