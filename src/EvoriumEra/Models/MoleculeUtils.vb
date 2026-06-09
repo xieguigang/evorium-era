@@ -63,8 +63,11 @@
         End If
     End Sub
 
+    ''' <summary>
+    ''' 将细胞内所有物质释放到当前格子
+    ''' </summary>
+    ''' <param name="cell"></param>
     Public Sub LyseCell(cell As Cell)
-        ' 将细胞内所有物质释放到当前格子
         Dim voxel = env(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
         For Each kvp In cell.InternalMolecules

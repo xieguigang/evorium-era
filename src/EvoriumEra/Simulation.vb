@@ -13,8 +13,12 @@ Public Class Simulation
     Public Property CurrentIteration As Long = 0
     Public Property IsRunning As Boolean = False
 
-    ' ===== 快照系统 =====
+    ''' <summary>
+    ''' ===== 快照系统 =====
+    ''' </summary>
+    ''' <returns></returns>
     Public Property SnapshotManager As SnapshotManager
+
     ''' <summary>
     ''' 每 N 步存一次
     ''' </summary>
@@ -97,10 +101,11 @@ Public Class Simulation
         Return r
     End Function
 
-    Public Sub Run(maxSteps As Long)
+    Public Sub Run(Optional maxSteps As Long = 9999)
         IsRunning = True
-        While CurrentIteration < maxSteps AndAlso IsRunning
-            StepOnce()
+
+        While CurrentIteration < maxSteps AndAlso IsRunning AndAlso App.Running
+            Call StepOnce()
         End While
     End Sub
 
@@ -130,6 +135,7 @@ Public Class Simulation
 
         ' 5. 统计 & 快照
         UpdateStatistics()
+
         If CurrentIteration Mod SnapshotInterval = 0 Then
             SnapshotManager.SaveSnapshot(Me)
         End If
@@ -216,6 +222,9 @@ Public Class Simulation
         DeadCellCount += 1
     End Sub
 
+    ''' <summary>
+    ''' 全局扩散
+    ''' </summary>
     Private Sub DiffuseAllVoxels()
         Dim voxels = Env.AllVoxels().ToList()
 

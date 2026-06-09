@@ -1,48 +1,51 @@
-﻿
-
-
+﻿''' <summary>
+''' Execute the biologicaal rules
+''' </summary>
 Public Class RuleScheduler
-    Public Property Rules As List(Of IBiochemicalRule) = New List(Of IBiochemicalRule)
-    Dim _functionMap As Dictionary(Of GeneOntology, List(Of IBiochemicalRule))
+
+    Public Property Rules As IBiochemicalRule()
+
+    ReadOnly _functionMap As New Dictionary(Of GeneOntology, List(Of IBiochemicalRule))
 
     Public Sub New()
         ' 按顺序添加所有规则
-        Rules.Add(New EnergyMetabolismRule())
-        Rules.Add(New GeneExpressionRule())
-        Rules.Add(New ReplicationAndDivisionRule())
-        Rules.Add(New TransportRule())
-        Rules.Add(New SynthesisAndDegradationRule())
-        Rules.Add(New EnvironmentalResponseRule())
-        Rules.Add(New MotionAndHGTRule())
-        Rules.Add(New MutationRule())
-        Rules.Add(New QuorumSensingAndBiofilmRule())
-        Rules.Add(New DiffusionRule())
+        Rules = {
+            New EnergyMetabolismRule(),
+            New GeneExpressionRule(),
+            New ReplicationAndDivisionRule(),
+            New TransportRule(),
+            New SynthesisAndDegradationRule(),
+            New EnvironmentalResponseRule(),
+            New MotionAndHGTRule(),
+            New MutationRule(),
+            New QuorumSensingAndBiofilmRule(),
+            New DiffusionRule()
+        }
 
-        BuildFunctionMap()
+        Call BuildFunctionMap()
     End Sub
 
+    ''' <summary>
+    ''' 轮盘赌选择（简化：按顺序执行，实际应按蛋白质浓度加权）
+    ''' </summary>
+    ''' <param name="cell"></param>
+    ''' <param name="env"></param>
     Public Sub ApplyAll(cell As Cell, env As Environment3D)
-        ' 轮盘赌选择（简化：按顺序执行，实际应按蛋白质浓度加权）
-        For Each rule In Rules
+        For Each rule As IBiochemicalRule In Rules
             If cell.IsAlive Then
-                Try
-                    rule.Execute(cell, env)
-                Catch ex As Exception
-                    ' 记录异常但继续执行
-                End Try
+                Call rule.Execute(cell, env)
             End If
         Next
     End Sub
 
     Private Sub BuildFunctionMap()
-        _functionMap = New Dictionary(Of GeneOntology, List(Of IBiochemicalRule))
-
-        For Each rule In _Rules
-            For Each f In rule.SupportedFunctions
+        For Each rule As IBiochemicalRule In _Rules
+            For Each f As GeneOntology In rule.SupportedFunctions
                 If Not _functionMap.ContainsKey(f) Then
                     _functionMap(f) = New List(Of IBiochemicalRule)
                 End If
-                _functionMap(f).Add(rule)
+
+                Call _functionMap(f).Add(rule)
             Next
         Next
     End Sub
@@ -51,10 +54,10 @@ Public Class RuleScheduler
     ''' 执行指定的基因功能
     ''' </summary>
     Public Sub ExecuteFunction(func As GeneOntology, cell As Cell, env As Environment3D)
-        If Not _functionMap.ContainsKey(func) Then Return
-
-        For Each rule In _functionMap(func)
-            rule.Execute(cell, env)
-        Next
+        If _functionMap.ContainsKey(func) Then
+            For Each rule As IBiochemicalRule In _functionMap(func)
+                rule.Execute(cell, env)
+            Next
+        End If
     End Sub
 End Class
