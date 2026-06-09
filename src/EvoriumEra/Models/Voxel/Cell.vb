@@ -70,6 +70,12 @@ Namespace Models.Container
         Public Property OsmoticState As Integer = 0
         Public Property ColdShockMitigation As Double
 
+        Public ReadOnly Property PH As Double
+            Get
+                Return PHHelper.EstimatePH(Me)
+            End Get
+        End Property
+
         Public Overrides Function ToString() As String
             Return $"[{ID.ToString}] Generation:{Generation}; ATP:{ATP}; Position: {Position}; Genome{{{Genome.ToString}}}"
         End Function

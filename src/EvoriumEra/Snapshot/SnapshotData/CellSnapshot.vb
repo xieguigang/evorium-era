@@ -27,6 +27,8 @@ Namespace Data
         Public Property TotalMolecules As Integer
         Public Property ATP As Integer
 
+        Public Property PH As Double
+
         ' 遗传信息
         Public Property GenomeSize As Integer
         Public Property PlasmidCount As Integer

@@ -28,6 +28,12 @@ Namespace Models.Container
             End Get
         End Property
 
+        Public ReadOnly Property PH As Double
+            Get
+                Return PHHelper.EstimatePH(Me)
+            End Get
+        End Property
+
         Sub New()
         End Sub
 

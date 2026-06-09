@@ -54,6 +54,8 @@ Public Class NaturalEvolution
     Public Property DenaturationEvents As Long = 0
     Public Property AverageEnergyLevel As Double = 0
 
+    Public Property AverageEnvironmentPH As Double = 7
+
     ''' <summary>
     ''' ===== 快照系统 =====
     ''' </summary>
@@ -116,7 +118,7 @@ Public Class NaturalEvolution
         IsRunning = True
 
         While CInt(CurrentIteration) < maxSteps AndAlso IsRunning AndAlso App.Running
-            Call VBDebugger.EchoLine($"[{CInt(CurrentIteration)}] living_cells: {LivingCellCount}; energy_level[ATP]:{AverageEnergyLevel:F3}; temperature[environment_avg]: {AverageTemperature:F2}℃")
+            Call VBDebugger.EchoLine($"[{CInt(CurrentIteration)}] living_cells: {LivingCellCount}; energy_level[ATP]: {AverageEnergyLevel:F3}; PH[environment_avg]: {AverageEnvironmentPH:F2}; temperature[environment_avg]: {AverageTemperature:F2}℃")
             Call RunIteration(++CurrentIteration)
         End While
     End Sub
@@ -508,6 +510,7 @@ Public Class NaturalEvolution
         Dim ionSum = 0.0
         Dim count = 0
         Dim dims = Env.Dimensions
+        Dim phSum As Double = 0
 
         For x As Integer = 0 To dims.Width - 1 Step 5
             For Y As Integer = 0 To dims.Height - 1 Step 5
@@ -515,12 +518,14 @@ Public Class NaturalEvolution
                     Dim voxel = Env.Grid(x, Y, z)
                     tempSum += voxel.Temperature
                     ionSum += voxel.ExternalIonStrength
+                    phSum += voxel.PH
                     count += 1
                 Next
             Next
         Next
 
         If count > 0 Then
+            AverageEnvironmentPH = phSum / count
             AverageTemperature = tempSum / count
             AverageIonStrength = ionSum / count
         End If

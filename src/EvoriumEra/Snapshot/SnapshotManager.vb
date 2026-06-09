@@ -89,7 +89,8 @@ Namespace Data
                             .BiofilmStrength = voxel.BiofilmStrength,
                             .ExternalIonStrength = voxel.ExternalIonStrength,
                             .MoleculeDensity = 0,
-                            .Temperature = voxel.Temperature
+                            .Temperature = voxel.Temperature,
+                            .PH = voxel.PH
                         }
                         voxels.Add(voxelSnap)
 
@@ -118,7 +119,8 @@ Namespace Data
                                 .ParentID = cell.ParentID,
                                 .Plasmids = cell.Plasmids.Select(Function(r) r.Clone).ToArray,
                                 .ProteinActivityFactor = cell.ProteinActivityFactor,
-                                .Proteins = New Dictionary(Of GeneOntology, Integer)(cell.Proteins)
+                                .Proteins = New Dictionary(Of GeneOntology, Integer)(cell.Proteins),
+                                .PH = cell.PH
                             }
                             cells.Add(cellSnap)
                         End If

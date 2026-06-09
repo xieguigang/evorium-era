@@ -26,6 +26,8 @@ Namespace Data
         Public Property Temperature As Double = 25.0
         Public Property ExternalIonStrength As Double
 
+        Public Property PH As Double
+
         ' 时间戳
         Public Property SnapshotTime As DateTime
 
