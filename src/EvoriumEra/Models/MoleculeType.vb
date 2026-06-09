@@ -18,8 +18,17 @@ Namespace Models
         Glucose
         Pyruvate
         Acetate
+        ''' <summary>
+        ''' AMINO_MIX_GLU_FAMILY氨基酸
+        ''' </summary>
         AminoMixGluFamily
+        ''' <summary>
+        ''' AMINO_MIX_ASP_FAMILY氨基酸
+        ''' </summary>
         AminoMixAspFamily
+        ''' <summary>
+        ''' AMINO_MIX_SER_GLY氨基酸
+        ''' </summary>
         AminoMixSerGly
         Antibiotic
         SecondaryMetabolite

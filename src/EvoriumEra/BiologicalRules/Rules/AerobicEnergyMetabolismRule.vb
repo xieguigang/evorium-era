@@ -3,9 +3,14 @@ Imports EvoriumEra.Models.Container
 
 Namespace BiologicalRules.Rules
 
+    ''' <summary>
+    ''' 有氧能量代谢规则
+    ''' </summary>
     Public Class AerobicEnergyMetabolismRule : Implements IBiochemicalRule
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+
+
 
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             If cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso
