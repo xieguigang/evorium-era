@@ -14,7 +14,7 @@ Namespace Data
             Directory.CreateDirectory(_basePath)
         End Sub
 
-        Public Sub SaveSnapshot(simulation As Simulation)
+        Public Sub SaveSnapshot(simulation As NaturalEvolution)
             Dim snapshot = CreateSnapshot(simulation)
             Dim json As String = snapshot.GetJson
 
@@ -38,7 +38,7 @@ Namespace Data
             End Using
         End Sub
 
-        Private Function CreateSnapshot(simulation As Simulation) As Snapshot
+        Private Function CreateSnapshot(simulation As NaturalEvolution) As Snapshot
             Dim snapshot As New Snapshot With {
             .Iteration = simulation.CurrentIteration,
             .Timestamp = DateTime.Now,

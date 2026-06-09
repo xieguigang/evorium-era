@@ -5,7 +5,13 @@ Imports EvoriumEra.Models.Container
 Imports Microsoft.VisualBasic.Imaging
 Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
-Public Class Simulation
+''' <summary>
+''' 用于模拟自然环境下的微生物群落演化过程的计算程序
+''' </summary>
+''' <remarks>
+''' A computational program for simulating the evolution of microbial communities in natural environments.
+''' </remarks>
+Public Class NaturalEvolution
 
     Public Property CurrentEnvironment As NaturalEnvironment
 
