@@ -28,26 +28,44 @@ Namespace Models
         ''' <param name="cell"></param>
         Public Sub LyseCell(cell As Cell, reason As String)
             Dim voxel = env(cell.Position.X, cell.Position.Y, cell.Position.Z)
+            Dim voxelProteins As ProteinMolecule = voxel.ExternalMolecules.TryGetValue(MoleculeType.Protein)
+            Dim voxelDNAs As DNAMolecule = voxel.ExternalMolecules.TryGetValue(MoleculeType.DNA)
+
+            If voxelDNAs Is Nothing Then
+                voxelDNAs = New DNAMolecule
+                voxel.ExternalMolecules(MoleculeType.DNA) = voxelDNAs
+            End If
+            If voxelProteins Is Nothing Then
+                voxelProteins = New ProteinMolecule
+                voxel.ExternalMolecules(MoleculeType.Protein) = voxelProteins
+            End If
 
             ' 将细胞内的代谢物释放到环境中
             For Each kvp In cell.InternalMolecules
-                env.moleculeUtils.AddToVoxel(voxel, kvp.Key, kvp.Value.Quantity)
+                ' 跳过直接添加被吸收到内部的DNA片段列表
+                If kvp.Key <> MoleculeType.DNA Then
+                    env.moleculeUtils.AddToVoxel(voxel, kvp.Key, kvp.Value.Quantity)
+                Else
+                    ' 被吸收到细胞内的外源性DNA额外做处理
+                    Dim externalDNAs As DNAMolecule = kvp.Value
+
+                    For Each frag As Replicon In externalDNAs.DNAFragments
+                        Call externalDNAs.Add(frag)
+                    Next
+                End If
             Next
 
             ' 将细胞内的蛋白质也释放到环境中
-            ' DNA降解为核苷酸释放
-            Dim dna = cell.GetMoleculeAmount(MoleculeType.DNA)
+            For Each protKvp In cell.Proteins
+                Call voxelProteins.add(protKvp.Key, protKvp.Value)
+            Next
 
-            If dna > 0 Then
-                voxel.ExternalMolecules(MoleculeType.Nucleotide).Quantity += dna * 3
-            End If
+            ' 同时细胞内的DNA也会被释放到环境中
+            Call voxelDNAs.Add(cell.Genome)
 
-            ' 蛋白质降解为氨基酸释放
-            Dim totalProteins = cell.Proteins.Values.Sum()
-
-            If totalProteins > 0 Then
-                voxel.ExternalMolecules(MoleculeType.AminoMixGluFamily).Quantity += totalProteins
-            End If
+            For Each plasmid As Replicon In cell.Plasmids
+                Call voxelDNAs.Add(plasmid)
+            Next
 
             ' 清空细胞
             cell.IsAlive = False

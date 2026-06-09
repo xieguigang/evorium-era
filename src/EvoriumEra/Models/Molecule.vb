@@ -58,6 +58,14 @@
             Call MyBase.New(MoleculeType.Protein)
         End Sub
 
+        Public Sub Add(protein As GeneOntology, num As Integer)
+            If Not Proteins.ContainsKey(protein) Then
+                Proteins(protein) = num
+            Else
+                Proteins(protein) += num
+            End If
+        End Sub
+
     End Class
 
     ''' <summary>
@@ -72,6 +80,10 @@
 
         Sub New()
             Call MyBase.New(MoleculeType.DNA)
+        End Sub
+
+        Public Sub Add(fragment As Replicon)
+            DNAFragments.Add(fragment)
         End Sub
 
     End Class
