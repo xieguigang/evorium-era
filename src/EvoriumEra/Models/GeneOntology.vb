@@ -1,5 +1,7 @@
 ﻿
-' 基因功能
+''' <summary>
+''' 基因功能
+''' </summary>
 Public Enum GeneOntology
     DegradeMacromolecule
     NucleicAcidSynthesis

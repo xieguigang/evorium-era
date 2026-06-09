@@ -8,6 +8,12 @@ Public Class Environment3D
     Public Property Grid As Voxel(,,)
     Public Property Dimensions As (Width As Integer, Height As Integer, Depth As Integer)
 
+    Default Public ReadOnly Property Voxel(x As Integer, y As Integer, z As Integer) As Voxel
+        Get
+            Return _Grid(x, y, z)
+        End Get
+    End Property
+
     ' ===== 构造函数 =====
     Public Sub New(w As Integer, h As Integer, d As Integer)
         Dimensions = (w, h, d)

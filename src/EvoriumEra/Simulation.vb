@@ -76,7 +76,7 @@
 
         For i = 1 To geneCount
             r.Genes.Add(New Gene() With {
-                .FunctionTag = allFuncs(RNG.Next(allFuncs.Count))
+                .FunctionOntology = allFuncs(RNG.Next(allFuncs.Count))
             })
         Next
         Return r

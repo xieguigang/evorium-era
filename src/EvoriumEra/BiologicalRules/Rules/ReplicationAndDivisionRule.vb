@@ -50,7 +50,7 @@
     End Sub
 
     Private Function CloneReplicon(r As Replicon) As Replicon
-        Return New Replicon With {.Genes = r.Genes.Select(Function(g) New Gene With {.FunctionTag = g.FunctionTag}).ToList()}
+        Return New Replicon With {.Genes = r.Genes.Select(Function(g) New Gene With {.FunctionOntology = g.FunctionOntology}).ToList()}
     End Function
 
     Private Sub DistributeMolecules(parent As Cell, child As Cell)

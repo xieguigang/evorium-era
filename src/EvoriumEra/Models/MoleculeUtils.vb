@@ -1,16 +1,17 @@
 ﻿Public Module MoleculeUtils
+
     ''' <summary>
     ''' 向容器中添加或移除分子
     ''' </summary>
     ''' <param name="container">可以是Cell或Voxel</param>
     ''' <param name="moleculeType">分子类型</param>
     ''' <param name="amount">正数增加，负数减少</param>
-    Public Sub AddMolecule(container As Object, moleculeType As MoleculeType, amount As Integer)
+    Public Sub AddMolecule(container As IVoxel, moleculeType As MoleculeType, amount As Integer)
         Select Case container.GetType()
             Case GetType(Cell)
-                AddToCell(CType(container, Cell), moleculeType, amount)
+                AddToCell(DirectCast(container, Cell), moleculeType, amount)
             Case GetType(Voxel)
-                AddToVoxel(CType(container, Voxel), moleculeType, amount)
+                AddToVoxel(DirectCast(container, Voxel), moleculeType, amount)
             Case Else
                 Throw New ArgumentException("不支持的容器类型")
         End Select
@@ -55,8 +56,7 @@
 
     Public Sub LyseCell(cell As Cell)
         ' 将细胞内所有物质释放到当前格子
-        Dim voxel = Simulation.CurrentEnvironment.Grid(
-            cell.Position.X, cell.Position.Y, cell.Position.Z)
+        Dim voxel = Simulation.CurrentEnvironment(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
         For Each kvp In cell.InternalMolecules
             AddToVoxel(voxel, kvp.Key, kvp.Value)

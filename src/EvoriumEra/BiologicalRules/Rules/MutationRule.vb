@@ -15,11 +15,11 @@ Public Class MutationRule : Implements IBiochemicalRule
                             replicon.Genes.RemoveAt(index)
                         Case 1 ' 插入突变
                             Dim gene = replicon.Genes(rng.Next(replicon.Genes.Count))
-                            replicon.Genes.Add(New Gene With {.FunctionTag = gene.FunctionTag})
+                            replicon.Genes.Add(New Gene With {.FunctionOntology = gene.FunctionOntology})
                         Case 2 ' 功能突变
                             Dim index = rng.Next(replicon.Genes.Count)
                             Dim allFunctions = [Enum].GetValues(GetType(GeneOntology)).Cast(Of GeneOntology)().ToList()
-                            replicon.Genes(index).FunctionTag = allFunctions(rng.Next(allFunctions.Count))
+                            replicon.Genes(index).FunctionOntology = allFunctions(rng.Next(allFunctions.Count))
                     End Select
                 End If
             Next

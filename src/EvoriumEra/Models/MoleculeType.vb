@@ -1,4 +1,6 @@
-' 分子类型
+''' <summary>
+''' 分子类型
+''' </summary>
 Public Enum MoleculeType
     Water
     Oxygen
