@@ -499,6 +499,8 @@ Public Class NaturalEvolution
 
         If LivingCellCount > 0 Then
             AverageEnergyLevel = cells.Where(Function(c) c.IsAlive).Average(Function(c) c.ATP)
+        Else
+            AverageEnergyLevel = 0
         End If
 
         ' [v3.0] 更新温度和离子统计
