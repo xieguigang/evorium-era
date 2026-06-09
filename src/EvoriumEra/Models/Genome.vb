@@ -45,6 +45,10 @@
             }
         End Function
 
+        ''' <summary>
+        ''' Display the gene function list
+        ''' </summary>
+        ''' <returns></returns>
         Public Overrides Function ToString() As String
             Return Genes.Select(Function(g) g.ToString).OrderBy(Function(s) s).JoinBy("; ")
         End Function

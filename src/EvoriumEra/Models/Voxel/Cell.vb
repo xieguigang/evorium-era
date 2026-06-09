@@ -71,7 +71,7 @@ Namespace Models.Container
         Public Property ColdShockMitigation As Double
 
         Public Overrides Function ToString() As String
-            Return $"[{ID.ToString}] Generation:{Generation}; Position: {Position}"
+            Return $"[{ID.ToString}] Generation:{Generation}; ATP:{ATP}; Position: {Position}; Genome{{{Genome.ToString}}}"
         End Function
 
         <MethodImpl(MethodImplOptions.AggressiveInlining)>
