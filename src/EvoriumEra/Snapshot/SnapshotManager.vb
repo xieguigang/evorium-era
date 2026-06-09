@@ -76,11 +76,15 @@ Namespace Data
                         ' 创建体素快照
                         Dim voxelSnap As New VoxelSnapshot With {
                             .X = x, .Y = y, .Z = z,
-                            .ExternalMolecules = New Dictionary(Of MoleculeType, Integer)(voxel.ExternalMolecules),
+                            .ExternalMolecules = voxel.ExternalMolecules _
+                                .ToDictionary(Function(m) m.Key,
+                                              Function(m)
+                                                  Return m.Value.Quantity
+                                              End Function),
                             .HasBiofilm = voxel.HasBiofilm,
                             .OccupantCellId = If(voxel.Occupant?.ID, Nothing),
                             .OccupantCellAlive = If(voxel.Occupant?.IsAlive, Nothing),
-                            .TotalMolecules = voxel.ExternalMolecules.Values.Sum(),
+                            .TotalMolecules = .ExternalMolecules.Values.Sum(),
                             .SnapshotTime = DateTime.Now,
                             .BiofilmStrength = voxel.BiofilmStrength,
                             .ExternalIonStrength = voxel.ExternalIonStrength,
@@ -92,12 +96,13 @@ Namespace Data
                         ' 创建细胞快照
                         If voxel.Occupant IsNot Nothing Then
                             Dim cell = voxel.Occupant
+                            Dim mols = cell.InternalMolecules.ToDictionary(Function(m) m.Key, Function(m) m.Value.Quantity)
                             Dim cellSnap As New CellSnapshot With {
                                 .ID = cell.ID,
                                 .Position = cell.Position,
                                 .IsAlive = cell.IsAlive,
                                 .HasCellWall = cell.HasCellWall,
-                                .InternalMolecules = New Dictionary(Of MoleculeType, Integer)(cell.InternalMolecules),
+                                .InternalMolecules = mols,
                                 .TotalMolecules = cell.TotalMolecules,
                                 .ATP = cell.ATP,
                                 .GenomeSize = cell.Genome.NucleotideLength,

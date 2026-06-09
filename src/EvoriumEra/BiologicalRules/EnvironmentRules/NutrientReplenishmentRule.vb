@@ -62,10 +62,10 @@ Namespace BiologicalRules.Rules
 
                         If delta <> 0 Then
                             If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.Oxygen) Then
-                                voxel.ExternalMolecules(MoleculeType.Oxygen) = 0
+                                voxel.ExternalMolecules(MoleculeType.Oxygen).Quantity = 0
                             End If
 
-                            voxel.ExternalMolecules(MoleculeType.Oxygen) = Math.Max(0, currentOxygen + delta)
+                            voxel.ExternalMolecules(MoleculeType.Oxygen).Quantity = Math.Max(0, currentOxygen + delta)
                         End If
                     Next
                 Next
@@ -84,21 +84,21 @@ Namespace BiologicalRules.Rules
                     Dim voxel = env.Grid(pos.X, pos.Y, pos.Z)
 
                     If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.CarbonSource) Then
-                        voxel.ExternalMolecules(MoleculeType.CarbonSource) = 0
+                        voxel.ExternalMolecules(MoleculeType.CarbonSource).Quantity = 0
                     End If
                     If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.NitrogenSource) Then
-                        voxel.ExternalMolecules(MoleculeType.NitrogenSource) = 0
+                        voxel.ExternalMolecules(MoleculeType.NitrogenSource).Quantity = 0
                     End If
 
                     ' 补充碳源/补充氮源
-                    voxel.ExternalMolecules(MoleculeType.CarbonSource) += config.NutrientHotspotStrength
-                    voxel.ExternalMolecules(MoleculeType.NitrogenSource) += config.NutrientHotspotStrength \ 2
+                    voxel.ExternalMolecules(MoleculeType.CarbonSource).Quantity += config.NutrientHotspotStrength
+                    voxel.ExternalMolecules(MoleculeType.NitrogenSource).Quantity += config.NutrientHotspotStrength \ 2
 
                     ' [v3.0] 热点也补充glucose
                     If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.Glucose) Then
-                        voxel.ExternalMolecules(MoleculeType.Glucose) = 0
+                        voxel.ExternalMolecules(MoleculeType.Glucose).Quantity = 0
                     End If
-                    voxel.ExternalMolecules(MoleculeType.Glucose) += config.NutrientHotspotStrength \ 3
+                    voxel.ExternalMolecules(MoleculeType.Glucose).Quantity += config.NutrientHotspotStrength \ 3
                 End If
             Next
         End Sub
@@ -115,18 +115,18 @@ Namespace BiologicalRules.Rules
                 Dim voxel = env.Grid(x, y, z)
 
                 If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.CarbonSource) Then
-                    voxel.ExternalMolecules(MoleculeType.CarbonSource) = 0
+                    voxel.ExternalMolecules(MoleculeType.CarbonSource).Quantity = 0
                 End If
                 If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.NitrogenSource) Then
-                    voxel.ExternalMolecules(MoleculeType.NitrogenSource) = 0
+                    voxel.ExternalMolecules(MoleculeType.NitrogenSource).Quantity = 0
                 End If
                 If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.Water) Then
-                    voxel.ExternalMolecules(MoleculeType.Water) = 0
+                    voxel.ExternalMolecules(MoleculeType.Water).Quantity = 0
                 End If
 
-                voxel.ExternalMolecules(MoleculeType.CarbonSource) += config.NutrientReplenishmentCarbon \ 10
-                voxel.ExternalMolecules(MoleculeType.NitrogenSource) += config.NutrientReplenishmentNitrogen \ 10
-                voxel.ExternalMolecules(MoleculeType.Water) += 5
+                voxel.ExternalMolecules(MoleculeType.CarbonSource).Quantity += config.NutrientReplenishmentCarbon \ 10
+                voxel.ExternalMolecules(MoleculeType.NitrogenSource).Quantity += config.NutrientReplenishmentNitrogen \ 10
+                voxel.ExternalMolecules(MoleculeType.Water).Quantity += 5
             Next
         End Sub
 
@@ -158,10 +158,10 @@ Namespace BiologicalRules.Rules
 
         Private Sub EnsureMolecule(voxel As Container.Voxel, type As MoleculeType, minAmount As Integer)
             If Not voxel.ExternalMolecules.ContainsKey(type) Then
-                voxel.ExternalMolecules(type) = 0
+                voxel.ExternalMolecules(type).Quantity = 0
             End If
             If voxel.ExternalMolecules(type) < minAmount Then
-                voxel.ExternalMolecules(type) = minAmount
+                voxel.ExternalMolecules(type).Quantity = minAmount
             End If
         End Sub
 

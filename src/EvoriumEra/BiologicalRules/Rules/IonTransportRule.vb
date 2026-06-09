@@ -39,10 +39,12 @@ Namespace BiologicalRules.Rules
                     If transfer <> 0 Then
                         cell.AddMoleculeInternal(ion, transfer)
                         If Not voxel.ExternalMolecules.ContainsKey(ion) Then
-                            voxel.ExternalMolecules(ion) = 0
+                            voxel.ExternalMolecules(ion).Quantity = 0
                         End If
-                        voxel.ExternalMolecules(ion) -= transfer
-                        If voxel.ExternalMolecules(ion) < 0 Then voxel.ExternalMolecules(ion) = 0
+                        voxel.ExternalMolecules(ion).Quantity -= transfer
+                        If voxel.ExternalMolecules(ion) < 0 Then
+                            voxel.ExternalMolecules(ion).Quantity = 0
+                        End If
                     End If
                 End If
             Next
@@ -55,11 +57,11 @@ Namespace BiologicalRules.Rules
                     cell.ATP -= 1
                     cell.AddMoleculeInternal(MoleculeType.Phosphate, uptake)
                     If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.Phosphate) Then
-                        voxel.ExternalMolecules(MoleculeType.Phosphate) = 0
+                        voxel.ExternalMolecules(MoleculeType.Phosphate).Quantity = 0
                     End If
-                    voxel.ExternalMolecules(MoleculeType.Phosphate) -= uptake
+                    voxel.ExternalMolecules(MoleculeType.Phosphate).Quantity -= uptake
                     If voxel.ExternalMolecules(MoleculeType.Phosphate) < 0 Then
-                        voxel.ExternalMolecules(MoleculeType.Phosphate) = 0
+                        voxel.ExternalMolecules(MoleculeType.Phosphate).Quantity = 0
                     End If
                 End If
             End If
@@ -74,11 +76,11 @@ Namespace BiologicalRules.Rules
                 cell.AddMoleculeInternal(MoleculeType.IronIII, uptake)
                 cell.AddMoleculeInternal(MoleculeType.Siderophore, uptake)
                 If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.IronIII) Then
-                    voxel.ExternalMolecules(MoleculeType.IronIII) = 0
+                    voxel.ExternalMolecules(MoleculeType.IronIII).Quantity = 0
                 End If
-                voxel.ExternalMolecules(MoleculeType.IronIII) -= uptake
+                voxel.ExternalMolecules(MoleculeType.IronIII).Quantity -= uptake
                 If voxel.ExternalMolecules(MoleculeType.IronIII) < 0 Then
-                    voxel.ExternalMolecules(MoleculeType.IronIII) = 0
+                    voxel.ExternalMolecules(MoleculeType.IronIII).Quantity = 0
                 End If
             End If
 
@@ -113,9 +115,9 @@ Namespace BiologicalRules.Rules
             If extMg > intMg + 2 Then
                 cell.AddMoleculeInternal(MoleculeType.MagnesiumIon, 1)
                 If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.MagnesiumIon) Then
-                    voxel.ExternalMolecules(MoleculeType.MagnesiumIon) = 0
+                    voxel.ExternalMolecules(MoleculeType.MagnesiumIon).Quantity = 0
                 End If
-                voxel.ExternalMolecules(MoleculeType.MagnesiumIon) -= 1
+                voxel.ExternalMolecules(MoleculeType.MagnesiumIon).Quantity -= 1
             End If
 
             ' ===== Ca2+ 被动扩散（微量） =====
@@ -124,9 +126,9 @@ Namespace BiologicalRules.Rules
             If extCa > intCa + 2 Then
                 cell.AddMoleculeInternal(MoleculeType.CalciumIon, 1)
                 If Not voxel.ExternalMolecules.ContainsKey(MoleculeType.CalciumIon) Then
-                    voxel.ExternalMolecules(MoleculeType.CalciumIon) = 0
+                    voxel.ExternalMolecules(MoleculeType.CalciumIon).Quantity = 0
                 End If
-                voxel.ExternalMolecules(MoleculeType.CalciumIon) -= 1
+                voxel.ExternalMolecules(MoleculeType.CalciumIon).Quantity -= 1
             End If
         End Sub
     End Class

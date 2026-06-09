@@ -25,6 +25,7 @@ Namespace Models
         ATP
         Nucleotide
         DNA
+        Protein
         CarbonSource
         NitrogenSource
 

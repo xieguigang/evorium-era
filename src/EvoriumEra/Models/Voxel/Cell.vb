@@ -12,7 +12,7 @@ Namespace Models.Container
         Public Property Position As SpatialIndex3D Implements IVoxel.Position
         Public Property Genome As Replicon
         Public Property Plasmids As New List(Of Replicon)
-        Public Property InternalMolecules As New Dictionary(Of MoleculeType, Integer) Implements IVoxel.Molecules
+        Public Property InternalMolecules As New Dictionary(Of MoleculeType, Molecule) Implements IVoxel.Molecules
         Public Property Proteins As New Dictionary(Of GeneOntology, Integer)
         Public Property HasCellWall As Boolean = False
         Public Property IsAlive As Boolean = True
@@ -95,7 +95,7 @@ Namespace Models.Container
         ''' </summary>
         Public Function GetMoleculeAmount(type As MoleculeType) As Integer
             If InternalMolecules.ContainsKey(type) Then
-                Return InternalMolecules(type)
+                Return InternalMolecules(type).Quantity
             Else
                 Return 0
             End If
@@ -107,9 +107,9 @@ Namespace Models.Container
         Public Sub SetMoleculeAmount(type As MoleculeType, amount As Integer)
             If amount < 0 Then amount = 0
             If Not InternalMolecules.ContainsKey(type) Then
-                InternalMolecules(type) = 0
+                InternalMolecules(type) = Molecule.EmptyModel(type)
             End If
-            InternalMolecules(type) = amount
+            InternalMolecules(type).Quantity = amount
         End Sub
 
         ''' <summary>
@@ -117,10 +117,12 @@ Namespace Models.Container
         ''' </summary>
         Public Sub AddMoleculeInternal(type As MoleculeType, amount As Integer)
             If Not InternalMolecules.ContainsKey(type) Then
-                InternalMolecules(type) = 0
+                InternalMolecules(type) = Molecule.EmptyModel(type)
             End If
-            InternalMolecules(type) += amount
-            If InternalMolecules(type) < 0 Then InternalMolecules(type) = 0
+            InternalMolecules(type).Quantity += amount
+            If InternalMolecules(type).Quantity < 0 Then
+                InternalMolecules(type).Quantity = 0
+            End If
         End Sub
 
         ''' <summary>

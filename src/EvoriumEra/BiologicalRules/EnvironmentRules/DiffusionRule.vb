@@ -75,7 +75,7 @@ Namespace BiologicalRules.Rules
                                 If voxel.ExternalMolecules.ContainsKey(mol) AndAlso
                                    neighbor.ExternalMolecules.ContainsKey(mol) Then
 
-                                    Dim diff = voxel.ExternalMolecules(mol) - neighbor.ExternalMolecules(mol)
+                                    Dim diff = voxel.ExternalMolecules(mol) - neighbor.ExternalMolecules(mol).Quantity
                                     If Math.Abs(diff) > 0 Then
                                         ' 生物膜阻断
                                         ' 扩散量 = 浓度差 × 扩散系数 × 生物膜因子
@@ -84,13 +84,13 @@ Namespace BiologicalRules.Rules
                                                               rng.NextInteger(1, 6)))
 
                                         If transfer <> 0 Then
-                                            voxel.ExternalMolecules(mol) -= transfer
-                                            neighbor.ExternalMolecules(mol) += transfer
+                                            voxel.ExternalMolecules(mol).Quantity -= transfer
+                                            neighbor.ExternalMolecules(mol).Quantity += transfer
 
                                             ' 确保不为负
                                             If voxel.ExternalMolecules(mol) < 0 Then
-                                                neighbor.ExternalMolecules(mol) += voxel.ExternalMolecules(mol)
-                                                voxel.ExternalMolecules(mol) = 0
+                                                neighbor.ExternalMolecules(mol).Quantity += voxel.ExternalMolecules(mol).Quantity
+                                                voxel.ExternalMolecules(mol).Quantity = 0
                                             End If
                                         End If
                                     End If

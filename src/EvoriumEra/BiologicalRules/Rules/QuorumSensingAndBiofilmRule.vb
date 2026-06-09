@@ -45,7 +45,7 @@ Namespace BiologicalRules.Rules
                 ' 群体感应激活时，吸收环境信号分子
                 If quorumActive AndAlso envSignal > 0 Then
                     Dim absorb = Math.Min(envSignal, 5)
-                    voxel.ExternalMolecules(MoleculeType.SignalMolecule) -= absorb
+                    voxel.ExternalMolecules(MoleculeType.SignalMolecule).Quantity -= absorb
                     cell.AddMoleculeInternal(MoleculeType.SignalMolecule, absorb)
                 End If
             End If

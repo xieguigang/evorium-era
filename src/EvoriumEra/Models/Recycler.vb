@@ -31,7 +31,7 @@ Namespace Models
 
             ' 将细胞内的代谢物释放到环境中
             For Each kvp In cell.InternalMolecules
-                env.moleculeUtils.AddToVoxel(voxel, kvp.Key, kvp.Value)
+                env.moleculeUtils.AddToVoxel(voxel, kvp.Key, kvp.Value.Quantity)
             Next
 
             ' 将细胞内的蛋白质也释放到环境中
@@ -39,14 +39,14 @@ Namespace Models
             Dim dna = cell.GetMoleculeAmount(MoleculeType.DNA)
 
             If dna > 0 Then
-                voxel.ExternalMolecules(MoleculeType.Nucleotide) += dna * 3
+                voxel.ExternalMolecules(MoleculeType.Nucleotide).Quantity += dna * 3
             End If
 
             ' 蛋白质降解为氨基酸释放
             Dim totalProteins = cell.Proteins.Values.Sum()
 
             If totalProteins > 0 Then
-                voxel.ExternalMolecules(MoleculeType.AminoMixGluFamily) += totalProteins
+                voxel.ExternalMolecules(MoleculeType.AminoMixGluFamily).Quantity += totalProteins
             End If
 
             ' 清空细胞

@@ -90,8 +90,8 @@ Namespace BiologicalRules.Rules
             For Each kvp In parent.InternalMolecules.ToList()
                 Dim parentAmount = CInt(kvp.Value * 0.6)
                 Dim childAmount = kvp.Value - parentAmount
-                parent.InternalMolecules(kvp.Key) = parentAmount
-                child.InternalMolecules(kvp.Key) = childAmount
+                parent.InternalMolecules(kvp.Key).Quantity = parentAmount
+                child.InternalMolecules(kvp.Key).Quantity = childAmount
             Next
         End Sub
 
