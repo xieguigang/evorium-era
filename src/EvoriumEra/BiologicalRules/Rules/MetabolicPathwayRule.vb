@@ -23,7 +23,8 @@ Namespace BiologicalRules.Rules
                 GeneOntology.GlucoseConversionEnzyme,
                 GeneOntology.PyruvateEnzyme,
                 GeneOntology.AcetateEnzyme,
-                GeneOntology.LactateDehydrogenase
+                GeneOntology.LactateDehydrogenase,
+                GeneOntology.NucleicAcidSynthesis
             )
 
             ' ===== Step 1: glucose → pyruvate =====
@@ -42,8 +43,9 @@ Namespace BiologicalRules.Rules
             ' 消耗1个pyruvate → 1个lactate + 2个ATP
             ' 需要LactateDehydrogenase蛋白质，无氧时优先
             Dim lactateDehydro = New Reaction(GeneOntology.LactateDehydrogenase, 2, exemptATP:=True).Left((MoleculeType.Pyruvate, -1)).Right((MoleculeType.Lactate, 1)).Inhibit((MoleculeType.Oxygen, 10))
+            Dim nucleotideSyns = New Reaction(GeneOntology.NucleicAcidSynthesis, 0, exemptATP:=False).Left((MoleculeType.Pyruvate, -1), (MoleculeType.NitrogenSource, -1)).Right((MoleculeType.Nucleotide, 1))
 
-            reactions = {glucoseConversion, pyruvateMetabolism, acetateMetabolism, lactateDehydro}
+            reactions = {glucoseConversion, pyruvateMetabolism, acetateMetabolism, lactateDehydro, nucleotideSyns}
         End Sub
 
         Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)

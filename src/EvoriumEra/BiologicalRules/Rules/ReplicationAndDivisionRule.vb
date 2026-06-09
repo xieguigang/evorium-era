@@ -66,6 +66,10 @@ Namespace BiologicalRules.Rules
             ' 记录分裂
             cell.DivisionCount += 1
             cell.Age = 0
+
+            If env.debug Then
+                Call $"[cell_division] {child.ToString}".debug
+            End If
         End Sub
 
         Private Function CanDivide(cell As Cell) As Boolean

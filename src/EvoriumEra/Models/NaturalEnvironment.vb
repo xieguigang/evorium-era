@@ -39,6 +39,7 @@ Namespace Models
         Friend ReadOnly configs As Configs
         Friend moleculeUtils As MoleculeUtils
         Friend recycler As Recycler
+        Friend ReadOnly debug As Boolean = False
 
         ' ===== 构造函数 =====
         Public Sub New(config As Configs, Optional debug As Boolean = False)
@@ -51,6 +52,8 @@ Namespace Models
             configs = config
             moleculeUtils = New MoleculeUtils(configs, Me, debug:=debug)
             recycler = New Recycler(configs, Me, debug:=debug)
+
+            Me.debug = debug
 
             For X As Integer = 0 To w - 1
                 For Y As Integer = 0 To h - 1
