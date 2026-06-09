@@ -1,9 +1,9 @@
 ﻿Imports EvoriumEra.BiologicalRules
-Imports EvoriumEra.BiologicalRules.Rules
 Imports EvoriumEra.Data
 Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
 Imports Microsoft.VisualBasic.Imaging
+Imports Microsoft.VisualBasic.Language
 Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
 ''' <summary>
@@ -30,7 +30,7 @@ Public Class NaturalEvolution
     Public Property Config As Configs
 
     ' ===== 状态 =====
-    Public Property CurrentIteration As Long = 0
+    Public Property CurrentIteration As i32 = 0
     Public Property IsRunning As Boolean = False
     Public Property LivingCellCount As Integer = 0
     Public Property DeadCellCount As Integer = 0
@@ -98,63 +98,27 @@ Public Class NaturalEvolution
     Public Sub Run(Optional maxSteps As Long = 9999)
         IsRunning = True
 
-        While CurrentIteration < maxSteps AndAlso IsRunning AndAlso App.Running
-            Call RunIteration()
+        While CInt(CurrentIteration) < maxSteps AndAlso IsRunning AndAlso App.Running
+            Call RunIteration(++CurrentIteration)
         End While
     End Sub
 
-    Public Sub RunIteration()
-        CurrentIteration += 1
+    Public Sub RunIteration(currentIteration As Integer)
+        ' 1. 获取所有活细胞并随机打乱
+        Dim cells = (From c As Cell
+                     In Env.AllCells
+                     Where c.IsAlive
+                     Order By RNG.NextDouble).ToArray()
+        Dim maxActions = Config.MaxCellActions
 
-        ' 1. 环境级别规则（营养补充、扩散、温度）
-        Scheduler.ExecuteEnvironmentRules(Env, CurrentIteration)
-
-        ' 2. 获取所有活细胞并随机打乱
-        Dim cells = Env.AllCells().Where(Function(c) c.IsAlive).OrderBy(Function() RNG.NextDouble).ToList()
+        ' 2. 环境级别规则（营养补充、扩散、温度）
+        Call Scheduler.ExecuteEnvironmentRules(Env, currentIteration)
 
         ' 3. 对每个细胞执行规则
-        For Each cell In cells
-            If Not cell.IsAlive Then Continue For
-
-            ' [v3.0] 更新细胞温度为所在格子温度
-            SyncCellTemperature(cell)
-
-            ' 全局规则（基因组维护、细胞裂解、温度、渗透压）
-            Scheduler.ExecuteGlobalRules(cell, Env)
-
-            ' 基于蛋白质丰度选择功能执行
-            Dim actions = 0
-            Dim maxActions = Config.MaxCellActions
-
-            While actions < maxActions AndAlso cell.IsAlive AndAlso cell.ATP > 0
-                Dim func = SelectFunctionByProteinAbundance(cell)
-                If func Is Nothing Then Exit While
-
-                Scheduler.ExecuteFunction(func, cell, Env)
-                actions += 1
-            End While
-
-            ' 代谢溢流检查
-            CheckOverflowSecretion(cell)
-
-            ' 被动扩散（水、氧气等小分子）
-            PassiveDiffusion(cell)
-
-            ' [v3.0] 温度恢复（细胞温度向环境温度回归）
-            cell.InternalTemperature = cell.InternalTemperature * 0.9 + GetVoxelTemperature(cell) * 0.1
-
-            ' 死亡检查
-            If cell.ATP <= 0 Then
-                cell.ConsecutiveNoATP += 1
-                If cell.ConsecutiveNoATP >= Config.StarvationDeathIterations Then
-                    Call Env.LyseCell(cell)
-                End If
-            Else
-                cell.ConsecutiveNoATP = 0
+        For Each cell As Cell In cells
+            If cell.IsAlive Then
+                Call CellIteration(cell, maxActions)
             End If
-
-            ' 年龄增长
-            cell.Age += 1
         Next
 
         ' 4. HGT检查
@@ -163,9 +127,52 @@ Public Class NaturalEvolution
         ' 5. 更新统计
         UpdateStatistics()
 
-        If CurrentIteration Mod SnapshotInterval = 0 Then
+        If currentIteration Mod SnapshotInterval = 0 Then
             SnapshotManager.SaveSnapshot(Me)
         End If
+    End Sub
+
+    Private Sub CellIteration(cell As Cell, maxActions As Integer)
+        Dim actions As Integer = 0
+
+        ' [v3.0] 更新细胞温度为所在格子温度
+        Call SyncCellTemperature(cell)
+        ' 全局规则（基因组维护、细胞裂解、温度、渗透压）
+        Call Scheduler.ExecuteGlobalRules(cell, Env)
+
+        ' 基于蛋白质丰度选择功能执行
+        While actions < maxActions AndAlso cell.IsAlive AndAlso cell.ATP > 0
+            Dim func = SelectFunctionByProteinAbundance(cell)
+
+            If func Is Nothing Then
+                Exit While
+            End If
+
+            Scheduler.ExecuteFunction(func, cell, Env)
+            actions += 1
+        End While
+
+        ' 代谢溢流检查
+        CheckOverflowSecretion(cell)
+
+        ' 被动扩散（水、氧气等小分子）
+        PassiveDiffusion(cell)
+
+        ' [v3.0] 温度恢复（细胞温度向环境温度回归）
+        cell.InternalTemperature = cell.InternalTemperature * 0.9 + GetVoxelTemperature(cell) * 0.1
+
+        ' 死亡检查
+        If cell.ATP <= 0 Then
+            cell.ConsecutiveNoATP += 1
+            If cell.ConsecutiveNoATP >= Config.StarvationDeathIterations Then
+                Call Env.LyseCell(cell)
+            End If
+        Else
+            cell.ConsecutiveNoATP = 0
+        End If
+
+        ' 年龄增长
+        cell.Age += 1
     End Sub
 
     ''' <summary>
@@ -262,7 +269,7 @@ Public Class NaturalEvolution
         Dim r = RNG.NextDouble() * totalWeight
         Dim cumulative = 0.0
 
-        For Each c In candidates
+        For Each c As (func As GeneOntology, weight As Double) In candidates
             cumulative += c.weight
             If r <= cumulative Then Return c.func
         Next
@@ -504,9 +511,9 @@ Public Class NaturalEvolution
             cell.AddMoleculeInternal(MoleculeType.MagnesiumIon, RNG.NextInteger(2, 5))
 
             ' [v3.0] 初始温度
-            cell.InternalTemperature = Voxel.Temperature
+            cell.InternalTemperature = voxel.Temperature
 
-            Voxel.Occupant = cell
+            voxel.Occupant = cell
         Next
     End Sub
 
