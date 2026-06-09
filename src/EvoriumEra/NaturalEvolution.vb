@@ -399,15 +399,16 @@ Public Class NaturalEvolution
                 For z As Integer = 0 To dims.Depth - 1
                     Dim voxel = Env.Grid(x, y, z)
 
-                    voxel.ExternalMolecules(MoleculeType.Water).SetQuantity(RNG.NextInteger(50, 200))
-                    voxel.ExternalMolecules(MoleculeType.CarbonSource).SetQuantity(RNG.NextInteger(20, 80))
-                    voxel.ExternalMolecules(MoleculeType.NitrogenSource).SetQuantity(RNG.NextInteger(10, 40))
-                    voxel.ExternalMolecules(MoleculeType.Glucose).SetQuantity(RNG.NextInteger(5, 30))
+                    Call Env.AddMolecule(voxel, MoleculeType.Water, RNG.NextInteger(50, 200))
+                    Call Env.AddMolecule(voxel, MoleculeType.CarbonSource, RNG.NextInteger(20, 80))
+                    Call Env.AddMolecule(voxel, MoleculeType.NitrogenSource, RNG.NextInteger(10, 40))
+                    Call Env.AddMolecule(voxel, MoleculeType.Glucose, RNG.NextInteger(5, 30))
 
                     ' 氧气梯度：表层多，深层少
                     Dim targetOxygen = Math.Max(0, Config.SurfaceOxygenLevel - z * Config.OxygenDecayPerLayer)
-                    voxel.ExternalMolecules(MoleculeType.Oxygen).SetQuantity(CInt(targetOxygen))
-                    voxel.ExternalMolecules(MoleculeType.CarbonDioxide).SetQuantity(RNG.NextInteger(5, 20))
+
+                    Call Env.AddMolecule(voxel, MoleculeType.Oxygen, CInt(targetOxygen))
+                    Call Env.AddMolecule(voxel, MoleculeType.CarbonDioxide, RNG.NextInteger(5, 20))
                 Next
             Next
         Next
@@ -441,15 +442,15 @@ Public Class NaturalEvolution
                 For z As Integer = 0 To dims.Depth - 1
                     Dim voxel = Env.Grid(x, y, z)
 
-                    voxel.ExternalMolecules(MoleculeType.SodiumIon).SetQuantity(Config.InitialSaltIonLevel + RNG.NextInteger(-10, 10))
-                    voxel.ExternalMolecules(MoleculeType.PotassiumIon).SetQuantity(Config.InitialSaltIonLevel \ 2 + RNG.NextInteger(-5, 5))
-                    voxel.ExternalMolecules(MoleculeType.ChlorideIon).SetQuantity(Config.InitialSaltIonLevel + RNG.NextInteger(-10, 10))
-                    voxel.ExternalMolecules(MoleculeType.Phosphate).SetQuantity(Config.InitialPhosphateLevel + RNG.NextInteger(-5, 5))
-                    voxel.ExternalMolecules(MoleculeType.Sulfate).SetQuantity(Config.InitialSulfateLevel + RNG.NextInteger(-5, 5))
-                    voxel.ExternalMolecules(MoleculeType.IronII).SetQuantity(Config.InitialIronLevel \ 2 + RNG.NextInteger(-3, 3))
-                    voxel.ExternalMolecules(MoleculeType.IronIII).SetQuantity(Config.InitialIronLevel \ 3 + RNG.NextInteger(-2, 2))
-                    voxel.ExternalMolecules(MoleculeType.MagnesiumIon).SetQuantity(RNG.NextInteger(5, 15))
-                    voxel.ExternalMolecules(MoleculeType.CalciumIon).SetQuantity(RNG.NextInteger(3, 10))
+                    Call Env.AddMolecule(voxel, MoleculeType.SodiumIon, Config.InitialSaltIonLevel + RNG.NextInteger(-10, 10))
+                    Call Env.AddMolecule(voxel, MoleculeType.PotassiumIon, Config.InitialSaltIonLevel \ 2 + RNG.NextInteger(-5, 5))
+                    Call Env.AddMolecule(voxel, MoleculeType.ChlorideIon, Config.InitialSaltIonLevel + RNG.NextInteger(-10, 10))
+                    Call Env.AddMolecule(voxel, MoleculeType.Phosphate, Config.InitialPhosphateLevel + RNG.NextInteger(-5, 5))
+                    Call Env.AddMolecule(voxel, MoleculeType.Sulfate, Config.InitialSulfateLevel + RNG.NextInteger(-5, 5))
+                    Call Env.AddMolecule(voxel, MoleculeType.IronII, Config.InitialIronLevel \ 2 + RNG.NextInteger(-3, 3))
+                    Call Env.AddMolecule(voxel, MoleculeType.IronIII, Config.InitialIronLevel \ 3 + RNG.NextInteger(-2, 2))
+                    Call Env.AddMolecule(voxel, MoleculeType.MagnesiumIon, RNG.NextInteger(5, 15))
+                    Call Env.AddMolecule(voxel, MoleculeType.CalciumIon, RNG.NextInteger(3, 10))
                 Next
             Next
         Next
