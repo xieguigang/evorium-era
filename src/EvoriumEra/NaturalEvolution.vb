@@ -389,6 +389,9 @@ Public Class NaturalEvolution
                     Call Env.AddMolecule(voxel, MoleculeType.IronIII, Config.InitialIronLevel \ 3 + RNG.NextInteger(-2, 2))
                     Call Env.AddMolecule(voxel, MoleculeType.MagnesiumIon, RNG.NextInteger(5, 15))
                     Call Env.AddMolecule(voxel, MoleculeType.CalciumIon, RNG.NextInteger(3, 10))
+
+                    Call Env.AddMolecule(voxel, MoleculeType.HydrogenIon, RNG.NextInteger(5, 20))
+                    Call Env.AddMolecule(voxel, MoleculeType.HydroxideIon, RNG.NextInteger(5, 20))
                 Next
             Next
         Next

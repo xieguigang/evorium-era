@@ -19,7 +19,13 @@ Namespace Models
         Water
         Oxygen
         CarbonDioxide
+        ''' <summary>
+        ''' H+
+        ''' </summary>
         HydrogenIon
+        ''' <summary>
+        ''' OH-
+        ''' </summary>
         HydroxideIon
         CarbonateIon
         ATP
