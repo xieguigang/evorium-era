@@ -69,7 +69,7 @@ Namespace BiologicalRules
                    protein = GeneOntology.EthanolMetabolism OrElse
                    protein = GeneOntology.FormateMetabolism OrElse
                    protein = GeneOntology.ButyrateEnzyme Then
-                    w *= 3.0
+                    w *= 10.0
                 End If
             End If
 

@@ -471,8 +471,8 @@ Public Class NaturalEvolution
 
             ' 初始分子
             cell.AddMoleculeInternal(MoleculeType.Water, RNG.NextInteger(50, 150))
-            cell.AddMoleculeInternal(MoleculeType.Glucose, RNG.NextInteger(10, 30))
-            cell.AddMoleculeInternal(MoleculeType.CarbonSource, RNG.NextInteger(10, 30))
+            cell.AddMoleculeInternal(MoleculeType.Glucose, RNG.NextInteger(50, 300))
+            cell.AddMoleculeInternal(MoleculeType.CarbonSource, RNG.NextInteger(100, 1000))
             cell.AddMoleculeInternal(MoleculeType.NitrogenSource, RNG.NextInteger(5, 20))
             cell.AddMoleculeInternal(MoleculeType.Nucleotide, RNG.NextInteger(10, 30))
             cell.AddMoleculeInternal(MoleculeType.AminoMixGluFamily, RNG.NextInteger(5, 20))
