@@ -9,6 +9,12 @@ Namespace Models
     ''' <summary>
     ''' 自然环境：提供微生物群落的生长环境，包括营养源，模拟的空间位置等信息。在这个模拟程序中，自然环境被定义为一个被划分为有限数量的格子的三维空间，一个格子内只能够容纳一个细胞，但是可以容纳任意数量的分子对象。自然环境空间在这个模拟程序中可以为任意形状的
     ''' </summary>
+    ''' <remarks>
+    ''' Natural Environment: Provides a growth habitat for microbial communities, including nutrient sources and simulated spatial locations. 
+    ''' In this simulation, the natural environment is defined as a three-dimensional space partitioned into a finite number of grids. 
+    ''' A single grid can accommodate only one cell, but can hold an arbitrary number of molecular objects. The natural environment space 
+    ''' in this simulation can take on any arbitrary shape.
+    ''' </remarks>
     Public Class NaturalEnvironment
 
         ''' <summary>
