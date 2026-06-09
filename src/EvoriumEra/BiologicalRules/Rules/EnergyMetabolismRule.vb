@@ -7,7 +7,7 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-        Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
+        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 需氧能量代谢
             If cell.Proteins.ContainsKey(GeneOntology.AerobicEnergyMetabolismATP) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso

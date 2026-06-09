@@ -36,7 +36,7 @@ Namespace BiologicalRules
         ''' </summary>
         ''' <param name="cell"></param>
         ''' <param name="env"></param>
-        Public Sub ApplyAll(cell As Cell, env As Environment3D)
+        Public Sub ApplyAll(cell As Cell, env As NaturalEnvironment)
             For Each rule As IBiochemicalRule In Rules
                 If cell.IsAlive Then
                     Call rule.Execute(cell, env)
@@ -59,7 +59,7 @@ Namespace BiologicalRules
         ''' <summary>
         ''' 执行指定的基因功能
         ''' </summary>
-        Public Sub ExecuteFunction(func As GeneOntology, cell As Cell, env As Environment3D)
+        Public Sub ExecuteFunction(func As GeneOntology, cell As Cell, env As NaturalEnvironment)
             If _functionMap.ContainsKey(func) Then
                 For Each rule As IBiochemicalRule In _functionMap(func)
                     rule.Execute(cell, env)

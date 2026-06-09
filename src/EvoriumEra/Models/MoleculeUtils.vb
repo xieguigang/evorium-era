@@ -5,9 +5,9 @@ Namespace Models
     Public Class MoleculeUtils
 
         ReadOnly config As Configs
-        ReadOnly env As Environment3D
+        ReadOnly env As NaturalEnvironment
 
-        Sub New(config As Configs, env As Environment3D)
+        Sub New(config As Configs, env As NaturalEnvironment)
             Me.env = env
             Me.config = config
             Me.env.moleculeUtils = Me

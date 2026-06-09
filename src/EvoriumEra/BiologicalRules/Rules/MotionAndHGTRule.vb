@@ -9,7 +9,7 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-        Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
+        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 细胞鞭毛运动
             If cell.Proteins.ContainsKey(GeneOntology.FlagellarMovement) Then
                 Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)

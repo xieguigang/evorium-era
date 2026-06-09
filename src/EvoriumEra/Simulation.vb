@@ -7,10 +7,10 @@ Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class Simulation
 
-    Public Property CurrentEnvironment As Environment3D
+    Public Property CurrentEnvironment As NaturalEnvironment
 
     ' ===== 核心成员 =====
-    Public Property Env As Environment3D
+    Public Property Env As NaturalEnvironment
     Public Property Scheduler As RuleScheduler
 
     ' ===== 状态 =====
@@ -42,7 +42,7 @@ Public Class Simulation
 
     ' ===== 初始化 =====
     Public Sub New(config As Configs, snapshotRoot As String)
-        Env = New Environment3D(config)
+        Env = New NaturalEnvironment(config)
         configs = config
         CurrentEnvironment = Env
         Scheduler = New RuleScheduler()

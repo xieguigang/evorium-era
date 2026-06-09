@@ -15,7 +15,7 @@ Namespace BiologicalRules.Rules
         }
         End Sub
 
-        Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
+        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' DNA复制（需要n*9 * 2个核苷酸）
             Dim totalGenes = cell.Genome.Genes.Count + cell.Plasmids.Sum(Function(p) p.Genes.Count)
             Dim requiredNucleotides = totalGenes * 9 * 2

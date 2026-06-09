@@ -17,7 +17,7 @@ Namespace BiologicalRules.Rules
         }
         End Sub
 
-        Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
+        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 信号分子合成
             If cell.Proteins.ContainsKey(GeneOntology.SignalMoleculeSynthesis) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.CarbonSource) AndAlso
@@ -55,7 +55,7 @@ Namespace BiologicalRules.Rules
             End If
         End Sub
 
-        Private Sub ExecuteBiofilmSynthesis(cell As Cell, env As Environment3D)
+        Private Sub ExecuteBiofilmSynthesis(cell As Cell, env As NaturalEnvironment)
             If cell.InternalMolecules.ContainsKey(MoleculeType.NitrogenSource) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.AminoMixAspFamily) AndAlso
            cell.InternalMolecules(MoleculeType.NitrogenSource) >= 10 AndAlso

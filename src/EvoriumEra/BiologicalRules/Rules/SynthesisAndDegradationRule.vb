@@ -7,7 +7,7 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-        Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
+        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 降解大分子
             If cell.Proteins.ContainsKey(GeneOntology.DegradeMacromolecule) Then
                 ' 降解细胞内大分子
@@ -63,7 +63,7 @@ Namespace BiologicalRules.Rules
             cell.ATP -= 1
         End Sub
 
-        Private Sub SecondaryMetaboliteKinetics(cell As Cell, env As Environment3D)
+        Private Sub SecondaryMetaboliteKinetics(cell As Cell, env As NaturalEnvironment)
             Const Vmax As Integer = 3
             Const Km As Integer = 10
 
@@ -80,7 +80,7 @@ Namespace BiologicalRules.Rules
             env.AddMolecule(cell, MoleculeType.SecondaryMetabolite, rate)
         End Sub
 
-        Private Sub BiofilmKinetics(cell As Cell, env As Environment3D)
+        Private Sub BiofilmKinetics(cell As Cell, env As NaturalEnvironment)
             Const rho As Double = 1.0
             Const KN As Double = 50.0
             Const KA As Double = 10.0

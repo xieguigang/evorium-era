@@ -7,7 +7,7 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-        Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
+        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 基因转录（需要9个核苷酸）
             If cell.Proteins.ContainsKey(GeneOntology.GeneTranscription) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso

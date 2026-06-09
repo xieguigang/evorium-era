@@ -7,7 +7,7 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-        Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
+        Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             If cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Oxygen) Then
 

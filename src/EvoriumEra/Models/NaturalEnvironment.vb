@@ -6,7 +6,10 @@ Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace Models
 
-    Public Class Environment3D
+    ''' <summary>
+    ''' 自然环境：提供微生物群落的生长环境，包括营养源，模拟的空间位置等信息。在这个模拟程序中，自然环境被定义为一个被划分为有限数量的格子的三维空间，一个格子内只能够容纳一个细胞，但是可以容纳任意数量的分子对象。自然环境空间在这个模拟程序中可以为任意形状的
+    ''' </summary>
+    Public Class NaturalEnvironment
 
         ''' <summary>
         ''' ===== 网格数据 =====
@@ -61,20 +64,18 @@ Namespace Models
             Call moleculeUtils.AddMolecule(container, moleculeType, amount)
         End Sub
 
-        ' ===== 邻居查找（6邻域）=====
-        ''' <summary>
-        ''' 获取指定体素的6个相邻体素（上下左右前后）
-        ''' </summary>
-        Public Function GetNeighbors(v As Voxel) As List(Of Voxel)
-            Dim neighbors = New List(Of Voxel)()
-
-            ' 六个方向：±X, ±Y, ±Z
-            Dim directions = New List(Of (Integer, Integer, Integer)) From {
+        ' 六个方向：±X, ±Y, ±Z
+        Shared ReadOnly directions As (Integer, Integer, Integer)() = {
             (1, 0, 0), (-1, 0, 0),
             (0, 1, 0), (0, -1, 0),
             (0, 0, 1), (0, 0, -1)
         }
 
+        ' ===== 邻居查找（6邻域）=====
+        ''' <summary>
+        ''' 获取指定体素的6个相邻体素（上下左右前后）
+        ''' </summary>
+        Public Iterator Function GetNeighbors(v As Voxel) As IEnumerable(Of Voxel)
             For Each dir As (Integer, Integer, Integer) In directions
                 Dim pos As SpatialIndex3D = v.Position
                 Dim nx = pos.X + dir.Item1
@@ -82,11 +83,9 @@ Namespace Models
                 Dim nz = pos.Z + dir.Item3
 
                 If IsValidCoordinate(nx, ny, nz) Then
-                    neighbors.Add(Grid(nx, ny, nz))
+                    Yield _Grid(nx, ny, nz)
                 End If
             Next
-
-            Return neighbors
         End Function
 
         ' ===== 所有体素枚举 =====

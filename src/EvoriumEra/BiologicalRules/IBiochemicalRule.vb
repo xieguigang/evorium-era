@@ -10,7 +10,7 @@ Namespace BiologicalRules
         ''' </summary>
         ReadOnly Property SupportedFunctions As GeneOntology()
 
-        Sub Execute(cell As Cell, env As Environment3D)
+        Sub Execute(cell As Cell, env As NaturalEnvironment)
 
     End Interface
 End Namespace
