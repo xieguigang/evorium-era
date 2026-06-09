@@ -16,6 +16,8 @@ Namespace BiologicalRules.Rules
     ''' </summary>
     Public Class MetabolicPathwayRule : Inherits IBiochemicalRule
 
+        ReadOnly reactions As Reaction()
+
         Sub New()
             Call MyBase.New(
                 GeneOntology.GlucoseConversionEnzyme,
@@ -23,76 +25,31 @@ Namespace BiologicalRules.Rules
                 GeneOntology.AcetateEnzyme,
                 GeneOntology.LactateDehydrogenase
             )
-        End Sub
 
-        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
             ' ===== Step 1: glucose → pyruvate =====
             ' 消耗1个glucose + 1个水 → 2个pyruvate + 2个ATP
             ' 需要GlucoseConversionEnzyme蛋白质
-            If cell.HasFunction(GeneOntology.GlucoseConversionEnzyme) Then
-                Dim glucose = cell.GetMoleculeAmount(MoleculeType.Glucose)
-                Dim water = cell.GetMoleculeAmount(MoleculeType.Water)
-
-                If glucose > 0 AndAlso water > 0 Then
-                    If ConsumeBasicResources(cell, exemptATP:=True) Then
-                        cell.AddMoleculeInternal(MoleculeType.Glucose, -1)
-                        cell.AddMoleculeInternal(MoleculeType.Water, -1)
-                        cell.AddMoleculeInternal(MoleculeType.Pyruvate, 2)
-                        cell.ATP = Math.Min(cell.ATP + 2, 1000)
-                        ' 糖酵解产生少量CO2
-                        cell.AddMoleculeInternal(MoleculeType.CarbonDioxide, 1)
-                    End If
-                End If
-            End If
-
+            Dim glucoseConversion = New Reaction(GeneOntology.GlucoseConversionEnzyme, 2, exemptATP:=True).Left((MoleculeType.Glucose, -1), (MoleculeType.Water, -1)).Right((MoleculeType.Pyruvate, 2), (MoleculeType.CarbonDioxide, 1)) ' 糖酵解产生少量CO2
             ' ===== Step 2: pyruvate → acetate =====
             ' 消耗1个pyruvate → 1个acetate + 1个CO2 + 1个ATP
             ' 需要PyruvateEnzyme蛋白质
-            If cell.HasFunction(GeneOntology.PyruvateEnzyme) Then
-                Dim pyruvate = cell.GetMoleculeAmount(MoleculeType.Pyruvate)
-
-                If pyruvate > 0 Then
-                    If ConsumeBasicResources(cell) Then
-                        cell.AddMoleculeInternal(MoleculeType.Pyruvate, -1)
-                        cell.AddMoleculeInternal(MoleculeType.Acetate, 1)
-                        cell.AddMoleculeInternal(MoleculeType.CarbonDioxide, 1)
-                        cell.ATP = Math.Min(cell.ATP + 1, 1000)
-                    End If
-                End If
-            End If
-
+            Dim pyruvateMetabolism = New Reaction(GeneOntology.PyruvateEnzyme, 1, exemptATP:=False).Left((MoleculeType.Pyruvate, -1)).Right((MoleculeType.Acetate, 1), (MoleculeType.CarbonDioxide, 1))
             ' ===== Step 3: acetate → ATP (厌氧) =====
             ' 消耗1个acetate → 5个ATP + 2个CO2 + 2个H+
             ' 需要AcetateEnzyme蛋白质，有氧时抑制
-            If cell.HasFunction(GeneOntology.AcetateEnzyme) Then
-                Dim acetate = cell.GetMoleculeAmount(MoleculeType.Acetate)
-                Dim oxygen = cell.GetMoleculeAmount(MoleculeType.Oxygen)
-
-                If acetate > 0 AndAlso oxygen < 10 Then
-                    If ConsumeBasicResources(cell, exemptATP:=True) Then
-                        cell.AddMoleculeInternal(MoleculeType.Acetate, -1)
-                        cell.ATP = Math.Min(cell.ATP + 5, 1000)
-                        cell.AddMoleculeInternal(MoleculeType.CarbonDioxide, 2)
-                        cell.AddMoleculeInternal(MoleculeType.HydrogenIon, 2)
-                    End If
-                End If
-            End If
-
+            Dim acetateMetabolism = New Reaction(GeneOntology.AcetateEnzyme, 5, exemptATP:=True).Left((MoleculeType.Acetate, -1)).Right((MoleculeType.CarbonDioxide, 2), (MoleculeType.HydrogenIon, 2)).Inhibit((MoleculeType.Oxygen, 10))
             ' ===== Step 4: pyruvate → lactate (发酵) =====
             ' 消耗1个pyruvate → 1个lactate + 2个ATP
             ' 需要LactateDehydrogenase蛋白质，无氧时优先
-            If cell.HasFunction(GeneOntology.LactateDehydrogenase) Then
-                Dim pyruvate = cell.GetMoleculeAmount(MoleculeType.Pyruvate)
-                Dim oxygen = cell.GetMoleculeAmount(MoleculeType.Oxygen)
+            Dim lactateDehydro = New Reaction(GeneOntology.LactateDehydrogenase, 2, exemptATP:=True).Left((MoleculeType.Pyruvate, -1)).Right((MoleculeType.Lactate, 1)).Inhibit((MoleculeType.Oxygen, 10))
 
-                If pyruvate > 0 AndAlso oxygen < 10 Then
-                    If ConsumeBasicResources(cell, exemptATP:=True) Then
-                        cell.AddMoleculeInternal(MoleculeType.Pyruvate, -1)
-                        cell.AddMoleculeInternal(MoleculeType.Lactate, 1)
-                        cell.ATP = Math.Min(cell.ATP + 2, 1000)
-                    End If
-                End If
-            End If
+            reactions = {glucoseConversion, pyruvateMetabolism, acetateMetabolism, lactateDehydro}
+        End Sub
+
+        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
+            For Each rxn As Reaction In reactions
+                Call rxn.Execute(cell)
+            Next
         End Sub
     End Class
 End Namespace

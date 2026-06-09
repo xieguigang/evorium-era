@@ -42,7 +42,7 @@ Namespace BiologicalRules
         ''' 
         ''' [v3.0] 增加温度活性修正：蛋白活性低时功能执行概率降低
         ''' </summary>
-        Protected Shared Function ConsumeBasicResources(cell As Cell, Optional exemptATP As Boolean = False) As Boolean
+        Protected Friend Shared Function ConsumeBasicResources(cell As Cell, Optional exemptATP As Boolean = False) As Boolean
             ' 检查水
             If cell.GetMoleculeAmount(MoleculeType.Water) <= 0 Then Return False
             ' 检查ATP（能量代谢功能豁免）
