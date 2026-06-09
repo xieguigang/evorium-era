@@ -22,20 +22,12 @@ Namespace BiologicalRules.Rules
     ''' 3. 新增次级代谢物扩散：vitamin, pigment, toxin, compatible solute
     ''' 4. 热量扩散由TemperatureRule处理
     ''' </summary>
-    Public Class DiffusionRule : Inherits IBiochemicalRule
-
-        Sub New()
-            Call MyBase.New()
-        End Sub
-
-        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
-            ' 细胞级别的扩散由ExecuteEnvironment处理
-        End Sub
+    Public Class DiffusionRule : Implements IEnvironmentRule
 
         ''' <summary>
         ''' 环境级别的扩散计算
         ''' </summary>
-        Public Sub ExecuteEnvironment(env As NaturalEnvironment)
+        Public Sub ExecuteEnvironment(env As NaturalEnvironment, iteration As Long) Implements IEnvironmentRule.ExecuteEnvironment
             Dim dims = env.Dimensions
             Dim diffusable = {
                               _ ' 基础

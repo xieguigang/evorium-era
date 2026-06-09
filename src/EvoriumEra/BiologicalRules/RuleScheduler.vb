@@ -6,12 +6,18 @@ Namespace BiologicalRules
 
     Public Class RuleScheduler
 
-        Public Property Rules As IBiochemicalRule()
+        ReadOnly BiologicalRules As IBiochemicalRule()
+        ReadOnly EnvironmentRules As IEnvironmentRule()
 
         ReadOnly _functionMap As New Dictionary(Of GeneOntology, List(Of IBiochemicalRule))
 
         Public Sub New()
-            Rules = {
+            EnvironmentRules = {
+                New TemperatureRule(),               ' [v3.0] 温度系统
+                New DiffusionRule(),                 ' [v2.0] 改进：代谢中间产物可扩散
+                New NutrientReplenishmentRule()      ' [v2.0] 新增：环境营养补充    
+            }
+            BiologicalRules = {
                 New EnergyMetabolismRule(),
                 New MetabolicPathwayRule(),          ' [v2.0] 核心代谢链
                 New ExtendedMetabolicPathwayRule(),  ' [v3.0] 扩展代谢链
@@ -23,8 +29,6 @@ Namespace BiologicalRules
                 New MotionAndHGTRule(),
                 New MutationRule(),                  ' [v2.0] 改进：增加基因重复/缺失
                 New QuorumSensingAndBiofilmRule(),
-                New DiffusionRule(),                 ' [v2.0] 改进：代谢中间产物可扩散
-                New NutrientReplenishmentRule(),     ' [v2.0] 新增：环境营养补充
                 New GenomeMaintenanceRule(),         ' [v2.0] 新增：基因组维护成本
                 New CellLysisRule(),                 ' [v2.0] 新增：细胞裂解释放
                 New TemperatureRule(),               ' [v3.0] 温度系统
@@ -33,7 +37,7 @@ Namespace BiologicalRules
             }
 
             ' BuildFunctionMap
-            For Each rule As IBiochemicalRule In Rules
+            For Each rule As IBiochemicalRule In BiologicalRules
                 For Each f As GeneOntology In rule.SupportedFunctions
                     If Not _functionMap.ContainsKey(f) Then
                         _functionMap(f) = New List(Of IBiochemicalRule)
@@ -55,8 +59,8 @@ Namespace BiologicalRules
         ''' [v2.0] 执行所有非基因功能驱动的全局规则
         ''' </summary>
         Public Sub ExecuteGlobalRules(cell As Cell, env As NaturalEnvironment)
-            For Each rule As IBiochemicalRule In Rules
-                If rule.SupportedFunctions Is Nothing OrElse rule.SupportedFunctions.Length = 0 Then
+            For Each rule As IBiochemicalRule In BiologicalRules
+                If rule.SupportedFunctions.IsNullOrEmpty Then
                     rule.Execute(cell, env)
                 End If
             Next
@@ -66,14 +70,8 @@ Namespace BiologicalRules
         ''' [v2.0] 执行环境级别的规则（不针对特定细胞）
         ''' </summary>
         Public Sub ExecuteEnvironmentRules(env As NaturalEnvironment, iteration As Long)
-            For Each rule As IBiochemicalRule In Rules
-                If TypeOf rule Is NutrientReplenishmentRule Then
-                    DirectCast(rule, NutrientReplenishmentRule).ExecuteEnvironment(env)
-                ElseIf TypeOf rule Is DiffusionRule Then
-                    DirectCast(rule, DiffusionRule).ExecuteEnvironment(env)
-                ElseIf TypeOf rule Is TemperatureRule Then
-                    DirectCast(rule, TemperatureRule).ExecuteEnvironment(env, iteration)
-                End If
+            For Each rule As IEnvironmentRule In EnvironmentRules
+                Call rule.ExecuteEnvironment(env, iteration)
             Next
         End Sub
     End Class

@@ -34,6 +34,7 @@ Namespace BiologicalRules.Rules
     '''    格子温度向环境基线缓慢恢复
     ''' </summary>
     Public Class TemperatureRule : Inherits IBiochemicalRule
+        Implements IEnvironmentRule
 
         Sub New()
             Call MyBase.New() ' 全局规则
@@ -100,7 +101,7 @@ Namespace BiologicalRules.Rules
         ''' <summary>
         ''' 环境级别的温度计算
         ''' </summary>
-        Public Sub ExecuteEnvironment(env As NaturalEnvironment, iteration As Long)
+        Public Sub ExecuteEnvironment(env As NaturalEnvironment, iteration As Long) Implements IEnvironmentRule.ExecuteEnvironment
             Dim config = env.configs
             ' 1. 计算当前昼夜温度偏移
             Dim diurnalOffset = config.DiurnalTemperatureAmplitude *

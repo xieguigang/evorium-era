@@ -22,20 +22,12 @@ Namespace BiologicalRules.Rules
     ''' 1. 增加离子补充（Na+, K+, Cl-, phosphate, sulfate, Fe2+/Fe3+）
     ''' 2. 增加温度梯度初始化
     ''' </summary>
-    Public Class NutrientReplenishmentRule : Inherits IBiochemicalRule
-
-        Sub New()
-            Call MyBase.New()
-        End Sub
-
-        Public Overrides Sub Execute(cell As Cell, env As NaturalEnvironment)
-            ' 细胞级别不执行，由ExecuteEnvironment处理
-        End Sub
+    Public Class NutrientReplenishmentRule : Implements IEnvironmentRule
 
         ''' <summary>
         ''' 环境级别的营养补充
         ''' </summary>
-        Public Sub ExecuteEnvironment(env As NaturalEnvironment)
+        Public Sub ExecuteEnvironment(env As NaturalEnvironment, iteration As Long) Implements IEnvironmentRule.ExecuteEnvironment
             ' 1. 氧气梯度
             ReplenishOxygenGradient(env)
 
