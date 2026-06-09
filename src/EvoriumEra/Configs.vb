@@ -8,7 +8,7 @@ Public Class Configs
     Public Property gridD As Integer = 30
     Public Property SnapshotInterval As Integer = 1
 
-    Public Property InitCellNumbers As Integer = 1000
+    Public Property InitCellNumbers As Integer = 5000
     Public Property MaxVoxelActions As Integer = 5
     Public Property MaxCellActions As Integer = 12
 

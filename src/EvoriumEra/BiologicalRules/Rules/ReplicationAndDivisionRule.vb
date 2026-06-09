@@ -66,6 +66,7 @@ Namespace BiologicalRules.Rules
             ' 记录分裂
             cell.DivisionCount += 1
             cell.Age = 0
+            cell.ATP = cell.ATP - child.ATP
 
             If env.debug Then
                 Call $"[cell_division] {child.ToString}".debug
@@ -87,7 +88,7 @@ Namespace BiologicalRules.Rules
                 .Generation = parent.Generation + 1,
                 .Genome = parent.Genome.Clone,
                 .Plasmids = New List(Of Replicon)(parent.Plasmids.Select(Function(p) p.Clone)),
-                .ATP = 100,
+                .ATP = parent.ATP * 0.4,
                 .Age = 0,
                 .DivisionCount = 0
             }
