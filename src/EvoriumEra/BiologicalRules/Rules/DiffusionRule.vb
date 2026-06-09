@@ -1,9 +1,10 @@
-﻿
+﻿Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
+
 Public Class DiffusionRule : Implements IBiochemicalRule
 
-    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+    Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-    Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
+    Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
         Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
         Dim neighbors = env.GetNeighbors(voxel)
 
@@ -19,7 +20,7 @@ Public Class DiffusionRule : Implements IBiochemicalRule
 
                     Dim diff = voxel.ExternalMolecules(mol) - neighbor.ExternalMolecules(mol)
                     If Math.Abs(diff) > 0 Then
-                        Dim transfer = CInt(Math.Sign(diff) * Math.Min(Math.Abs(diff) * 0.1, rng.Next(1, 6)))
+                        Dim transfer = CInt(Math.Sign(diff) * Math.Min(Math.Abs(diff) * 0.1, rng.NextInteger(1, 6)))
                         voxel.ExternalMolecules(mol) -= transfer
                         neighbor.ExternalMolecules(mol) += transfer
                     End If

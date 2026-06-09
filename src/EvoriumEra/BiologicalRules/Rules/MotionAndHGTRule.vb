@@ -1,14 +1,11 @@
-﻿
-
-
-
-Imports Microsoft.VisualBasic.Imaging
+﻿Imports Microsoft.VisualBasic.Imaging
+Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class MotionAndHGTRule : Implements IBiochemicalRule
 
-    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+    Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-    Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
+    Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
         ' 细胞鞭毛运动
         If cell.Proteins.ContainsKey(GeneOntology.FlagellarMovement) Then
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
@@ -28,13 +25,13 @@ Public Class MotionAndHGTRule : Implements IBiochemicalRule
         For Each neighbor In env.GetNeighbors(currentVoxel)
             If neighbor.Occupant IsNot Nothing Then
                 If rng.NextDouble() < 0.01 Then ' 1%概率
-                    ExchangePlasmids(cell, neighbor.Occupant, rng)
+                    ExchangePlasmids(cell, neighbor.Occupant)
                 End If
             End If
         Next
     End Sub
 
-    Private Sub ExchangePlasmids(cell1 As Cell, cell2 As Cell, rng As Random)
+    Private Sub ExchangePlasmids(cell1 As Cell, cell2 As Cell)
         If cell1.Plasmids.Any() AndAlso cell2.Plasmids.Any() Then
             Dim plasmid1 = cell1.Plasmids(rng.Next(cell1.Plasmids.Count))
             Dim plasmid2 = cell2.Plasmids(rng.Next(cell2.Plasmids.Count))

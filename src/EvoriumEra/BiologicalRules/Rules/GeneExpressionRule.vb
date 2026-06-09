@@ -1,9 +1,9 @@
 ﻿
 Public Class GeneExpressionRule : Implements IBiochemicalRule
 
-    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
+    Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-    Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
+    Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
         ' 基因转录（需要9个核苷酸）
         If cell.Proteins.ContainsKey(GeneOntology.GeneTranscription) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso

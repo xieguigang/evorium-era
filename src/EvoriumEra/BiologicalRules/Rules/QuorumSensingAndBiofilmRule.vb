@@ -2,18 +2,18 @@
 Public Class QuorumSensingAndBiofilmRule : Implements IBiochemicalRule
 
 
-    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
-        Get
-            Return New List(Of GeneOntology) From {
-                GeneOntology.QuorumSensing,
-                GeneOntology.SignalMoleculeSynthesis,
-                GeneOntology.SecondaryMetaboliteSynthesis,
-                GeneOntology.BiofilmSynthesis
-            }
-        End Get
-    End Property
+    Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
-    Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
+    Sub New()
+        SupportedFunctions = {
+            GeneOntology.QuorumSensing,
+            GeneOntology.SignalMoleculeSynthesis,
+            GeneOntology.SecondaryMetaboliteSynthesis,
+            GeneOntology.BiofilmSynthesis
+        }
+    End Sub
+
+    Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
         ' 信号分子合成
         If cell.Proteins.ContainsKey(GeneOntology.SignalMoleculeSynthesis) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.CarbonSource) AndAlso

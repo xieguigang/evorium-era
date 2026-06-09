@@ -1,16 +1,17 @@
 ﻿Imports Microsoft.VisualBasic.Imaging
+Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class ReplicationAndDivisionRule : Implements IBiochemicalRule
-    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) _
-        Implements IBiochemicalRule.SupportedFunctions
-        Get
-            Return New List(Of GeneOntology) From {
-                GeneOntology.CellDivision
-            }
-        End Get
-    End Property
 
-    Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
+    Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+
+    Sub New()
+        SupportedFunctions = {
+            GeneOntology.CellDivision
+        }
+    End Sub
+
+    Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
         ' DNA复制（需要n*9 * 2个核苷酸）
         Dim totalGenes = cell.Genome.Genes.Count + cell.Plasmids.Sum(Function(p) p.Genes.Count)
         Dim requiredNucleotides = totalGenes * 9 * 2

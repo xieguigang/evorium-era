@@ -3,8 +3,8 @@
     ''' <summary>
     ''' 该规则负责处理的基因功能
     ''' </summary>
-    ReadOnly Property SupportedFunctions As List(Of GeneOntology)
+    ReadOnly Property SupportedFunctions As GeneOntology()
 
-    Sub Execute(cell As Cell, env As Environment3D, rng As Random)
+    Sub Execute(cell As Cell, env As Environment3D)
 
 End Interface

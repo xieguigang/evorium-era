@@ -21,12 +21,12 @@ Public Class RuleScheduler
         BuildFunctionMap()
     End Sub
 
-    Public Sub ApplyAll(cell As Cell, env As Environment3D, rng As Random)
+    Public Sub ApplyAll(cell As Cell, env As Environment3D)
         ' 轮盘赌选择（简化：按顺序执行，实际应按蛋白质浓度加权）
         For Each rule In Rules
             If cell.IsAlive Then
                 Try
-                    rule.Execute(cell, env, rng)
+                    rule.Execute(cell, env)
                 Catch ex As Exception
                     ' 记录异常但继续执行
                 End Try
@@ -50,11 +50,11 @@ Public Class RuleScheduler
     ''' <summary>
     ''' 执行指定的基因功能
     ''' </summary>
-    Public Sub ExecuteFunction(func As GeneOntology, cell As Cell, env As Environment3D, rng As Random)
+    Public Sub ExecuteFunction(func As GeneOntology, cell As Cell, env As Environment3D)
         If Not _functionMap.ContainsKey(func) Then Return
 
         For Each rule In _functionMap(func)
-            rule.Execute(cell, env, rng)
+            rule.Execute(cell, env)
         Next
     End Sub
 End Class

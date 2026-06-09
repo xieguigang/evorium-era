@@ -189,7 +189,7 @@ Public Class Simulation
         For i As Integer = 1 To configs.MaxCellActions
             Dim func = RouletteSelect(cell)
             If func.HasValue Then
-                Scheduler.ExecuteFunction(func.Value, cell, Env, RNG)
+                Scheduler.ExecuteFunction(func.Value, cell, Env)
             End If
         Next
     End Sub
