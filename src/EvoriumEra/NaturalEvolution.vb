@@ -53,6 +53,8 @@ Public Class NaturalEvolution
     ''' <returns></returns>
     Public Property SnapshotManager As SnapshotManager
 
+    ReadOnly debug As Boolean = False
+
     ''' <summary>
     ''' 每 N 步存一次
     ''' </summary>
@@ -70,9 +72,10 @@ Public Class NaturalEvolution
     ''' <param name="snapshotRoot">
     ''' A temp dir path for save the snapshot temp data and result zip package file
     ''' </param>
-    Public Sub New(config As Configs, snapshotRoot As String)
+    Public Sub New(config As Configs, snapshotRoot As String, Optional debug As Boolean = False)
         Me.Config = config
         Me.SnapshotManager = New SnapshotManager(snapshotRoot)
+        Me.debug = debug
     End Sub
 
     Public Function Initialize() As NaturalEvolution
@@ -115,11 +118,20 @@ Public Class NaturalEvolution
         Call Scheduler.ExecuteEnvironmentRules(Env, currentIteration)
 
         ' 3. 对每个细胞执行规则
-        For Each cell As Cell In cells
-            If cell.IsAlive Then
-                Call CellIteration(cell, maxActions)
-            End If
-        Next
+        If debug Then
+            For Each cell As Cell In cells
+                If cell.IsAlive Then
+                    Call CellIteration(cell, maxActions)
+                End If
+            Next
+        Else
+            Call Parallel.ForEach(cells,
+                 body:=Sub(cell)
+                           If cell.IsAlive Then
+                               Call CellIteration(cell, maxActions)
+                           End If
+                       End Sub)
+        End If
 
         ' 4. HGT检查
         CheckHGT()
