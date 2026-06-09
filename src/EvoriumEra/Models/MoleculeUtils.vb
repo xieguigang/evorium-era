@@ -6,11 +6,13 @@ Namespace Models
 
         ReadOnly config As Configs
         ReadOnly env As NaturalEnvironment
+        ReadOnly debug As Boolean
 
-        Sub New(config As Configs, env As NaturalEnvironment)
+        Sub New(config As Configs, env As NaturalEnvironment, Optional debug As Boolean = False)
             Me.env = env
             Me.config = config
             Me.env.moleculeUtils = Me
+            Me.debug = debug
         End Sub
 
         ''' <summary>
@@ -51,7 +53,7 @@ Namespace Models
             ' 检查容量限制（规则17）
             If cell.TotalMolecules > config.MaxCellContentCapacity Then
                 ' 细胞破裂死亡
-                LyseCell(cell)
+                LyseCell(cell, "total_molecules_reach_max_cell_content_capacity")
             End If
         End Sub
 
@@ -70,7 +72,7 @@ Namespace Models
         ''' 杀死细胞，并将细胞内所有物质释放到当前格子
         ''' </summary>
         ''' <param name="cell"></param>
-        Public Sub LyseCell(cell As Cell)
+        Public Sub LyseCell(cell As Cell, reason As String)
             Dim voxel = env(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
             ' 将细胞内的代谢物释放到环境中
@@ -87,6 +89,10 @@ Namespace Models
             cell.ConsecutiveNoATP = Integer.MaxValue
 
             voxel.Occupant = Nothing
+
+            If debug Then
+                Call VBDebugger.EchoLine($"[lyse_cell, {reason}] {cell.ToString}")
+            End If
         End Sub
     End Class
 End Namespace

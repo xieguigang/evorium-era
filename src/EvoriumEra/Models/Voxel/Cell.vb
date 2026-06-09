@@ -70,6 +70,10 @@ Namespace Models.Container
         Public Property OsmoticState As Integer = 0
         Public Property ColdShockMitigation As Double
 
+        Public Overrides Function ToString() As String
+            Return $"[{ID.ToString}] Generation:{Generation}; Position: {Position}"
+        End Function
+
         <MethodImpl(MethodImplOptions.AggressiveInlining)>
         Public Function GetTotalGenes() As Dictionary(Of GeneOntology, Integer)
             Return Plasmids.JoinIterates(Genome) _

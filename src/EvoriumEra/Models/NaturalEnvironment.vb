@@ -40,7 +40,7 @@ Namespace Models
         Friend moleculeUtils As MoleculeUtils
 
         ' ===== 构造函数 =====
-        Public Sub New(config As Configs)
+        Public Sub New(config As Configs, Optional debug As Boolean = False)
             Dim w As Integer = config.gridW
             Dim h As Integer = config.gridH
             Dim d As Integer = config.gridD
@@ -48,7 +48,7 @@ Namespace Models
             Dimensions = (w, h, d)
             Grid = New Voxel(w - 1, h - 1, d - 1) {}
             configs = config
-            moleculeUtils = New MoleculeUtils(configs, Me)
+            moleculeUtils = New MoleculeUtils(configs, Me, debug:=debug)
 
             For X As Integer = 0 To w - 1
                 For Y As Integer = 0 To h - 1
@@ -77,8 +77,8 @@ Namespace Models
         ''' <param name="cell"></param>
         ''' 
         <MethodImpl(MethodImplOptions.AggressiveInlining)>
-        Public Sub LyseCell(cell As Cell)
-            Call moleculeUtils.LyseCell(cell)
+        Public Sub LyseCell(cell As Cell, reason As String)
+            Call moleculeUtils.LyseCell(cell, reason)
         End Sub
 
         ' 六个方向：±X, ±Y, ±Z

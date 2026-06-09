@@ -111,7 +111,7 @@ Namespace BiologicalRules.Rules
                     Dim lysisPressure = Math.Abs(osmoticDiff) / 500.0
                     If rng.NextDouble() < lysisPressure Then
                         ' 细胞因低渗裂解
-                        Call env.LyseCell(cell)
+                        Call env.LyseCell(cell, reason:="hypotonic_cell_lysis")
                     End If
                 End If
 

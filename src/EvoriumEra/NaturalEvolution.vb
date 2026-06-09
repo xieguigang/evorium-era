@@ -81,7 +81,7 @@ Public Class NaturalEvolution
     Public Function Initialize() As NaturalEvolution
         Call VBDebugger.EchoLine("setup the natural evolution simulation system...")
 
-        Env = New NaturalEnvironment(Config)
+        Env = New NaturalEnvironment(Config, debug:=debug)
         Scheduler = New RuleScheduler()
         CurrentIteration = 0
 
@@ -104,7 +104,7 @@ Public Class NaturalEvolution
         IsRunning = True
 
         While CInt(CurrentIteration) < maxSteps AndAlso IsRunning AndAlso App.Running
-            Call VBDebugger.EchoLine($"[{CInt(CurrentIteration)}] living_cells: {LivingCellCount}; environment_avg_temperature: {AverageTemperature}")
+            Call VBDebugger.EchoLine($"[{CInt(CurrentIteration)}] living_cells: {LivingCellCount}; temperature[environment_avg]: {AverageTemperature:F2}℃")
             Call RunIteration(++CurrentIteration)
         End While
     End Sub
@@ -180,7 +180,7 @@ Public Class NaturalEvolution
         If cell.ATP <= 0 Then
             cell.ConsecutiveNoATP += 1
             If cell.ConsecutiveNoATP >= Config.StarvationDeathIterations Then
-                Call Env.LyseCell(cell)
+                Call Env.LyseCell(cell, reason:="structural_failure_due_to_ATP_depletion")
             End If
         Else
             cell.ConsecutiveNoATP = 0
