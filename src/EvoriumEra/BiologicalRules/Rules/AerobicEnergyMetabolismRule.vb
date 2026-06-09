@@ -1,19 +1,22 @@
-﻿Public Class AerobicEnergyMetabolismRule : Implements IBiochemicalRule
+﻿Namespace BiologicalRules.Rules
 
-    Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+    Public Class AerobicEnergyMetabolismRule : Implements IBiochemicalRule
 
-    Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
-        If cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso
+        Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
+
+        Public Sub Execute(cell As Cell, env As Environment3D) Implements IBiochemicalRule.Execute
+            If cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Oxygen) Then
 
-            If cell.InternalMolecules(MoleculeType.Glucose) > 0 AndAlso
+                If cell.InternalMolecules(MoleculeType.Glucose) > 0 AndAlso
                cell.InternalMolecules(MoleculeType.Oxygen) > 0 Then
 
-                cell.InternalMolecules(MoleculeType.Glucose) -= 1
-                cell.InternalMolecules(MoleculeType.Oxygen) -= 1
-                cell.ATP = Math.Min(cell.ATP + 12, 1000)
-                env.AddMolecule(cell, MoleculeType.CarbonDioxide, 6)
+                    cell.InternalMolecules(MoleculeType.Glucose) -= 1
+                    cell.InternalMolecules(MoleculeType.Oxygen) -= 1
+                    cell.ATP = Math.Min(cell.ATP + 12, 1000)
+                    env.AddMolecule(cell, MoleculeType.CarbonDioxide, 6)
+                End If
             End If
-        End If
-    End Sub
-End Class
+        End Sub
+    End Class
+End Namespace

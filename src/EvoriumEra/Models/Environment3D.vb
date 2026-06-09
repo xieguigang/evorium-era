@@ -1,6 +1,7 @@
 ﻿
 Imports System.Runtime.CompilerServices
 Imports Microsoft.VisualBasic.Imaging
+Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class Environment3D
 
@@ -113,7 +114,7 @@ Public Class Environment3D
     ''' <summary>
     ''' 随机返回一个没有细胞占据的体素
     ''' </summary>
-    Public Function GetRandomEmptyVoxel(rng As Random) As Voxel
+    Public Function GetRandomEmptyVoxel() As Voxel
         Dim emptyVoxels = AllVoxels() _
             .Where(Function(v) v.Occupant Is Nothing) _
             .ToList()

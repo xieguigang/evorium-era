@@ -1,10 +1,13 @@
-﻿Public Interface IBiochemicalRule
+﻿Namespace BiologicalRules
 
-    ''' <summary>
-    ''' 该规则负责处理的基因功能
-    ''' </summary>
-    ReadOnly Property SupportedFunctions As GeneOntology()
+    Public Interface IBiochemicalRule
 
-    Sub Execute(cell As Cell, env As Environment3D)
+        ''' <summary>
+        ''' 该规则负责处理的基因功能
+        ''' </summary>
+        ReadOnly Property SupportedFunctions As GeneOntology()
 
-End Interface
+        Sub Execute(cell As Cell, env As Environment3D)
+
+    End Interface
+End Namespace

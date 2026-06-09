@@ -1,4 +1,6 @@
-﻿Imports Microsoft.VisualBasic.Imaging
+﻿Imports EvoriumEra.BiologicalRules
+Imports Microsoft.VisualBasic.Imaging
+Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class Simulation
 
@@ -7,7 +9,6 @@ Public Class Simulation
     ' ===== 核心成员 =====
     Public Property Env As Environment3D
     Public Property Scheduler As RuleScheduler
-    Public Property RNG As New Random()
 
     ' ===== 状态 =====
     Public Property CurrentIteration As Long = 0
@@ -63,27 +64,27 @@ Public Class Simulation
     End Sub
 
     Private Sub InitVoxelMolecules(v As Voxel)
-        v.ExternalMolecules(MoleculeType.Water) = RNG.Next(500, 2000)
-        v.ExternalMolecules(MoleculeType.Oxygen) = RNG.Next(100, 800)
-        v.ExternalMolecules(MoleculeType.CarbonSource) = RNG.Next(200, 1000)
-        v.ExternalMolecules(MoleculeType.NitrogenSource) = RNG.Next(200, 800)
-        v.ExternalMolecules(MoleculeType.Glucose) = RNG.Next(50, 300)
+        v.ExternalMolecules(MoleculeType.Water) = RNG.NextInteger(500, 2000)
+        v.ExternalMolecules(MoleculeType.Oxygen) = RNG.NextInteger(100, 800)
+        v.ExternalMolecules(MoleculeType.CarbonSource) = RNG.NextInteger(200, 1000)
+        v.ExternalMolecules(MoleculeType.NitrogenSource) = RNG.NextInteger(200, 800)
+        v.ExternalMolecules(MoleculeType.Glucose) = RNG.NextInteger(50, 300)
     End Sub
 
     Private Sub SpawnRandomCell()
-        Dim empty = Env.GetRandomEmptyVoxel(RNG)
+        Dim empty = Env.GetRandomEmptyVoxel()
         If empty Is Nothing Then Return
 
         Dim cell = New Cell()
         cell.Position = New SpatialIndex3D(empty.Position)
 
         ' 随机基因组
-        cell.Genome = RandomGenome(RNG.Next(5, 15))
+        cell.Genome = RandomGenome(RNG.NextInteger(5, 15))
 
         ' 初始代谢物
-        cell.InternalMolecules(MoleculeType.ATP) = RNG.Next(200, 600)
-        cell.InternalMolecules(MoleculeType.Water) = RNG.Next(200, 500)
-        cell.InternalMolecules(MoleculeType.Nucleotide) = RNG.Next(50, 300)
+        cell.InternalMolecules(MoleculeType.ATP) = RNG.NextInteger(200, 600)
+        cell.InternalMolecules(MoleculeType.Water) = RNG.NextInteger(200, 500)
+        cell.InternalMolecules(MoleculeType.Nucleotide) = RNG.NextInteger(50, 300)
 
         cell.TotalMolecules = cell.InternalMolecules.Values.Sum()
         empty.Occupant = cell
@@ -113,7 +114,7 @@ Public Class Simulation
         CurrentIteration += 1
 
         ' 1. 打乱体素顺序（消除空间偏差）
-        Dim voxels = Env.AllVoxels().OrderBy(Function(v) RNG.Next()).ToList()
+        Dim voxels = Env.AllVoxels().OrderBy(Function(v) RNG.NextDouble()).ToList()
 
         ' 2. 每个格子最多执行 5 次操作
         For Each v As Voxel In voxels
@@ -150,7 +151,7 @@ Public Class Simulation
 
         For Each mol In v.ExternalMolecules.Keys.ToList()
             If Not IsPassiveDiffusion(mol) Then
-                Dim amount = RNG.Next(1, 6)
+                Dim amount = RNG.NextInteger(1, 6)
                 TransferBetweenVoxels(v, target, mol, amount)
             End If
         Next
