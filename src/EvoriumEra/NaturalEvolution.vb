@@ -1,4 +1,5 @@
 ﻿Imports EvoriumEra.BiologicalRules
+Imports EvoriumEra.BiologicalRules.Rules
 Imports EvoriumEra.Data
 Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
@@ -6,11 +7,16 @@ Imports Microsoft.VisualBasic.Imaging
 Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
 ''' <summary>
-''' 用于模拟自然环境下的微生物群落演化过程的计算程序
+''' 用于模拟自然环境下的微生物群落演化过程的计算程序 v2.0
+''' 
+''' v2.0核心改进：
+''' 1. 完整代谢链驱动交叉喂养
+''' 2. 基因→蛋白质→功能的正确表达链
+''' 3. 基因组维护成本驱动代谢专化
+''' 4. 环境梯度创造生态位
+''' 5. 营养补充维持群落持续演化
+''' 6. 细胞裂解实现营养循环
 ''' </summary>
-''' <remarks>
-''' A computational program for simulating the evolution of microbial communities in natural environments.
-''' </remarks>
 Public Class NaturalEvolution
 
     Public Property CurrentEnvironment As NaturalEnvironment
@@ -18,262 +24,411 @@ Public Class NaturalEvolution
     ' ===== 核心成员 =====
     Public Property Env As NaturalEnvironment
     Public Property Scheduler As RuleScheduler
+    Public Property Config As Configs
 
     ' ===== 状态 =====
     Public Property CurrentIteration As Long = 0
     Public Property IsRunning As Boolean = False
-
-    ''' <summary>
-    ''' ===== 快照系统 =====
-    ''' </summary>
-    ''' <returns></returns>
-    Public Property SnapshotManager As SnapshotManager
-
-    ''' <summary>
-    ''' 每 N 步存一次
-    ''' </summary>
-    ''' <returns></returns>
-    Public ReadOnly Property SnapshotInterval As Integer
-        Get
-            Return configs.SnapshotInterval
-        End Get
-    End Property
-
-    ' ===== 统计 =====
     Public Property LivingCellCount As Integer = 0
     Public Property DeadCellCount As Integer = 0
 
-    Friend ReadOnly configs As Configs
-    Friend ReadOnly moleculeUtils As MoleculeUtils
+    ' ===== v2.0 统计 =====
+    Public Property CrossFeedingEvents As Long = 0
+    Public Property TotalDivisions As Long = 0
+    Public Property TotalMutations As Long = 0
+    Public Property TotalLysis As Long = 0
 
-    ''' <summary>
-    ''' ===== 初始化 =====
-    ''' </summary>
-    ''' <param name="config"></param>
-    ''' <param name="snapshotRoot">
-    ''' A temp dir path for save the snapshot temp data and result zip package file
-    ''' </param>
-    Public Sub New(config As Configs, snapshotRoot As String)
-        Env = New NaturalEnvironment(config)
-        configs = config
-        CurrentEnvironment = Env
+    Public Sub Initialize(config As Configs)
+        Me.Config = config
+
+        Env = New NaturalEnvironment(config.gridW, config.gridH, config.gridD)
         Scheduler = New RuleScheduler()
-        SnapshotManager = New SnapshotManager(snapshotRoot)
-        moleculeUtils = New MoleculeUtils(configs, Env)
 
-        InitializeWorld()
-    End Sub
-
-    Private Sub InitializeWorld()
-        ' 初始化环境分子
-        For Each v In Env.AllVoxels()
-            InitVoxelMolecules(v)
-        Next
+        ' 初始化环境
+        InitializeEnvironment()
 
         ' 初始化细胞
-        For i As Integer = 1 To configs.InitCellNumbers
-            SpawnRandomCell()
-        Next
+        InitializeCells(config.InitCellNumbers)
 
-        UpdateStatistics()
+        ' 初始化营养热点
+        InitializeNutrientHotspots()
+
+        CurrentIteration = 0
     End Sub
 
-    Private Sub InitVoxelMolecules(v As Voxel)
-        v.ExternalMolecules(MoleculeType.Water) = RNG.NextInteger(500, 2000)
-        v.ExternalMolecules(MoleculeType.Oxygen) = RNG.NextInteger(100, 800)
-        v.ExternalMolecules(MoleculeType.CarbonSource) = RNG.NextInteger(200, 1000)
-        v.ExternalMolecules(MoleculeType.NitrogenSource) = RNG.NextInteger(200, 800)
-        v.ExternalMolecules(MoleculeType.Glucose) = RNG.NextInteger(50, 300)
-    End Sub
-
-    Private Sub SpawnRandomCell()
-        Dim empty = Env.GetRandomEmptyVoxel()
-        If empty Is Nothing Then Return
-
-        Dim cell = New Cell()
-        cell.Position = New SpatialIndex3D(empty.Position)
-
-        ' 随机基因组
-        cell.Genome = RandomGenome(RNG.NextInteger(5, 15))
-
-        ' 初始代谢物
-        cell.InternalMolecules(MoleculeType.ATP) = RNG.NextInteger(200, 600)
-        cell.InternalMolecules(MoleculeType.Water) = RNG.NextInteger(200, 500)
-        cell.InternalMolecules(MoleculeType.Nucleotide) = RNG.NextInteger(50, 300)
-
-        cell.TotalMolecules = cell.InternalMolecules.Values.Sum()
-        empty.Occupant = cell
-    End Sub
-
-    Private Function RandomGenome(geneCount As Integer) As Replicon
-        Dim r As New Replicon()
-        Dim allFuncs = [Enum].GetValues(GetType(GeneOntology)).Cast(Of GeneOntology)().ToList()
-
-        For i = 1 To geneCount
-            r.Genes.Add(New Gene() With {
-                .FunctionOntology = allFuncs(RNG.Next(allFuncs.Count))
-            })
-        Next
-        Return r
-    End Function
-
-    Public Sub Run(Optional maxSteps As Long = 9999)
-        IsRunning = True
-
-        While CurrentIteration < maxSteps AndAlso IsRunning AndAlso App.Running
-            Call StepOnce()
-        End While
-    End Sub
-
-    Public Sub StepOnce()
+    Public Sub RunIteration()
         CurrentIteration += 1
 
-        ' 1. 打乱体素顺序（消除空间偏差）
-        Dim voxels = Env.AllVoxels().OrderBy(Function(v) RNG.NextDouble()).ToList()
+        ' 1. 环境级别规则（营养补充、扩散）
+        Scheduler.ExecuteEnvironmentRules(Env, Config)
 
-        ' 2. 每个格子最多执行 5 次操作
-        For Each v As Voxel In voxels
-            For op As Integer = 1 To configs.MaxVoxelActions
-                ProcessVoxel(v)
+        ' 2. 获取所有活细胞并随机打乱顺序
+        Dim cells = Env.AllCells().Where(Function(c) c.IsAlive).ToList()
+        Shuffle(cells)
+
+        ' 3. 对每个细胞执行规则
+        For Each cell In cells
+            If Not cell.IsAlive Then Continue For
+
+            ' 3a. 全局规则（基因组维护成本）
+            Scheduler.ExecuteGlobalRules(cell, Env)
+
+            ' 3b. 选择并执行基因功能
+            Dim actions = SelectActions(cell)
+            For Each action In actions
+                If cell.IsAlive Then
+                    Scheduler.ExecuteFunction(action, cell, Env)
+                End If
             Next
+
+            ' 3c. 代谢溢流检查
+            CheckOverflowSecretion(cell)
+
+            ' 3d. 被动扩散（小分子自动进出细胞）
+            PassiveDiffusion(cell)
+
+            ' 3e. 死亡检查
+            CheckDeath(cell)
+
+            ' 3f. 更新年龄
+            cell.Age += 1
         Next
 
-        ' 3. 细胞级更新
-        Dim allCells = Env.AllCells()
-        For Each cell In allCells
-            If cell.IsAlive Then
-                CellUpdate(cell)
-            End If
-        Next
+        ' 4. 处理死亡细胞（裂解释放内容物）
+        ProcessDeadCells()
 
-        ' 4. 全局扩散
-        DiffuseAllVoxels()
-
-        ' 5. 统计 & 快照
+        ' 5. 更新统计
         UpdateStatistics()
-
-        If CurrentIteration Mod SnapshotInterval = 0 Then
-            SnapshotManager.SaveSnapshot(Me)
-        End If
     End Sub
 
-    Private Sub ProcessVoxel(v As Voxel)
-        ' 非被动扩散分子在相邻格子间交换
-        Dim neighbors = Env.GetNeighbors(v)
-        If Not neighbors.Any() Then Return
+    ''' <summary>
+    ''' [v2.0] 基于优先级和蛋白质丰度选择要执行的功能
+    ''' </summary>
+    Private Function SelectActions(cell As Cell) As List(Of GeneOntology)
+        Dim actions = New List(Of GeneOntology)()
+        Dim maxActions = Config.MaxCellActions
 
-        Dim target = neighbors(RNG.Next(neighbors.Count))
+        ' 收集所有可执行的功能（基于已有蛋白质）
+        Dim availableFunctions = New List(Of (func As GeneOntology, priority As Double))()
 
-        For Each mol In v.ExternalMolecules.Keys.ToList()
-            If Not IsPassiveDiffusion(mol) Then
-                Dim amount = RNG.NextInteger(1, 6)
-                TransferBetweenVoxels(v, target, mol, amount)
+        For Each kvp In cell.Proteins
+            If kvp.Value > 0 Then
+                Dim priority = CalculatePriority(cell, kvp.Key)
+                availableFunctions.Add((kvp.Key, priority))
+            End If
+        Next
+
+        ' 按优先级排序
+        availableFunctions = availableFunctions.OrderByDescending(Function(x) x.priority).ToList()
+
+        ' 选择前N个功能
+        For Each item In availableFunctions
+            If actions.Count >= maxActions Then Exit For
+
+            ' 按概率选择（高优先级的功能更可能被选中）
+            If RNG.NextDouble() < Math.Min(1.0, item.priority) Then
+                actions.Add(item.func)
+            End If
+        Next
+
+        ' 确保至少执行能量代谢（如果有蛋白质的话）
+        If actions.Count = 0 AndAlso availableFunctions.Any() Then
+            actions.Add(availableFunctions.First.func)
+        End If
+
+        Return actions
+    End Function
+
+    ''' <summary>
+    ''' [v2.0] 计算功能的执行优先级
+    ''' </summary>
+    Private Function CalculatePriority(cell As Cell, func As GeneOntology) As Double
+        Dim priority = 1.0
+
+        ' ATP低时，能量代谢优先
+        If cell.ATP < 500 Then
+            If func = GeneOntology.AerobicEnergyMetabolismATP OrElse
+               func = GeneOntology.AnaerobicEnergyMetabolismATP Then
+                priority *= 5.0
+            End If
+            If func = GeneOntology.GlucoseConversionEnzyme Then
+                priority *= 3.0
+            End If
+            If func = GeneOntology.PyruvateEnzyme Then
+                priority *= 2.5
+            End If
+            If func = GeneOntology.AcetateEnzyme Then
+                priority *= 2.0
+            End If
+        End If
+
+        ' 有抗生素时，降解抗生素优先
+        If cell.GetMoleculeAmount(MoleculeType.Antibiotic) > 0 Then
+            If func = GeneOntology.DegradeAntibiotic Then
+                priority *= 10.0
+            End If
+        End If
+
+        ' 缺氧时，厌氧代谢优先
+        If cell.GetMoleculeAmount(MoleculeType.Oxygen) < 10 Then
+            If func = GeneOntology.AnaerobicEnergyMetabolismATP Then
+                priority *= 5.0
+            End If
+            If func = GeneOntology.LactateDehydrogenase Then
+                priority *= 3.0
+            End If
+        End If
+
+        ' 蛋白质丰度加权
+        Dim proteinCount = cell.Proteins.GetValueOrDefault(func)
+        priority *= (1.0 + proteinCount * 0.2)
+
+        Return priority
+    End Function
+
+    ''' <summary>
+    ''' [v2.0] 代谢溢流：中间产物超出容量60%时自动分泌50%
+    ''' </summary>
+    Private Sub CheckOverflowSecretion(cell As Cell)
+        Dim capacity = Config.MaxCellContentCapacity
+        Dim threshold = capacity * 0.6
+
+        ' 检查代谢中间产物
+        Dim intermediates = {
+            MoleculeType.Pyruvate, MoleculeType.Acetate, MoleculeType.Lactate,
+            MoleculeType.AminoMixGluFamily, MoleculeType.AminoMixAspFamily,
+            MoleculeType.AminoMixSerGly, MoleculeType.Nucleotide
+        }
+
+        For Each mol In intermediates
+            Dim amount = cell.GetMoleculeAmount(mol)
+            If amount > threshold * 0.1 Then ' 单个分子超过容量的6%
+                Dim secretion = CInt(amount * Config.OverflowSecretionFraction)
+                If secretion > 0 Then
+                    cell.AddMoleculeInternal(mol, -secretion)
+                    Env.AddMolecule(cell, mol, secretion)
+                    CrossFeedingEvents += 1
+                End If
             End If
         Next
     End Sub
 
-    Private Sub TransferBetweenVoxels(
-        fromV As Voxel, toV As Voxel, mol As MoleculeType, amount As Integer)
+    Private Sub PassiveDiffusion(cell As Cell)
+        Dim voxel = Env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
-        If Not fromV.ExternalMolecules.ContainsKey(mol) Then Return
-        If fromV.ExternalMolecules(mol) < amount Then Return
+        ' 小分子被动扩散（进出细胞）
+        Dim passiveMols = {
+            MoleculeType.Water, MoleculeType.Oxygen, MoleculeType.CarbonDioxide,
+            MoleculeType.HydrogenIon, MoleculeType.HydroxideIon
+        }
 
-        moleculeUtils.AddMolecule(fromV, mol, -amount)
-        moleculeUtils.AddMolecule(toV, mol, amount)
+        For Each mol In passiveMols
+            Dim internal = cell.GetMoleculeAmount(mol)
+            Dim external = voxel.GetMoleculeAmount(mol)
+            Dim diff = external - internal
+
+            If Math.Abs(diff) > 2 Then
+                Dim transfer = CInt(Math.Sign(diff) * Math.Min(Math.Abs(diff) * 0.1, 10))
+                If transfer > 0 Then
+                    ' 从环境进入细胞
+                    cell.AddMoleculeInternal(mol, transfer)
+                    If voxel.ExternalMolecules.ContainsKey(mol) Then
+                        voxel.ExternalMolecules(mol) -= transfer
+                    End If
+                ElseIf transfer < 0 Then
+                    ' 从细胞进入环境
+                    cell.AddMoleculeInternal(mol, transfer)
+                    If Not voxel.ExternalMolecules.ContainsKey(mol) Then
+                        voxel.ExternalMolecules(mol) = 0
+                    End If
+                    voxel.ExternalMolecules(mol) -= transfer
+                End If
+            End If
+        Next
     End Sub
 
-    Private Sub CellUpdate(cell As Cell)
-        ' ===== ATP 死亡判定（规则 3）=====
+    Private Sub CheckDeath(cell As Cell)
         If cell.ATP <= 0 Then
             cell.ConsecutiveNoATP += 1
-            If cell.ConsecutiveNoATP >= 5 Then
-                KillCell(cell)
-                Return
+            If cell.ConsecutiveNoATP >= Config.StarvationDeathIterations Then
+                cell.IsAlive = False
+                TotalLysis += 1
             End If
         Else
             cell.ConsecutiveNoATP = 0
         End If
+    End Sub
 
-        ' ===== pH 致死（规则 18 / 19）=====
-        If cell.InternalMolecules.ContainsKey(MoleculeType.HydroxideIon) AndAlso
-           cell.InternalMolecules(MoleculeType.HydroxideIon) >= 20 Then
-            KillCell(cell)
-            Return
-        End If
+    Private Sub ProcessDeadCells()
+        Dim lysisRule = New CellLysisRule()
+        Dim cells = Env.AllCells().Where(Function(c) Not c.IsAlive).ToList()
 
-        ' ===== 容量破裂（规则 17）=====
-        If cell.TotalMolecules > configs.MaxCellContentCapacity Then
-            KillCell(cell)
-            Return
-        End If
-
-        ' ===== 轮盘赌选择功能（规则 26）=====
-        For i As Integer = 1 To configs.MaxCellActions
-            Dim func = RouletteSelect(cell)
-            If func.HasValue Then
-                Scheduler.ExecuteFunction(func.Value, cell, Env)
-            End If
+        For Each cell In cells
+            lysisRule.Execute(cell, Env)
         Next
     End Sub
 
-    Private Function RouletteSelect(cell As Cell) As GeneOntology?
-        If cell.Proteins.Count = 0 Then Return Nothing
+    Private Sub InitializeEnvironment()
+        ' 基础环境分子
+        For x As Integer = 0 To Env.Width - 1
+            For y As Integer = 0 To Env.Height - 1
+                For z As Integer = 0 To Env.Depth - 1
+                    Dim voxel = Env.Grid(x, y, z)
 
-        Dim totalWeight = cell.Proteins.Values.Sum()
-        If totalWeight <= 0 Then Return Nothing
+                    ' 氧气梯度：表层多，深层少
+                    Dim oxygenLevel = Math.Max(10, Config.SurfaceOxygenLevel - z * Config.OxygenDecayPerLayer)
+                    voxel.ExternalMolecules(MoleculeType.Oxygen) = oxygenLevel
 
-        Dim r = RNG.NextDouble() * totalWeight
+                    ' 基础水分
+                    voxel.ExternalMolecules(MoleculeType.Water) = 500
 
-        For Each kv In cell.Proteins
-            r -= kv.Value
-            If r <= 0 Then Return kv.Key
-        Next
+                    ' 基础碳源和氮源
+                    voxel.ExternalMolecules(MoleculeType.CarbonSource) = RNG.NextInteger(20, 80)
+                    voxel.ExternalMolecules(MoleculeType.NitrogenSource) = RNG.NextInteger(10, 40)
 
-        Return cell.Proteins.Keys.Last()
-    End Function
+                    ' 少量glucose
+                    voxel.ExternalMolecules(MoleculeType.Glucose) = RNG.NextInteger(5, 30)
 
-    Private Sub KillCell(cell As Cell)
-        cell.IsAlive = False
-        moleculeUtils.LyseCell(cell)
-        DeadCellCount += 1
-    End Sub
-
-    ''' <summary>
-    ''' 全局扩散
-    ''' </summary>
-    Private Sub DiffuseAllVoxels()
-        Dim voxels = Env.AllVoxels().ToList()
-
-        For Each v In voxels
-            Dim neighbors = Env.GetNeighbors(v)
-            If Not neighbors.Any() Then Continue For
-
-            Dim target = neighbors(RNG.Next(neighbors.Count))
-
-            For Each mol In v.ExternalMolecules.Keys.ToList()
-                If IsPassiveDiffusion(mol) Then
-                    Dim delta = v.ExternalMolecules(mol) -
-                                target.ExternalMolecules(mol)
-
-                    Dim transfer = CInt(delta * 0.05)
-                    If transfer > 0 Then
-                        moleculeUtils.AddMolecule(v, mol, -transfer)
-                        moleculeUtils.AddMolecule(target, mol, transfer)
-                    End If
-                End If
+                    ' CO2
+                    voxel.ExternalMolecules(MoleculeType.CarbonDioxide) = RNG.NextInteger(5, 20)
+                Next
             Next
         Next
     End Sub
 
-    Private Function IsPassiveDiffusion(mol As MoleculeType) As Boolean
-        Return mol = MoleculeType.Water OrElse
-               mol = MoleculeType.Oxygen OrElse
-               mol = MoleculeType.CarbonDioxide OrElse
-               mol = MoleculeType.HydrogenIon OrElse
-               mol = MoleculeType.HydroxideIon OrElse
-               mol = MoleculeType.CarbonSource OrElse
-               mol = MoleculeType.NitrogenSource
-    End Function
+    Private Sub InitializeCells(count As Integer)
+        Dim allFunctions = [Enum].GetValues(GetType(GeneOntology)).Cast(Of GeneOntology)().ToList()
+
+        ' 必需基因（每个细胞都必须有）
+        Dim essentialGenes = {
+            GeneOntology.GeneTranscription,
+            GeneOntology.ProteinTranslation,
+            GeneOntology.ReplicateDNA,
+            GeneOntology.CellDivision
+        }
+
+        ' 代谢核心基因（大部分细胞应该有）
+        Dim coreMetabolicGenes = {
+            GeneOntology.AerobicEnergyMetabolismATP,
+            GeneOntology.GlucoseConversionEnzyme,
+            GeneOntology.Endocytosis,
+            GeneOntology.Exocytosis
+        }
+
+        ' 可选基因（随机分配，创造初始多样性）
+        Dim optionalGenes = {
+            GeneOntology.AnaerobicEnergyMetabolismATP,
+            GeneOntology.PyruvateEnzyme,
+            GeneOntology.AcetateEnzyme,
+            GeneOntology.LactateDehydrogenase,
+            GeneOntology.AminoMixGluFamilyEnzyme,
+            GeneOntology.AminoMixAspFamilyEnzyme,
+            GeneOntology.AminoMixSerGlyEnzyme,
+            GeneOntology.NucleicAcidSynthesis,
+            GeneOntology.FlagellarMovement,
+            GeneOntology.QuorumSensing,
+            GeneOntology.SignalMoleculeSynthesis,
+            GeneOntology.BiofilmSynthesis,
+            GeneOntology.CellWallSynthesis,
+            GeneOntology.SynthesizeAntibiotic,
+            GeneOntology.DegradeAntibiotic,
+            GeneOntology.DegradeMacromolecule,
+            GeneOntology.CarbonFixation,
+            GeneOntology.AcidMetabolism,
+            GeneOntology.BaseMetabolism,
+            GeneOntology.SecondaryMetaboliteSynthesis,
+            GeneOntology.SiderophoreSynthesis,
+            GeneOntology.DNAIntegration,
+            GeneOntology.NucleicAcidDegradation,
+            GeneOntology.ProteinDegradation
+        }
+
+        For i As Integer = 1 To count
+            Dim cell = New Cell()
+
+            ' 随机位置
+            Dim x = RNG.NextInteger(5, Env.Width - 5)
+            Dim y = RNG.NextInteger(5, Env.Height - 5)
+            Dim z = RNG.NextInteger(0, CInt(Env.Depth * 0.7)) ' 主要在表层和中层
+            cell.Position = New SpatialIndex3D(x, y, z)
+
+            ' 构建基因组
+            Dim genes = New List(Of Gene)()
+
+            ' 添加必需基因
+            For Each essential In essentialGenes
+                genes.Add(New Gene With {.FunctionOntology = essential})
+            Next
+
+            ' 添加核心代谢基因（80%概率）
+            For Each core In coreMetabolicGenes
+                If RNG.NextDouble() < 0.8 Then
+                    genes.Add(New Gene With {.FunctionOntology = core})
+                End If
+            Next
+
+            ' 添加随机可选基因（每个30-60%概率）
+            For Each optional In optionalGenes
+                If RNG.NextDouble() < RNG.NextDouble() * 0.4 + 0.2 Then
+                    genes.Add(New Gene With {.FunctionOntology = optional})
+                End If
+            Next
+
+            cell.Genome = New Replicon With {.Genes = genes, .IsPlasmid = False}
+
+            ' 30%概率携带质粒
+            If RNG.NextDouble() < 0.3 Then
+                Dim plasmidGenes = New List(Of Gene)()
+                Dim plasmidSize = RNG.NextInteger(1, 4)
+                For j As Integer = 0 To plasmidSize - 1
+                    plasmidGenes.Add(New Gene With {
+                        .FunctionOntology = optionalGenes(RNG.Next(optionalGenes.Length))
+                    })
+                Next
+                cell.Plasmids.Add(New Replicon With {.Genes = plasmidGenes, .IsPlasmid = True})
+            End If
+
+            ' 初始化蛋白质（基于基因组，初始有少量蛋白质）
+            For Each gene In cell.Genome.Genes
+                If Not cell.Proteins.ContainsKey(gene.FunctionOntology) Then
+                    cell.Proteins(gene.FunctionOntology) = 0
+                End If
+                cell.Proteins(gene.FunctionOntology) += RNG.NextInteger(1, 3)
+            Next
+
+            ' 初始化分子
+            cell.ATP = RNG.NextInteger(150, 300)
+            cell.AddMoleculeInternal(MoleculeType.Water, RNG.NextInteger(200, 500))
+            cell.AddMoleculeInternal(MoleculeType.Glucose, RNG.NextInteger(10, 50))
+            cell.AddMoleculeInternal(MoleculeType.CarbonSource, RNG.NextInteger(20, 60))
+            cell.AddMoleculeInternal(MoleculeType.NitrogenSource, RNG.NextInteger(10, 30))
+            cell.AddMoleculeInternal(MoleculeType.Nucleotide, RNG.NextInteger(10, 30))
+            cell.AddMoleculeInternal(MoleculeType.AminoMixGluFamily, RNG.NextInteger(5, 20))
+            cell.AddMoleculeInternal(MoleculeType.AminoMixAspFamily, RNG.NextInteger(5, 20))
+            cell.AddMoleculeInternal(MoleculeType.AminoMixSerGly, RNG.NextInteger(5, 20))
+
+            ' 放置到环境中
+            Dim voxel = Env.Grid(x, y, z)
+            If voxel.Occupant Is Nothing Then
+                voxel.Occupant = cell
+            End If
+        Next
+    End Sub
+
+    Private Sub InitializeNutrientHotspots()
+        ' 营养热点在NutrientReplenishmentRule中处理
+    End Sub
+
+    Private Sub Shuffle(Of T)(list As List(Of T))
+        Dim n = list.Count
+        While n > 1
+            n -= 1
+            Dim k = RNG.Next(n + 1)
+            Dim temp = list(k)
+            list(k) = list(n)
+            list(n) = temp
+        End While
+    End Sub
 
     Private Sub UpdateStatistics()
         Dim cells = Env.AllCells()
