@@ -1,20 +1,23 @@
 ﻿Imports Microsoft.VisualBasic.Imaging
 
-Public Class Voxel : Implements IVoxel
+Namespace Models.Container
 
-    Public Property Position As SpatialIndex3D Implements IVoxel.Position
-    Public Property ExternalMolecules As New Dictionary(Of MoleculeType, Integer) Implements IVoxel.Molecules
-    Public Property Occupant As Cell = Nothing
-    Public Property HasBiofilm As Boolean = False
+    Public Class Voxel : Implements IVoxel
 
-    Sub New()
-    End Sub
+        Public Property Position As SpatialIndex3D Implements IVoxel.Position
+        Public Property ExternalMolecules As New Dictionary(Of MoleculeType, Integer) Implements IVoxel.Molecules
+        Public Property Occupant As Cell = Nothing
+        Public Property HasBiofilm As Boolean = False
 
-    Sub New(x As Integer, y As Integer, z As Integer)
-        Position = New SpatialIndex3D(x, y, z)
-    End Sub
+        Sub New()
+        End Sub
 
-    Public Overrides Function ToString() As String
-        Return Position.ToString
-    End Function
-End Class
+        Sub New(x As Integer, y As Integer, z As Integer)
+            Position = New SpatialIndex3D(x, y, z)
+        End Sub
+
+        Public Overrides Function ToString() As String
+            Return Position.ToString
+        End Function
+    End Class
+End Namespace

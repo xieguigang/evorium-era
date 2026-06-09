@@ -1,4 +1,6 @@
-﻿Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
+﻿Imports EvoriumEra.Models
+Imports EvoriumEra.Models.Container
+Imports rng = Microsoft.VisualBasic.Math.RandomExtensions
 
 Namespace BiologicalRules.Rules
 

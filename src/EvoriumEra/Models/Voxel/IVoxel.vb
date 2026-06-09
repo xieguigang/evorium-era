@@ -1,8 +1,11 @@
 ﻿Imports Microsoft.VisualBasic.Imaging
 
-Public Interface IVoxel
+Namespace Models.Container
 
-    Property Position As SpatialIndex3D
-    Property Molecules As Dictionary(Of MoleculeType, Integer)
+    Public Interface IVoxel
 
-End Interface
+        Property Position As SpatialIndex3D
+        Property Molecules As Dictionary(Of MoleculeType, Integer)
+
+    End Interface
+End Namespace

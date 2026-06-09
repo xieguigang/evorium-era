@@ -1,4 +1,6 @@
 ﻿Imports EvoriumEra.BiologicalRules.Rules
+Imports EvoriumEra.Models
+Imports EvoriumEra.Models.Container
 
 Namespace BiologicalRules
 

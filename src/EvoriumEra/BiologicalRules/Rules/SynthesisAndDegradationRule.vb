@@ -1,4 +1,7 @@
-﻿Namespace BiologicalRules.Rules
+﻿Imports EvoriumEra.Models
+Imports EvoriumEra.Models.Container
+
+Namespace BiologicalRules.Rules
 
     Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
 

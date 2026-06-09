@@ -1,37 +1,40 @@
-﻿Public Class Molecule
+﻿Namespace Models
 
-    Public Property Type As MoleculeType
-    Public Property Quantity As Integer = 0
+    Public Class Molecule
 
-    Public Overrides Function ToString() As String
-        Return Type.Description
-    End Function
-End Class
+        Public Property Type As MoleculeType
+        Public Property Quantity As Integer = 0
 
-Public Class Gene
+        Public Overrides Function ToString() As String
+            Return Type.Description
+        End Function
+    End Class
 
-    ''' <summary>
-    ''' gene function ontology in this simulation system
-    ''' </summary>
-    ''' <returns></returns>
-    Public Property FunctionOntology As GeneOntology
+    Public Class Gene
 
-    Public Const LengthInNucleotides As Integer = 9
+        ''' <summary>
+        ''' gene function ontology in this simulation system
+        ''' </summary>
+        ''' <returns></returns>
+        Public Property FunctionOntology As GeneOntology
 
-    Public Overrides Function ToString() As String
-        Return FunctionOntology.Description
-    End Function
+        Public Const LengthInNucleotides As Integer = 9
 
-End Class
+        Public Overrides Function ToString() As String
+            Return FunctionOntology.Description
+        End Function
 
-Public Class Replicon
+    End Class
 
-    Public Property Genes As List(Of Gene) = New List(Of Gene)
-    Public Property IsPlasmid As Boolean = False
+    Public Class Replicon
 
-    Public ReadOnly Property NucleotideLength As Integer
-        Get
-            Return Genes.Count * Gene.LengthInNucleotides
-        End Get
-    End Property
-End Class
+        Public Property Genes As List(Of Gene) = New List(Of Gene)
+        Public Property IsPlasmid As Boolean = False
+
+        Public ReadOnly Property NucleotideLength As Integer
+            Get
+                Return Genes.Count * Gene.LengthInNucleotides
+            End Get
+        End Property
+    End Class
+End Namespace

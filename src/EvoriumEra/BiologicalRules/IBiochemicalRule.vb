@@ -1,4 +1,7 @@
-﻿Namespace BiologicalRules
+﻿Imports EvoriumEra.Models
+Imports EvoriumEra.Models.Container
+
+Namespace BiologicalRules
 
     Public Interface IBiochemicalRule
 

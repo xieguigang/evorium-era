@@ -1,4 +1,7 @@
 ﻿Imports EvoriumEra.BiologicalRules
+Imports EvoriumEra.Data
+Imports EvoriumEra.Models
+Imports EvoriumEra.Models.Container
 Imports Microsoft.VisualBasic.Imaging
 Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
