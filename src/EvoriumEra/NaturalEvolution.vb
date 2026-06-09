@@ -219,88 +219,18 @@ Public Class NaturalEvolution
     End Function
 
     Private Function SelectFunctionByProteinAbundance(cell As Cell) As GeneOntology?
-        If cell.Proteins.Count = 0 Then Return Nothing
+        If cell.Proteins.Count = 0 Then
+            Return Nothing
+        Else
+            Dim rank = New Regulation(cell).RankProteins(Env)
+            Dim best = rank.Expression
 
-        ' 构建蛋白质丰度加权的功能列表
-        Dim candidates = New List(Of (func As GeneOntology, weight As Double))
-
-        For Each kvp In cell.Proteins
-            If kvp.Value <= 0 Then Continue For
-
-            Dim w = CDbl(kvp.Value)
-
-            ' ATP低时，能量代谢优先
-            If cell.ATP < 500 Then
-                If kvp.Key = GeneOntology.AerobicEnergyMetabolismATP OrElse
-                   kvp.Key = GeneOntology.AnaerobicEnergyMetabolismATP OrElse
-                   kvp.Key = GeneOntology.GlucoseConversionEnzyme OrElse
-                   kvp.Key = GeneOntology.PyruvateEnzyme OrElse
-                   kvp.Key = GeneOntology.AcetateEnzyme OrElse
-                   kvp.Key = GeneOntology.LactateDehydrogenase OrElse
-                   kvp.Key = GeneOntology.SuccinateEnzyme OrElse
-                   kvp.Key = GeneOntology.EthanolMetabolism OrElse
-                   kvp.Key = GeneOntology.FormateMetabolism OrElse
-                   kvp.Key = GeneOntology.ButyrateEnzyme Then
-                    w *= 3.0
-                End If
+            If best Is Nothing Then
+                Return Nothing
+            Else
+                Return best.Value.func
             End If
-
-            ' 氧气低时，厌氧代谢优先
-            If cell.GetMoleculeAmount(MoleculeType.Oxygen) < 10 Then
-                If kvp.Key = GeneOntology.AnaerobicEnergyMetabolismATP OrElse
-                   kvp.Key = GeneOntology.LactateDehydrogenase Then
-                    w *= 5.0
-                End If
-            End If
-
-            ' 有抗生素时，降解抗生素优先
-            If cell.GetMoleculeAmount(MoleculeType.Antibiotic) > 0 OrElse
-               cell.GetMoleculeAmount(MoleculeType.Toxin) > 0 Then
-                If kvp.Key = GeneOntology.DegradeAntibiotic Then
-                    w *= 10.0
-                End If
-            End If
-
-            ' [v3.0] 高温时，耐热蛋白优先表达
-            If cell.InternalTemperature > 40 Then
-                If kvp.Key = GeneOntology.Thermotolerance Then
-                    w *= 8.0
-                End If
-            End If
-
-            ' [v3.0] 低温时，冷休克响应优先
-            If cell.InternalTemperature < 10 Then
-                If kvp.Key = GeneOntology.ColdShockResponse Then
-                    w *= 8.0
-                End If
-            End If
-
-            ' [v3.0] 渗透压失衡时，渗透调节优先
-            Dim voxel = Env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
-            Dim osmDiff = Math.Abs(voxel.ExternalIonStrength - cell.InternalIonStrength)
-            If osmDiff > 50 Then
-                If kvp.Key = GeneOntology.Osmoregulation OrElse
-                   kvp.Key = GeneOntology.CompatibleSoluteSynthesis Then
-                    w *= 5.0
-                End If
-            End If
-
-            candidates.Add((kvp.Key, w))
-        Next
-
-        If candidates.Count = 0 Then Return Nothing
-
-        ' 加权随机选择
-        Dim totalWeight = candidates.Sum(Function(c) c.weight)
-        Dim r = RNG.NextDouble() * totalWeight
-        Dim cumulative = 0.0
-
-        For Each c As (func As GeneOntology, weight As Double) In candidates
-            cumulative += c.weight
-            If r <= cumulative Then Return c.func
-        Next
-
-        Return candidates.Last.func
+        End If
     End Function
 
     ''' <summary>
