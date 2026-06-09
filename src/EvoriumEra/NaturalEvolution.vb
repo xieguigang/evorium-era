@@ -500,6 +500,8 @@ Public Class NaturalEvolution
                 .DivisionCount = 0
             }
 
+            voxel.Occupant = cell
+
             ' 初始化蛋白质（基于基因组，初始有少量蛋白质）
             For Each gene In cell.Genome.Genes
                 If Not cell.Proteins.ContainsKey(gene.FunctionOntology) Then
@@ -527,8 +529,6 @@ Public Class NaturalEvolution
 
             ' [v3.0] 初始温度
             cell.InternalTemperature = voxel.Temperature
-
-            voxel.Occupant = cell
         Next
     End Sub
 

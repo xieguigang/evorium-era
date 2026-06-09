@@ -38,6 +38,7 @@ Namespace Models
 
         Friend ReadOnly configs As Configs
         Friend moleculeUtils As MoleculeUtils
+        Friend recycler As Recycler
 
         ' ===== 构造函数 =====
         Public Sub New(config As Configs, Optional debug As Boolean = False)
@@ -49,6 +50,7 @@ Namespace Models
             Grid = New Voxel(w - 1, h - 1, d - 1) {}
             configs = config
             moleculeUtils = New MoleculeUtils(configs, Me, debug:=debug)
+            recycler = New Recycler(configs, Me, debug:=debug)
 
             For X As Integer = 0 To w - 1
                 For Y As Integer = 0 To h - 1
@@ -78,7 +80,7 @@ Namespace Models
         ''' 
         <MethodImpl(MethodImplOptions.AggressiveInlining)>
         Public Sub LyseCell(cell As Cell, reason As String)
-            Call moleculeUtils.LyseCell(cell, reason)
+            Call recycler.LyseCell(cell, reason)
         End Sub
 
         ' 六个方向：±X, ±Y, ±Z

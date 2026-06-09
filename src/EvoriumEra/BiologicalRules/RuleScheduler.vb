@@ -30,7 +30,6 @@ Namespace BiologicalRules
                 New MutationRule(),                  ' [v2.0] 改进：增加基因重复/缺失
                 New QuorumSensingAndBiofilmRule(),
                 New GenomeMaintenanceRule(),         ' [v2.0] 新增：基因组维护成本
-                New CellLysisRule(),                 ' [v2.0] 新增：细胞裂解释放
                 New TemperatureRule(),               ' [v3.0] 温度系统
                 New OsmoregulationRule(),            ' [v3.0] 渗透压系统
                 New IonTransportRule()               ' [v3.0] 离子转运
