@@ -1,5 +1,6 @@
 ﻿Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
+Imports Microsoft.VisualBasic.Serialization.JSON
 
 Namespace BiologicalRules
 
@@ -40,14 +41,22 @@ Namespace BiologicalRules
     ''' 31. 当细胞内的氧气数量小于一定阈值（例如小于10个单位）的时候，每一次迭代中，“厌氧能量代谢合成ATP”基因的表达被选中执行的概率会提高
     ''' 32. 每一步迭代过程中，单元格内的分子实体会由于浓度差，每一次迭代中会在相邻的单元格之间产生随机一个到5个单位数量范围内的分子物质交换
     ''' </remarks>
-    Public Interface IBiochemicalRule
+    Public MustInherit Class IBiochemicalRule
 
         ''' <summary>
         ''' 该规则负责处理的基因功能
         ''' </summary>
-        ReadOnly Property SupportedFunctions As GeneOntology()
+        Public ReadOnly Property SupportedFunctions As GeneOntology()
 
-        Sub Execute(cell As Cell, env As NaturalEnvironment)
+        Sub New(ParamArray terms As GeneOntology())
+            SupportedFunctions = terms
+        End Sub
 
-    End Interface
+        MustOverride Sub Execute(cell As Cell, env As NaturalEnvironment)
+
+        Public Overrides Function ToString() As String
+            Return SupportedFunctions.Select(Function(go) go.Description).GetJson
+        End Function
+
+    End Class
 End Namespace
