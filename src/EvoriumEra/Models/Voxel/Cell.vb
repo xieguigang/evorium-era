@@ -109,7 +109,7 @@ Namespace Models.Container
             If Not InternalMolecules.ContainsKey(type) Then
                 InternalMolecules(type) = Molecule.EmptyModel(type)
             End If
-            InternalMolecules(type).Quantity = amount
+            InternalMolecules(type).SetQuantity(amount)
         End Sub
 
         ''' <summary>
@@ -119,9 +119,9 @@ Namespace Models.Container
             If Not InternalMolecules.ContainsKey(type) Then
                 InternalMolecules(type) = Molecule.EmptyModel(type)
             End If
-            InternalMolecules(type).Quantity += amount
+            InternalMolecules(type).AddQuantity(amount)
             If InternalMolecules(type).Quantity < 0 Then
-                InternalMolecules(type).Quantity = 0
+                InternalMolecules(type).SetQuantity(0)
             End If
         End Sub
 

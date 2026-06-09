@@ -35,15 +35,15 @@ Namespace Models
         Private Sub AddToCell(cell As Cell, moleculeType As MoleculeType, amount As Integer)
             ' 初始化字典项
             If Not cell.InternalMolecules.ContainsKey(moleculeType) Then
-                cell.InternalMolecules(moleculeType).Quantity = 0
+                cell.InternalMolecules(moleculeType) = Molecule.EmptyModel(moleculeType)
             End If
 
             ' 更新分子数量
-            cell.InternalMolecules(moleculeType).Quantity += amount
+            cell.InternalMolecules(moleculeType).AddQuantity(amount)
 
             ' 防止负数
             If cell.InternalMolecules(moleculeType) < 0 Then
-                cell.InternalMolecules(moleculeType).Quantity = 0
+                cell.InternalMolecules(moleculeType).SetQuantity(0)
             End If
 
             ' 更新总分子数
@@ -59,12 +59,12 @@ Namespace Models
 
         Friend Sub AddToVoxel(voxel As Voxel, moleculeType As MoleculeType, amount As Integer)
             If Not voxel.ExternalMolecules.ContainsKey(moleculeType) Then
-                voxel.ExternalMolecules(moleculeType).Quantity = 0
+                voxel.ExternalMolecules(moleculeType) = Molecule.EmptyModel(moleculeType)
             End If
 
-            voxel.ExternalMolecules(moleculeType).Quantity += amount
+            voxel.ExternalMolecules(moleculeType).AddQuantity(amount)
             If voxel.ExternalMolecules(moleculeType) < 0 Then
-                voxel.ExternalMolecules(moleculeType).Quantity = 0
+                voxel.ExternalMolecules(moleculeType).SetQuantity(0)
             End If
         End Sub
     End Class

@@ -84,13 +84,13 @@ Namespace BiologicalRules.Rules
                                                               rng.NextInteger(1, 6)))
 
                                         If transfer <> 0 Then
-                                            voxel.ExternalMolecules(mol).Quantity -= transfer
-                                            neighbor.ExternalMolecules(mol).Quantity += transfer
+                                            voxel.ExternalMolecules(mol).AddQuantity(-transfer)
+                                            neighbor.ExternalMolecules(mol).AddQuantity(transfer)
 
                                             ' 确保不为负
                                             If voxel.ExternalMolecules(mol) < 0 Then
-                                                neighbor.ExternalMolecules(mol).Quantity += voxel.ExternalMolecules(mol).Quantity
-                                                voxel.ExternalMolecules(mol).Quantity = 0
+                                                neighbor.ExternalMolecules(mol).AddQuantity(voxel.ExternalMolecules(mol).Quantity)
+                                                voxel.ExternalMolecules(mol).SetQuantity(0)
                                             End If
                                         End If
                                     End If

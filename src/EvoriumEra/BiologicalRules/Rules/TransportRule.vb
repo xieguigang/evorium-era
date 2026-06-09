@@ -50,11 +50,11 @@ Namespace BiologicalRules.Rules
                         Dim uptake = Math.Min(available, 5)
                         cell.AddMoleculeInternal(molType, uptake)
                         If Not voxel.ExternalMolecules.ContainsKey(molType) Then
-                            voxel.ExternalMolecules(molType).Quantity = 0
+                            voxel.ExternalMolecules(molType) = Molecule.EmptyModel(molType)
                         End If
-                        voxel.ExternalMolecules(molType).Quantity -= uptake
+                        voxel.ExternalMolecules(molType).AddQuantity(-uptake)
                         If voxel.ExternalMolecules(molType) < 0 Then
-                            voxel.ExternalMolecules(molType).Quantity = 0
+                            voxel.ExternalMolecules(molType).SetQuantity(0)
                         End If
                     End If
                 Next

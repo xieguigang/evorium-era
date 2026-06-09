@@ -49,7 +49,7 @@ Namespace BiologicalRules.Rules
                 Dim waterLoss = CInt(cell.GetMoleculeAmount(MoleculeType.Water) * 0.05)
                 If waterLoss > 0 Then
                     cell.AddMoleculeInternal(MoleculeType.Water, -waterLoss)
-                    voxel.ExternalMolecules(MoleculeType.Water).Quantity = voxel.GetMoleculeAmount(MoleculeType.Water) + waterLoss
+                    voxel.ExternalMolecules(MoleculeType.Water).SetQuantity(voxel.GetMoleculeAmount(MoleculeType.Water) + waterLoss)
                 End If
 
                 ' 胞内分子浓缩效应：少量ATP因浓缩而"获得"（模拟底物浓度升高）
@@ -65,13 +65,13 @@ Namespace BiologicalRules.Rules
                         Dim naOut = Math.Min(cell.GetMoleculeAmount(MoleculeType.SodiumIon), 5)
                         If naOut > 0 Then
                             cell.AddMoleculeInternal(MoleculeType.SodiumIon, -naOut)
-                            voxel.ExternalMolecules(MoleculeType.SodiumIon).Quantity = voxel.GetMoleculeAmount(MoleculeType.SodiumIon) + naOut
+                            voxel.ExternalMolecules(MoleculeType.SodiumIon).SetQuantity(voxel.GetMoleculeAmount(MoleculeType.SodiumIon) + naOut)
                         End If
                         ' 吸收K+从环境
                         Dim kIn = Math.Min(voxel.GetMoleculeAmount(MoleculeType.PotassiumIon), 3)
                         If kIn > 0 Then
                             cell.AddMoleculeInternal(MoleculeType.PotassiumIon, kIn)
-                            voxel.ExternalMolecules(MoleculeType.PotassiumIon).Quantity = voxel.GetMoleculeAmount(MoleculeType.PotassiumIon) - kIn
+                            voxel.ExternalMolecules(MoleculeType.PotassiumIon).SetQuantity(voxel.GetMoleculeAmount(MoleculeType.PotassiumIon) - kIn)
                         End If
                     End If
                 End If
@@ -97,7 +97,7 @@ Namespace BiologicalRules.Rules
                 Dim waterGain = CInt(envWater * 0.03)
                 If waterGain > 0 Then
                     cell.AddMoleculeInternal(MoleculeType.Water, waterGain)
-                    voxel.ExternalMolecules(MoleculeType.Water).Quantity = Math.Max(0, envWater - waterGain)
+                    voxel.ExternalMolecules(MoleculeType.Water).SetQuantity(Math.Max(0, envWater - waterGain))
                 End If
 
                 ' 无细胞壁的细胞可能裂解
@@ -117,7 +117,7 @@ Namespace BiologicalRules.Rules
                         Dim kOut = Math.Min(cell.GetMoleculeAmount(MoleculeType.PotassiumIon), 3)
                         If kOut > 0 Then
                             cell.AddMoleculeInternal(MoleculeType.PotassiumIon, -kOut)
-                            voxel.ExternalMolecules(MoleculeType.PotassiumIon).Quantity = voxel.GetMoleculeAmount(MoleculeType.PotassiumIon) + kOut
+                            voxel.ExternalMolecules(MoleculeType.PotassiumIon).SetQuantity(voxel.GetMoleculeAmount(MoleculeType.PotassiumIon) + kOut)
                         End If
                     End If
                 End If

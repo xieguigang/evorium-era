@@ -13,6 +13,10 @@
             _Quantity = x
         End Sub
 
+        Public Sub AddQuantity(x As Integer)
+            Call SetQuantity(Quantity + x)
+        End Sub
+
         Public Overrides Function ToString() As String
             Return Type.Description
         End Function
