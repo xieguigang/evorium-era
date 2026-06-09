@@ -32,6 +32,8 @@ Namespace Models
             Dim voxelDNAs As DNAMolecule = voxel.ExternalMolecules.TryGetValue(MoleculeType.DNA)
 
             If voxelDNAs Is Nothing Then
+                ' 这些遗留在环境中的DNA片段会稳定的存在
+                ' 从而可以被PCR扩增，以及做宏基因组检测等
                 voxelDNAs = New DNAMolecule
                 voxel.ExternalMolecules(MoleculeType.DNA) = voxelDNAs
             End If
