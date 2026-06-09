@@ -1,8 +1,4 @@
 ﻿
-
-
-
-
 Public Class QuorumSensingAndBiofilmRule : Implements IBiochemicalRule
 
 
