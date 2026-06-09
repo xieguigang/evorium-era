@@ -82,7 +82,11 @@ Namespace Data
                             .OccupantCellId = If(voxel.Occupant?.ID, Nothing),
                             .OccupantCellAlive = If(voxel.Occupant?.IsAlive, Nothing),
                             .TotalMolecules = voxel.ExternalMolecules.Values.Sum(),
-                            .SnapshotTime = DateTime.Now
+                            .SnapshotTime = DateTime.Now,
+                            .BiofilmStrength = voxel.BiofilmStrength,
+                            .ExternalIonStrength = voxel.ExternalIonStrength,
+                            .MoleculeDensity = 0,
+                            .Temperature = voxel.Temperature
                         }
                         voxels.Add(voxelSnap)
 
@@ -98,7 +102,19 @@ Namespace Data
                                 .TotalMolecules = cell.TotalMolecules,
                                 .ATP = cell.ATP,
                                 .GenomeSize = cell.Genome.NucleotideLength,
-                                .PlasmidCount = cell.Plasmids.Count
+                                .PlasmidCount = cell.Plasmids.Count,
+                                .Age = cell.Age,
+                                .ColdShockMitigation = cell.ColdShockMitigation,
+                                .DivisionCount = cell.DivisionCount,
+                                .GeneCounts = cell.GetTotalGenes,
+                                .Generation = cell.Generation,
+                                .Genome = cell.Genome.Clone,
+                                .InternalIonStrength = cell.InternalIonStrength,
+                                .OsmoticState = cell.OsmoticState,
+                                .ParentID = cell.ParentID,
+                                .Plasmids = cell.Plasmids.Select(Function(r) r.Clone).ToArray,
+                                .ProteinActivityFactor = cell.ProteinActivityFactor,
+                                .Proteins = New Dictionary(Of GeneOntology, Integer)(cell.Proteins)
                             }
                             cells.Add(cellSnap)
                         End If

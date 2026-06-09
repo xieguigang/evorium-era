@@ -19,6 +19,13 @@
 
         Public Const LengthInNucleotides As Integer = 9
 
+        Sub New()
+        End Sub
+
+        Sub New(clone As Gene)
+            FunctionOntology = clone.FunctionOntology
+        End Sub
+
         Public Overrides Function ToString() As String
             Return FunctionOntology.Description
         End Function
@@ -38,5 +45,14 @@
                 Return Genes.Count * Gene.LengthInNucleotides
             End Get
         End Property
+
+        Public Function Clone() As Replicon
+            Return New Replicon With {
+                .Genes = New List(Of Gene)(From g As Gene
+                                           In Genes
+                                           Select New Gene(clone:=g)),
+                .IsPlasmid = IsPlasmid
+            }
+        End Function
     End Class
 End Namespace
