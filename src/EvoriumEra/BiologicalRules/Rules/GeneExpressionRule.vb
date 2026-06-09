@@ -7,9 +7,13 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
+        Sub New()
+            SupportedFunctions = {GeneOntology.GeneTranscription, GeneOntology.ProteinTranslation}
+        End Sub
+
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 基因转录（需要9个核苷酸）
-            If cell.Proteins.ContainsKey(GeneOntology.GeneTranscription) AndAlso
+            If cell.HasFunction(GeneOntology.GeneTranscription) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso
            cell.InternalMolecules(MoleculeType.Nucleotide) >= 9 Then
 
@@ -20,7 +24,7 @@ Namespace BiologicalRules.Rules
             End If
 
             ' 蛋白质翻译（需要3种氨基酸各1单位）
-            If cell.Proteins.ContainsKey(GeneOntology.ProteinTranslation) Then
+            If cell.HasFunction(GeneOntology.ProteinTranslation) Then
                 Dim hasAminoAcids = cell.InternalMolecules.ContainsKey(MoleculeType.AminoMixGluFamily) AndAlso
                                cell.InternalMolecules.ContainsKey(MoleculeType.AminoMixAspFamily) AndAlso
                                cell.InternalMolecules.ContainsKey(MoleculeType.AminoMixSerGly)

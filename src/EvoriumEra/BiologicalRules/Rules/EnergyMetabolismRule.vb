@@ -7,9 +7,13 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
+        Sub New()
+            SupportedFunctions = {GeneOntology.AerobicEnergyMetabolismATP, GeneOntology.AnaerobicEnergyMetabolismATP}
+        End Sub
+
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 需氧能量代谢
-            If cell.Proteins.ContainsKey(GeneOntology.AerobicEnergyMetabolismATP) AndAlso
+            If cell.HasFunction(GeneOntology.AerobicEnergyMetabolismATP) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Oxygen) Then
 
@@ -25,7 +29,7 @@ Namespace BiologicalRules.Rules
             End If
 
             ' 厌氧能量代谢
-            If cell.Proteins.ContainsKey(GeneOntology.AnaerobicEnergyMetabolismATP) AndAlso
+            If cell.HasFunction(GeneOntology.AnaerobicEnergyMetabolismATP) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Acetate) Then
 
                 If cell.InternalMolecules(MoleculeType.Acetate) > 0 AndAlso

@@ -10,16 +10,16 @@ Namespace BiologicalRules.Rules
 
         Sub New()
             SupportedFunctions = {
-            GeneOntology.QuorumSensing,
-            GeneOntology.SignalMoleculeSynthesis,
-            GeneOntology.SecondaryMetaboliteSynthesis,
-            GeneOntology.BiofilmSynthesis
-        }
+                GeneOntology.QuorumSensing,
+                GeneOntology.SignalMoleculeSynthesis,
+                GeneOntology.SecondaryMetaboliteSynthesis,
+                GeneOntology.BiofilmSynthesis
+            }
         End Sub
 
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 信号分子合成
-            If cell.Proteins.ContainsKey(GeneOntology.SignalMoleculeSynthesis) AndAlso
+            If cell.HasFunction(GeneOntology.SignalMoleculeSynthesis) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.CarbonSource) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.AminoMixSerGly) Then
 
@@ -30,14 +30,14 @@ Namespace BiologicalRules.Rules
             End If
 
             ' 群体感应
-            If cell.Proteins.ContainsKey(GeneOntology.QuorumSensing) AndAlso
+            If cell.HasFunction(GeneOntology.QuorumSensing) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.SignalMolecule) AndAlso
            cell.InternalMolecules(MoleculeType.SignalMolecule) >= 100 Then
 
                 ' 强制执行次级代谢产物合成或生物膜合成
-                If cell.Proteins.ContainsKey(GeneOntology.SecondaryMetaboliteSynthesis) Then
+                If cell.HasFunction(GeneOntology.SecondaryMetaboliteSynthesis) Then
                     ExecuteSecondaryMetaboliteSynthesis(cell)
-                ElseIf cell.Proteins.ContainsKey(GeneOntology.BiofilmSynthesis) Then
+                ElseIf cell.HasFunction(GeneOntology.BiofilmSynthesis) Then
                     ExecuteBiofilmSynthesis(cell, env)
                 End If
             End If

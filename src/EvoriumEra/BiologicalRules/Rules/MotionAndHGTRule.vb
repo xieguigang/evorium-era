@@ -9,9 +9,13 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
+        Sub New()
+            SupportedFunctions = {GeneOntology.FlagellarMovement}
+        End Sub
+
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 细胞鞭毛运动
-            If cell.Proteins.ContainsKey(GeneOntology.FlagellarMovement) Then
+            If cell.HasFunction(GeneOntology.FlagellarMovement) Then
                 Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
                 Dim neighbors = env.GetNeighbors(voxel).Where(Function(v) v.Occupant Is Nothing).ToList()
 

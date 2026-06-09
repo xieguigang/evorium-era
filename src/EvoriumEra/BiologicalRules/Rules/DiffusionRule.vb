@@ -8,6 +8,9 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
+        Sub New()
+        End Sub
+
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
             Dim neighbors = env.GetNeighbors(voxel)

@@ -7,11 +7,15 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
+        Sub New()
+            SupportedFunctions = {GeneOntology.Endocytosis, GeneOntology.Exocytosis}
+        End Sub
+
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
             ' 物质内吞
-            If cell.Proteins.ContainsKey(GeneOntology.Endocytosis) Then
+            If cell.HasFunction(GeneOntology.Endocytosis) Then
                 For Each moleculeType In voxel.ExternalMolecules.Keys.ToList()
                     If Not IsPassiveDiffusion(moleculeType) Then
                         Dim amount = Math.Min(voxel.ExternalMolecules(moleculeType), 5)
@@ -25,7 +29,7 @@ Namespace BiologicalRules.Rules
             End If
 
             ' 物质分泌
-            If cell.Proteins.ContainsKey(GeneOntology.Exocytosis) Then
+            If cell.HasFunction(GeneOntology.Exocytosis) Then
                 For Each moleculeType In cell.InternalMolecules.Keys.ToList()
                     If Not IsPassiveDiffusion(moleculeType) Then
                         Dim amount = Math.Min(cell.InternalMolecules(moleculeType), 5)

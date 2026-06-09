@@ -7,9 +7,13 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
+        Sub New()
+            SupportedFunctions = {GeneOntology.AcidMetabolism, GeneOntology.BaseMetabolism}
+        End Sub
+
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 酸代谢
-            If cell.Proteins.ContainsKey(GeneOntology.AcidMetabolism) AndAlso
+            If cell.HasFunction(GeneOntology.AcidMetabolism) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.HydrogenIon) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.CarbonSource) Then
 
@@ -22,7 +26,7 @@ Namespace BiologicalRules.Rules
             End If
 
             ' 碱代谢
-            If cell.Proteins.ContainsKey(GeneOntology.BaseMetabolism) AndAlso
+            If cell.HasFunction(GeneOntology.BaseMetabolism) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.HydroxideIon) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.NitrogenSource) Then
 

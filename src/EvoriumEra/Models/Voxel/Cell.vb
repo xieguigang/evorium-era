@@ -18,6 +18,10 @@ Namespace Models.Container
         Public Property ConsecutiveNoATP As Integer = 0
         Public Property TotalMolecules As Integer = 0
 
+        Public Function HasFunction(go As GeneOntology) As Boolean
+            Return Proteins.ContainsKey(go) AndAlso Proteins(go) > 0
+        End Function
+
     End Class
 
 End Namespace

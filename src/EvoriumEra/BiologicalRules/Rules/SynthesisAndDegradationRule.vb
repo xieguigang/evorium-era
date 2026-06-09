@@ -7,9 +7,13 @@ Namespace BiologicalRules.Rules
 
         Public ReadOnly Property SupportedFunctions As GeneOntology() Implements IBiochemicalRule.SupportedFunctions
 
+        Sub New()
+            SupportedFunctions = {GeneOntology.DegradeMacromolecule, GeneOntology.SynthesizeAntibiotic, GeneOntology.DegradeAntibiotic}
+        End Sub
+
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
             ' 降解大分子
-            If cell.Proteins.ContainsKey(GeneOntology.DegradeMacromolecule) Then
+            If cell.HasFunction(GeneOntology.DegradeMacromolecule) Then
                 ' 降解细胞内大分子
                 Dim macromolecules = {MoleculeType.SecondaryMetabolite, MoleculeType.Nucleotide,
                                  MoleculeType.DNA, MoleculeType.AminoMixGluFamily,
@@ -27,7 +31,7 @@ Namespace BiologicalRules.Rules
             End If
 
             ' 合成抗生素
-            If cell.Proteins.ContainsKey(GeneOntology.SynthesizeAntibiotic) AndAlso
+            If cell.HasFunction(GeneOntology.SynthesizeAntibiotic) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Acetate) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.NitrogenSource) Then
 
@@ -38,7 +42,7 @@ Namespace BiologicalRules.Rules
             End If
 
             ' 降解抗生素
-            If cell.Proteins.ContainsKey(GeneOntology.DegradeAntibiotic) AndAlso
+            If cell.HasFunction(GeneOntology.DegradeAntibiotic) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Antibiotic) Then
 
                 cell.InternalMolecules(MoleculeType.Antibiotic) -= 1

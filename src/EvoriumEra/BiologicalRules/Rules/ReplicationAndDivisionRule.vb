@@ -11,8 +11,8 @@ Namespace BiologicalRules.Rules
 
         Sub New()
             SupportedFunctions = {
-            GeneOntology.CellDivision
-        }
+                GeneOntology.CellDivision
+            }
         End Sub
 
         Public Sub Execute(cell As Cell, env As NaturalEnvironment) Implements IBiochemicalRule.Execute
@@ -20,7 +20,7 @@ Namespace BiologicalRules.Rules
             Dim totalGenes = cell.Genome.Genes.Count + cell.Plasmids.Sum(Function(p) p.Genes.Count)
             Dim requiredNucleotides = totalGenes * 9 * 2
 
-            If cell.Proteins.ContainsKey(GeneOntology.ReplicateDNA) AndAlso
+            If cell.HasFunction(GeneOntology.ReplicateDNA) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso
            cell.InternalMolecules(MoleculeType.Nucleotide) >= requiredNucleotides Then
 
@@ -30,7 +30,7 @@ Namespace BiologicalRules.Rules
             End If
 
             ' 细胞分裂
-            If cell.Proteins.ContainsKey(GeneOntology.CellDivision) Then
+            If cell.HasFunction(GeneOntology.CellDivision) Then
                 Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
                 Dim emptyNeighbors = env.GetNeighbors(voxel).Where(Function(v) v.Occupant Is Nothing).ToList()
 
