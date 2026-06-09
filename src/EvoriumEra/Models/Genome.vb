@@ -36,6 +36,12 @@
             End Get
         End Property
 
+        Public ReadOnly Property Size As Integer
+            Get
+                Return Genes.Count
+            End Get
+        End Property
+
         Public Function Clone() As Replicon
             Return New Replicon With {
                 .Genes = New List(Of Gene)(From g As Gene

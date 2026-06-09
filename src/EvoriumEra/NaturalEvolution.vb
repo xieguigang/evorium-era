@@ -408,7 +408,24 @@ Public Class NaturalEvolution
     End Function
 
     Private Sub InitializeCells()
-        Dim allFunctions = [Enum].GetValues(GetType(GeneOntology)).Cast(Of GeneOntology)().ToList()
+        ' 可选基因（随机分配，创造初始多样性）
+        Dim optionalGenes = [Enum].GetValues(GetType(GeneOntology)).Cast(Of GeneOntology)().ToList()
+        ' 确保每个细胞至少有基础代谢基因
+        Dim essentialGenes = {
+            GeneOntology.GeneTranscription,
+            GeneOntology.ProteinTranslation,
+            GeneOntology.ReplicateDNA,
+            GeneOntology.CellDivision,
+            GeneOntology.Endocytosis
+        }
+        ' 代谢核心基因（大部分细胞应该有）
+        Dim coreMetabolicGenes = {
+            GeneOntology.AerobicEnergyMetabolismATP,
+            GeneOntology.GlucoseConversionEnzyme,
+            GeneOntology.Endocytosis,
+            GeneOntology.Exocytosis,
+            GeneOntology.AnaerobicEnergyMetabolismATP
+        }
 
         For i As Integer = 1 To Config.InitCellNumbers
             Dim voxel As Voxel = RequestVoxel()
@@ -418,22 +435,19 @@ Public Class NaturalEvolution
                 .Genes = New List(Of Gene)
             }
 
-            ' 确保每个细胞至少有基础代谢基因
-            Dim essentialGenes = {
-                GeneOntology.GeneTranscription,
-                GeneOntology.ProteinTranslation,
-                GeneOntology.ReplicateDNA,
-                GeneOntology.CellDivision,
-                GeneOntology.Endocytosis
-            }
-
             For Each essential In essentialGenes
                 genome.Genes.Add(New Gene With {.FunctionOntology = essential})
             Next
+            ' 添加核心代谢基因（80%概率）
+            For Each core In coreMetabolicGenes
+                If RNG.NextDouble() < 0.8 Then
+                    genome.Genes.Add(New Gene With {.FunctionOntology = core})
+                End If
+            Next
 
             ' 添加随机基因
-            For j = 1 To geneCount - essentialGenes.Length
-                genome.Genes.Add(New Gene With {.FunctionOntology = allFunctions(RNG.Next(allFunctions.Count))})
+            For j = 1 To geneCount - genome.Size
+                genome.Genes.Add(New Gene With {.FunctionOntology = optionalGenes(RNG.Next(optionalGenes.Count))})
             Next
 
             Dim cell = New Cell With {
