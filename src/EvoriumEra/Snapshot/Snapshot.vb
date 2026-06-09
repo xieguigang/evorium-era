@@ -1,4 +1,4 @@
-﻿Imports System.Text
+﻿Imports Microsoft.VisualBasic.Imaging
 
 Namespace Data
 
@@ -9,7 +9,7 @@ Namespace Data
         Public Property SimulationTime As TimeSpan
 
         ' 环境快照
-        Public Property EnvironmentDimensions As (Width As Integer, Height As Integer, Depth As Integer)
+        Public Property EnvironmentDimensions As SpatialIndex3D
         Public Property Voxels As List(Of VoxelSnapshot)
 
         ' 细胞快照
