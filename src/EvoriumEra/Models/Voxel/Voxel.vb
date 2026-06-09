@@ -1,8 +1,8 @@
-﻿Public Class Voxel : Implements IVoxel
-    Public Property X As Integer
-    Public Property Y As Integer
-    Public Property Z As Integer
-    Public Property ExternalMolecules As Dictionary(Of MoleculeType, Integer) = New Dictionary(Of MoleculeType, Integer)
+﻿Imports Microsoft.VisualBasic.Imaging
+
+Public Class Voxel : Implements IVoxel
+    Public Property Position As SpatialIndex3D Implements IVoxel.Position
+    Public Property ExternalMolecules As New Dictionary(Of MoleculeType, Integer) Implements IVoxel.Molecules
     Public Property Occupant As Cell = Nothing
     Public Property HasBiofilm As Boolean = False
 End Class
