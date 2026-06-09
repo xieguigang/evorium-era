@@ -100,7 +100,8 @@ Namespace BiologicalRules.Rules
         ''' <summary>
         ''' 环境级别的温度计算
         ''' </summary>
-        Public Sub ExecuteEnvironment(env As NaturalEnvironment, config As Configs, iteration As Long)
+        Public Sub ExecuteEnvironment(env As NaturalEnvironment, iteration As Long)
+            Dim config = env.configs
             ' 1. 计算当前昼夜温度偏移
             Dim diurnalOffset = config.DiurnalTemperatureAmplitude *
                                 Math.Sin(2.0 * Math.PI * iteration / config.DiurnalPeriod)
@@ -122,13 +123,14 @@ Namespace BiologicalRules.Rules
             Next
 
             ' 3. 热扩散
-            ExecuteHeatDiffusion(env, config)
+            ExecuteHeatDiffusion(env)
         End Sub
 
-        Private Sub ExecuteHeatDiffusion(env As NaturalEnvironment, config As Configs)
+        Private Sub ExecuteHeatDiffusion(env As NaturalEnvironment)
             ' 收集温度变化量，避免就地修改影响计算
             Dim tempChanges = New Dictionary(Of (Integer, Integer, Integer), Double)
             Dim dims = env.Dimensions
+            Dim config = env.configs
 
             For x As Integer = 0 To dims.Width - 1
                 For y As Integer = 0 To dims.Height - 1

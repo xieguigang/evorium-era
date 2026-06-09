@@ -1,4 +1,7 @@
-﻿Public Class Configs
+﻿Imports System.Runtime.CompilerServices
+Imports Microsoft.VisualBasic.Serialization.JSON
+
+Public Class Configs
 
     Public Property gridW As Integer = 60
     Public Property gridH As Integer = 60
@@ -134,6 +137,11 @@
     ''' <summary>环境初始钠/钾/氯离子浓度</summary>
     Public Property InitialSaltIonLevel As Integer = 100
 
+    Public Overrides Function ToString() As String
+        Return Me.GetJson
+    End Function
+
+    <MethodImpl(MethodImplOptions.AggressiveInlining)>
     Public Shared Function [Default]() As Configs
         Return New Configs
     End Function

@@ -23,6 +23,7 @@ Namespace Data
 
         ' 分子库存
         Public Property InternalMolecules As Dictionary(Of MoleculeType, Integer)
+        Public Property Proteins As Dictionary(Of GeneOntology, Integer)
         Public Property TotalMolecules As Integer
         Public Property ATP As Integer
 
@@ -30,6 +31,9 @@ Namespace Data
         Public Property GenomeSize As Integer
         Public Property PlasmidCount As Integer
         Public Property GeneCounts As Dictionary(Of GeneOntology, Integer)
+
+        Public Property Genome As Replicon
+        Public Property Plasmids As Replicon()
 
         ''' <summary>
         ''' 存活了多少个迭代
@@ -41,6 +45,13 @@ Namespace Data
         ''' </summary>
         ''' <returns></returns>
         Public Property DivisionCount As Integer
+        Public Property ColdShockMitigation As Double
+        ''' <summary>胞内渗透压状态：-1=低渗, 0=等渗, 1=高渗</summary>
+        Public Property OsmoticState As Integer = 0
+        Public Property InternalIonStrength As Double
+
+        ''' <summary>蛋白质活性修正因子（0.0-1.0），受温度和离子强度影响</summary>
+        Public Property ProteinActivityFactor As Double = 1.0
 
         ''' <summary>
         ''' 计算属性

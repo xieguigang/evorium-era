@@ -65,14 +65,14 @@ Namespace BiologicalRules
         ''' <summary>
         ''' [v2.0] 执行环境级别的规则（不针对特定细胞）
         ''' </summary>
-        Public Sub ExecuteEnvironmentRules(env As NaturalEnvironment, config As Configs, iteration As Long)
+        Public Sub ExecuteEnvironmentRules(env As NaturalEnvironment, iteration As Long)
             For Each rule As IBiochemicalRule In Rules
                 If TypeOf rule Is NutrientReplenishmentRule Then
-                    DirectCast(rule, NutrientReplenishmentRule).ExecuteEnvironment(env, config)
+                    DirectCast(rule, NutrientReplenishmentRule).ExecuteEnvironment(env)
                 ElseIf TypeOf rule Is DiffusionRule Then
                     DirectCast(rule, DiffusionRule).ExecuteEnvironment(env)
                 ElseIf TypeOf rule Is TemperatureRule Then
-                    DirectCast(rule, TemperatureRule).ExecuteEnvironment(env, config, iteration)
+                    DirectCast(rule, TemperatureRule).ExecuteEnvironment(env, iteration)
                 End If
             Next
         End Sub

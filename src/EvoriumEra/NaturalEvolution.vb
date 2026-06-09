@@ -103,7 +103,7 @@ Public Class NaturalEvolution
         CurrentIteration += 1
 
         ' 1. 环境级别规则（营养补充、扩散、温度）
-        Scheduler.ExecuteEnvironmentRules(Env, Config, CurrentIteration)
+        Scheduler.ExecuteEnvironmentRules(Env, CurrentIteration)
 
         ' 2. 获取所有活细胞并随机打乱
         Dim cells = Env.AllCells().Where(Function(c) c.IsAlive).OrderBy(Function() RNG.NextDouble).ToList()

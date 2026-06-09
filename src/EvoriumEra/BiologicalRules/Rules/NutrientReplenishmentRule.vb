@@ -35,22 +35,23 @@ Namespace BiologicalRules.Rules
         ''' <summary>
         ''' 环境级别的营养补充
         ''' </summary>
-        Public Sub ExecuteEnvironment(env As NaturalEnvironment, config As Configs)
+        Public Sub ExecuteEnvironment(env As NaturalEnvironment)
             ' 1. 氧气梯度
-            ReplenishOxygenGradient(env, config)
+            ReplenishOxygenGradient(env)
 
             ' 2. 营养热点
-            ReplenishNutrientHotspots(env, config)
+            ReplenishNutrientHotspots(env)
 
             ' 3. 全局营养补充
-            ReplenishGlobalNutrients(env, config)
+            ReplenishGlobalNutrients(env)
 
             ' 4. [v3.0] 离子补充
-            ReplenishIons(env, config)
+            ReplenishIons(env)
         End Sub
 
-        Private Sub ReplenishOxygenGradient(env As NaturalEnvironment, config As Configs)
+        Private Sub ReplenishOxygenGradient(env As NaturalEnvironment)
             Dim dims = env.Dimensions
+            Dim config = env.configs
 
             ' 氧气浓度随Z轴（深度）递减
             ' 表层（z=0）最富氧，底层（z=max）最缺氧
@@ -79,7 +80,8 @@ Namespace BiologicalRules.Rules
             Next
         End Sub
 
-        Private Sub ReplenishNutrientHotspots(env As NaturalEnvironment, config As Configs)
+        Private Sub ReplenishNutrientHotspots(env As NaturalEnvironment)
+            Dim config = env.configs
             Dim hotspots = GenerateHotspotPositions(env, config.NutrientHotspotCount)
 
             ' 使用确定性种子生成固定位置的营养热点
@@ -109,8 +111,9 @@ Namespace BiologicalRules.Rules
             Next
         End Sub
 
-        Private Sub ReplenishGlobalNutrients(env As NaturalEnvironment, config As Configs)
+        Private Sub ReplenishGlobalNutrients(env As NaturalEnvironment)
             Dim dims = env.Dimensions
+            Dim config = env.configs
 
             ' 每迭代向随机位置补充少量基础营养
             For i As Integer = 0 To 9
@@ -138,8 +141,9 @@ Namespace BiologicalRules.Rules
         ''' <summary>
         ''' [v3.0] 离子补充
         ''' </summary>
-        Private Sub ReplenishIons(env As NaturalEnvironment, config As Configs)
+        Private Sub ReplenishIons(env As NaturalEnvironment)
             Dim dims = env.Dimensions
+            Dim config = env.configs
 
             For X As Integer = 0 To dims.Width - 1 Step 5
                 For Y As Integer = 0 To dims.Height - 1 Step 5

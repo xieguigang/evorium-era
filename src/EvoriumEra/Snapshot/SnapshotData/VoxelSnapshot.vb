@@ -14,6 +14,7 @@ Namespace Data
 
         ' 物理状态
         Public Property HasBiofilm As Boolean
+        Public Property BiofilmStrength As Integer = 0
 
         ' 占据情况
         Public Property OccupantCellId As Guid?
@@ -22,6 +23,8 @@ Namespace Data
         ' 统计信息
         Public Property TotalMolecules As Integer
         Public Property MoleculeDensity As Double
+        Public Property Temperature As Double = 25.0
+        Public Property ExternalIonStrength As Double
 
         ' 时间戳
         Public Property SnapshotTime As DateTime
