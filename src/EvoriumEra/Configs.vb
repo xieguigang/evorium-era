@@ -1,4 +1,4 @@
-﻿Imports System.Runtime.CompilerServices
+Imports System.Runtime.CompilerServices
 Imports Microsoft.VisualBasic.Serialization.JSON
 
 Public Class Configs
@@ -136,6 +136,40 @@ Public Class Configs
 
     ''' <summary>环境初始钠/钾/氯离子浓度</summary>
     Public Property InitialSaltIonLevel As Integer = 100
+
+    ' ===== v4.0 胞外蛋白质活性配置 =====
+
+    ''' <summary>胞外蛋白质保持活性的循环周期数（默认5）</summary>
+    Public Property ExtracellularProteinViability As Integer = 5
+
+    ''' <summary>胞外活性蛋白质每周期消耗的环境ATP量</summary>
+    Public Property ExtracellularProteinATPCost As Integer = 1
+
+    ''' <summary>胞外活性蛋白质执行功能的概率（0.0-1.0）</summary>
+    Public Property ExtracellularProteinActivityProb As Double = 0.3
+
+    ''' <summary>失活蛋白质被降解酶降解的概率（0.0-1.0）</summary>
+    Public Property InactiveProteinDegradationProb As Double = 0.2
+
+    ' ===== v4.0 外源DNA整合配置 =====
+
+    ''' <summary>细胞内吞外源DNA的概率（0.0-1.0）</summary>
+    Public Property DNAIngestionBaseProb As Double = 0.1
+
+    ''' <summary>内吞外源DNA消耗的ATP量</summary>
+    Public Property DNAIngestionATPCost As Integer = 5
+
+    ''' <summary>外源DNA整合到基因组的概率（0.0-1.0，受基因组大小修正）</summary>
+    Public Property DNAIntegrationBaseProb As Double = 0.5
+
+    ''' <summary>外源DNA整合每个基因消耗的ATP量</summary>
+    Public Property DNAIntegrationATPCostPerGene As Integer = 2
+
+    ''' <summary>基因组最大基因数限制（防止无限整合）</summary>
+    Public Property MaxGenomeGeneCount As Integer = 50
+
+    ''' <summary>无整合/降解功能时外源DNA自发降解概率</summary>
+    Public Property SpontaneousDNADegradationProb As Double = 0.05
 
     Public Overrides Function ToString() As String
         Return Me.GetJson

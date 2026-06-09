@@ -13,9 +13,11 @@ Namespace BiologicalRules
 
         Public Sub New()
             EnvironmentRules = {
-                New TemperatureRule(),               ' [v3.0] 温度系统
-                New DiffusionRule(),                 ' [v2.0] 改进：代谢中间产物可扩散
-                New NutrientReplenishmentRule()      ' [v2.0] 新增：环境营养补充    
+                New TemperatureRule(),                    ' [v3.0] 温度系统
+                New DiffusionRule(),                      ' [v2.0] 改进：代谢中间产物可扩散
+                New NutrientReplenishmentRule(),          ' [v2.0] 新增：环境营养补充
+                New ExtracellularProteinActivityRule(),   ' [v4.0] 新增：胞外蛋白质活性
+                New EnvironmentalDNADegradationRule()     ' [v4.0] 新增：环境DNA降解
             }
             BiologicalRules = {
                 New EnergyMetabolismRule(),
@@ -32,7 +34,8 @@ Namespace BiologicalRules
                 New GenomeMaintenanceRule(),         ' [v2.0] 新增：基因组维护成本
                 New TemperatureRule(),               ' [v3.0] 温度系统
                 New OsmoregulationRule(),            ' [v3.0] 渗透压系统
-                New IonTransportRule()               ' [v3.0] 离子转运
+                New IonTransportRule(),              ' [v3.0] 离子转运
+                New ExogenousDNAIntegrationRule()    ' [v4.0] 新增：外源DNA整合
             }
 
             ' BuildFunctionMap

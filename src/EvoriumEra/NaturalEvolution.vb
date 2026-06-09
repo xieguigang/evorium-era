@@ -8,7 +8,7 @@ Imports Microsoft.VisualBasic.Serialization.JSON
 Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
 ''' <summary>
-''' 用于模拟自然环境下的微生物群落演化过程的计算程序 v3.0
+''' 用于模拟自然环境下的微生物群落演化过程的计算程序 v4.0
 ''' 
 ''' v2.0核心改进：
 ''' 1. 完整代谢链驱动交叉喂养
@@ -22,6 +22,11 @@ Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 ''' 1. 温度系统：昼夜循环、深度梯度、代谢产热、蛋白热失活/冷休克
 ''' 2. 渗透压系统：离子强度、渗透压调节、相容溶质
 ''' 3. 扩展代谢网络：更多碳代谢路径、硫/铁/磷循环、扩展氨基酸和次级代谢
+''' 
+''' v4.0新增：
+''' 1. 胞外蛋白质活性：释放到环境中的蛋白质在5个周期内保持活性，消耗环境ATP执行功能
+''' 2. 外源DNA整合：细胞可摄取环境DNA，整合到基因组或降解为核苷酸
+''' 3. 环境DNA降解：环境中的降解酶可降解游离DNA为核苷酸
 ''' </summary>
 Public Class NaturalEvolution
 
