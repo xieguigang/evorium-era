@@ -113,8 +113,7 @@ Namespace BiologicalRules.Rules
                     Dim lysisPressure = Math.Abs(osmoticDiff) / 500.0
                     If rng.NextDouble() < lysisPressure Then
                         ' 细胞因低渗裂解
-                        cell.IsAlive = False
-                        cell.ConsecutiveNoATP = 999 ' 标记为死亡
+                        Call env.LyseCell(cell)
                     End If
                 End If
 

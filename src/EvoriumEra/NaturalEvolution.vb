@@ -24,8 +24,6 @@ Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 ''' </summary>
 Public Class NaturalEvolution
 
-    Public Property CurrentEnvironment As NaturalEnvironment
-
     ' ===== 核心成员 =====
     Public Property Env As NaturalEnvironment
     Public Property Scheduler As RuleScheduler
@@ -145,7 +143,7 @@ Public Class NaturalEvolution
             If cell.ATP <= 0 Then
                 cell.ConsecutiveNoATP += 1
                 If cell.ConsecutiveNoATP >= Config.StarvationDeathIterations Then
-                    cell.IsAlive = False
+                    Call Env.LyseCell(cell)
                 End If
             Else
                 cell.ConsecutiveNoATP = 0

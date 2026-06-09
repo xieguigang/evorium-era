@@ -3,8 +3,8 @@ Namespace Models
     ''' <summary>
     ''' 代谢物：细胞生命活动的物质基础
     ''' 
-    ''' v2.0新增：Lactate（乳酸）, Siderophore（铁载体）
-    ''' v3.0大幅扩展：
+    ''' v2.0 新增：Lactate（乳酸）, Siderophore（铁载体）
+    ''' v3.0 大幅扩展：
     '''   - 温度相关：Heat（热量/温度载体）
     '''   - 渗透压相关：SodiumIon, PotassiumIon, ChlorideIon, CalciumIon, 
     '''     CompatibleSolute（相容溶质/甜菜碱）, MagnesiumIon

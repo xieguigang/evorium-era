@@ -71,6 +71,16 @@ Namespace Models
             Call moleculeUtils.AddMolecule(container, moleculeType, amount)
         End Sub
 
+        ''' <summary>
+        ''' 杀死细胞，并将细胞内所有物质释放到当前格子
+        ''' </summary>
+        ''' <param name="cell"></param>
+        ''' 
+        <MethodImpl(MethodImplOptions.AggressiveInlining)>
+        Public Sub LyseCell(cell As Cell)
+            Call moleculeUtils.LyseCell(cell)
+        End Sub
+
         ' 六个方向：±X, ±Y, ±Z
         Shared ReadOnly directions As (Integer, Integer, Integer)() = {
             (1, 0, 0), (-1, 0, 0),
