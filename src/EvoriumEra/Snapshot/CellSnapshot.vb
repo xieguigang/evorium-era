@@ -16,7 +16,7 @@
     ' 遗传信息
     Public Property GenomeSize As Integer
     Public Property PlasmidCount As Integer
-    Public Property GeneCounts As Dictionary(Of GeneFunction, Integer)
+    Public Property GeneCounts As Dictionary(Of GeneOntology, Integer)
 
     ' 统计指标
     Public Property Age As Integer ' 存活了多少个迭代

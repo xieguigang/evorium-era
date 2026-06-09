@@ -4,7 +4,7 @@
 End Class
 
 Public Class Gene
-    Public Property FunctionTag As GeneFunction
+    Public Property FunctionTag As GeneOntology
     Public Const LengthInNucleotides As Integer = 9
 End Class
 

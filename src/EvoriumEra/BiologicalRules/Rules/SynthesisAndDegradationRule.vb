@@ -2,7 +2,7 @@
 Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 降解大分子
-        If cell.Proteins.ContainsKey(GeneFunction.DegradeMacromolecule) Then
+        If cell.Proteins.ContainsKey(GeneOntology.DegradeMacromolecule) Then
             ' 降解细胞内大分子
             Dim macromolecules = {MoleculeType.SecondaryMetabolite, MoleculeType.Nucleotide,
                                  MoleculeType.DNA, MoleculeType.AminoMixGluFamily,
@@ -20,7 +20,7 @@ Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
         End If
 
         ' 合成抗生素
-        If cell.Proteins.ContainsKey(GeneFunction.SynthesizeAntibiotic) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.SynthesizeAntibiotic) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Acetate) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.NitrogenSource) Then
 
@@ -31,7 +31,7 @@ Public Class SynthesisAndDegradationRule : Implements IBiochemicalRule
         End If
 
         ' 降解抗生素
-        If cell.Proteins.ContainsKey(GeneFunction.DegradeAntibiotic) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.DegradeAntibiotic) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Antibiotic) Then
 
             cell.InternalMolecules(MoleculeType.Antibiotic) -= 1

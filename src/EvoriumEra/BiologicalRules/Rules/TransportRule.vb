@@ -3,7 +3,7 @@
         Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
 
         ' 物质内吞
-        If cell.Proteins.ContainsKey(GeneFunction.Endocytosis) Then
+        If cell.Proteins.ContainsKey(GeneOntology.Endocytosis) Then
             For Each moleculeType In voxel.ExternalMolecules.Keys.ToList()
                 If Not IsPassiveDiffusion(moleculeType) Then
                     Dim amount = Math.Min(voxel.ExternalMolecules(moleculeType), 5)
@@ -17,7 +17,7 @@
         End If
 
         ' 物质分泌
-        If cell.Proteins.ContainsKey(GeneFunction.Exocytosis) Then
+        If cell.Proteins.ContainsKey(GeneOntology.Exocytosis) Then
             For Each moleculeType In cell.InternalMolecules.Keys.ToList()
                 If Not IsPassiveDiffusion(moleculeType) Then
                     Dim amount = Math.Min(cell.InternalMolecules(moleculeType), 5)

@@ -1,9 +1,9 @@
 ﻿Public Class ReplicationAndDivisionRule : Implements IBiochemicalRule
-    Public ReadOnly Property SupportedFunctions As List(Of GeneFunction) _
+    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) _
         Implements IBiochemicalRule.SupportedFunctions
         Get
-            Return New List(Of GeneFunction) From {
-                GeneFunction.CellDivision
+            Return New List(Of GeneOntology) From {
+                GeneOntology.CellDivision
             }
         End Get
     End Property
@@ -13,7 +13,7 @@
         Dim totalGenes = cell.Genome.Genes.Count + cell.Plasmids.Sum(Function(p) p.Genes.Count)
         Dim requiredNucleotides = totalGenes * 9 * 2
 
-        If cell.Proteins.ContainsKey(GeneFunction.ReplicateDNA) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.ReplicateDNA) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Nucleotide) AndAlso
            cell.InternalMolecules(MoleculeType.Nucleotide) >= requiredNucleotides Then
 
@@ -23,7 +23,7 @@
         End If
 
         ' 细胞分裂
-        If cell.Proteins.ContainsKey(GeneFunction.CellDivision) Then
+        If cell.Proteins.ContainsKey(GeneOntology.CellDivision) Then
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
             Dim neighbors = env.GetNeighbors(voxel).Where(Function(v) v.Occupant Is Nothing).ToList()
 

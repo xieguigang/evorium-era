@@ -1,7 +1,10 @@
 ﻿
-
 Public Class Environment3D
-    ' ===== 网格数据 =====
+
+    ''' <summary>
+    ''' ===== 网格数据 =====
+    ''' </summary>
+    ''' <returns></returns>
     Public Property Grid As Voxel(,,)
     Public Property Dimensions As (Width As Integer, Height As Integer, Depth As Integer)
 
@@ -50,12 +53,6 @@ Public Class Environment3D
         Return neighbors
     End Function
 
-    Private Function WrapCoordinate(value As Integer, max As Integer) As Integer
-        If value < 0 Then Return max - 1
-        If value >= max Then Return 0
-        Return value
-    End Function
-
     ' ===== 所有体素枚举 =====
     ''' <summary>
     ''' 返回环境中所有体素的扁平枚举
@@ -94,21 +91,37 @@ Public Class Environment3D
         Return emptyVoxels(rng.Next(emptyVoxels.Count))
     End Function
 
-    ' ===== 坐标有效性检查 =====
+    ''' <summary>
+    ''' ===== 坐标有效性检查 =====
+    ''' </summary>
+    ''' <param name="x"></param>
+    ''' <param name="y"></param>
+    ''' <param name="z"></param>
+    ''' <returns></returns>
     Private Function IsValidCoordinate(x As Integer, y As Integer, z As Integer) As Boolean
         Return x >= 0 AndAlso x < Dimensions.Width AndAlso
                y >= 0 AndAlso y < Dimensions.Height AndAlso
                z >= 0 AndAlso z < Dimensions.Depth
     End Function
 
-    ' ===== 距离计算（可选，用于高级规则）=====
+    ''' <summary>
+    ''' ===== 距离计算（可选，用于高级规则）=====
+    ''' </summary>
+    ''' <param name="v1"></param>
+    ''' <param name="v2"></param>
+    ''' <returns></returns>
     Public Function ManhattanDistance(v1 As Voxel, v2 As Voxel) As Integer
         Return Math.Abs(v1.X - v2.X) +
                Math.Abs(v1.Y - v2.Y) +
                Math.Abs(v1.Z - v2.Z)
     End Function
 
-    ' ===== 区域查询 =====
+    ''' <summary>
+    ''' ===== 区域查询 =====
+    ''' </summary>
+    ''' <param name="center"></param>
+    ''' <param name="radius"></param>
+    ''' <returns></returns>
     Public Function GetVoxelsInRadius(center As Voxel, radius As Integer) As List(Of Voxel)
         Dim result = New List(Of Voxel)()
 

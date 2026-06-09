@@ -5,7 +5,7 @@
 Public Class MotionAndHGTRule : Implements IBiochemicalRule
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 细胞鞭毛运动
-        If cell.Proteins.ContainsKey(GeneFunction.FlagellarMovement) Then
+        If cell.Proteins.ContainsKey(GeneOntology.FlagellarMovement) Then
             Dim voxel = env.Grid(cell.Position.X, cell.Position.Y, cell.Position.Z)
             Dim neighbors = env.GetNeighbors(voxel).Where(Function(v) v.Occupant Is Nothing).ToList()
 

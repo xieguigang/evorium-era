@@ -72,7 +72,7 @@
 
     Private Function RandomGenome(geneCount As Integer) As Replicon
         Dim r As New Replicon()
-        Dim allFuncs = [Enum].GetValues(GetType(GeneFunction)).Cast(Of GeneFunction)().ToList()
+        Dim allFuncs = [Enum].GetValues(GetType(GeneOntology)).Cast(Of GeneOntology)().ToList()
 
         For i = 1 To geneCount
             r.Genes.Add(New Gene() With {
@@ -179,7 +179,7 @@
         Next
     End Sub
 
-    Private Function RouletteSelect(cell As Cell) As GeneFunction?
+    Private Function RouletteSelect(cell As Cell) As GeneOntology?
         If cell.Proteins.Count = 0 Then Return Nothing
 
         Dim totalWeight = cell.Proteins.Values.Sum()

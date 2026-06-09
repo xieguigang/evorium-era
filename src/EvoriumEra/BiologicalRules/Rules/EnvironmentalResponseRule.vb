@@ -2,7 +2,7 @@
 Public Class EnvironmentalResponseRule : Implements IBiochemicalRule
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 酸代谢
-        If cell.Proteins.ContainsKey(GeneFunction.AcidMetabolism) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.AcidMetabolism) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.HydrogenIon) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.CarbonSource) Then
 
@@ -15,7 +15,7 @@ Public Class EnvironmentalResponseRule : Implements IBiochemicalRule
         End If
 
         ' 碱代谢
-        If cell.Proteins.ContainsKey(GeneFunction.BaseMetabolism) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.BaseMetabolism) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.HydroxideIon) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.NitrogenSource) Then
 

@@ -3,7 +3,7 @@
 
 Public Class RuleScheduler
     Public Property Rules As List(Of IBiochemicalRule) = New List(Of IBiochemicalRule)
-    Dim _functionMap As Dictionary(Of GeneFunction, List(Of IBiochemicalRule))
+    Dim _functionMap As Dictionary(Of GeneOntology, List(Of IBiochemicalRule))
 
     Public Sub New()
         ' 按顺序添加所有规则
@@ -35,7 +35,7 @@ Public Class RuleScheduler
     End Sub
 
     Private Sub BuildFunctionMap()
-        _functionMap = New Dictionary(Of GeneFunction, List(Of IBiochemicalRule))
+        _functionMap = New Dictionary(Of GeneOntology, List(Of IBiochemicalRule))
 
         For Each rule In _Rules
             For Each f In rule.SupportedFunctions
@@ -50,7 +50,7 @@ Public Class RuleScheduler
     ''' <summary>
     ''' 执行指定的基因功能
     ''' </summary>
-    Public Sub ExecuteFunction(func As GeneFunction, cell As Cell, env As Environment3D, rng As Random)
+    Public Sub ExecuteFunction(func As GeneOntology, cell As Cell, env As Environment3D, rng As Random)
         If Not _functionMap.ContainsKey(func) Then Return
 
         For Each rule In _functionMap(func)

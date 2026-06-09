@@ -2,7 +2,7 @@
 Public Class EnergyMetabolismRule : Implements IBiochemicalRule
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 需氧能量代谢
-        If cell.Proteins.ContainsKey(GeneFunction.AerobicEnergyMetabolismATP) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.AerobicEnergyMetabolismATP) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Glucose) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Oxygen) Then
 
@@ -18,7 +18,7 @@ Public Class EnergyMetabolismRule : Implements IBiochemicalRule
         End If
 
         ' 厌氧能量代谢
-        If cell.Proteins.ContainsKey(GeneFunction.AnaerobicEnergyMetabolismATP) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.AnaerobicEnergyMetabolismATP) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.Acetate) Then
 
             If cell.InternalMolecules(MoleculeType.Acetate) > 0 AndAlso

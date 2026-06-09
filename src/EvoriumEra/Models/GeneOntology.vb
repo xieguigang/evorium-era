@@ -1,6 +1,6 @@
 ﻿
 ' 基因功能
-Public Enum GeneFunction
+Public Enum GeneOntology
     DegradeMacromolecule
     NucleicAcidSynthesis
     ReplicateDNA

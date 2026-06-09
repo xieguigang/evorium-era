@@ -6,20 +6,20 @@
 Public Class QuorumSensingAndBiofilmRule : Implements IBiochemicalRule
 
 
-    Public ReadOnly Property SupportedFunctions As List(Of GeneFunction) Implements IBiochemicalRule.SupportedFunctions
+    Public ReadOnly Property SupportedFunctions As List(Of GeneOntology) Implements IBiochemicalRule.SupportedFunctions
         Get
-            Return New List(Of GeneFunction) From {
-                GeneFunction.QuorumSensing,
-                GeneFunction.SignalMoleculeSynthesis,
-                GeneFunction.SecondaryMetaboliteSynthesis,
-                GeneFunction.BiofilmSynthesis
+            Return New List(Of GeneOntology) From {
+                GeneOntology.QuorumSensing,
+                GeneOntology.SignalMoleculeSynthesis,
+                GeneOntology.SecondaryMetaboliteSynthesis,
+                GeneOntology.BiofilmSynthesis
             }
         End Get
     End Property
 
     Public Sub Execute(cell As Cell, env As Environment3D, rng As Random) Implements IBiochemicalRule.Execute
         ' 信号分子合成
-        If cell.Proteins.ContainsKey(GeneFunction.SignalMoleculeSynthesis) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.SignalMoleculeSynthesis) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.CarbonSource) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.AminoMixSerGly) Then
 
@@ -30,14 +30,14 @@ Public Class QuorumSensingAndBiofilmRule : Implements IBiochemicalRule
         End If
 
         ' 群体感应
-        If cell.Proteins.ContainsKey(GeneFunction.QuorumSensing) AndAlso
+        If cell.Proteins.ContainsKey(GeneOntology.QuorumSensing) AndAlso
            cell.InternalMolecules.ContainsKey(MoleculeType.SignalMolecule) AndAlso
            cell.InternalMolecules(MoleculeType.SignalMolecule) >= 100 Then
 
             ' 强制执行次级代谢产物合成或生物膜合成
-            If cell.Proteins.ContainsKey(GeneFunction.SecondaryMetaboliteSynthesis) Then
+            If cell.Proteins.ContainsKey(GeneOntology.SecondaryMetaboliteSynthesis) Then
                 ExecuteSecondaryMetaboliteSynthesis(cell)
-            ElseIf cell.Proteins.ContainsKey(GeneFunction.BiofilmSynthesis) Then
+            ElseIf cell.Proteins.ContainsKey(GeneOntology.BiofilmSynthesis) Then
                 ExecuteBiofilmSynthesis(cell, env)
             End If
         End If
