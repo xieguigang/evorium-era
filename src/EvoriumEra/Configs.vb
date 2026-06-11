@@ -9,6 +9,7 @@ Public Class Configs
     Public Property SnapshotInterval As Integer = 1
 
     Public Property InitCellNumbers As Integer = 5000
+    Public Property InitCellPlasmidUpperBound As Integer = 2
     Public Property MaxVoxelActions As Integer = 5
     Public Property MaxCellActions As Integer = 12
 

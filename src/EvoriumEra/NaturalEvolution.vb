@@ -4,6 +4,7 @@ Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
 Imports Microsoft.VisualBasic.Imaging
 Imports Microsoft.VisualBasic.Language
+Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Serialization.JSON
 Imports RNG = Microsoft.VisualBasic.Math.RandomExtensions
 
@@ -463,6 +464,26 @@ Public Class NaturalEvolution
                 .Age = 0,
                 .DivisionCount = 0
             }
+
+            ' 初始化随机数量的质粒
+            Dim n_plasmids As Integer = RNG.NextInteger(0, Config.InitCellPlasmidUpperBound)
+
+            If n_plasmids > 0 Then
+                For n As Integer = 1 To n_plasmids
+                    Dim plasmid As New Models.Replicon With {
+                        .Genes = New Generic.List(Of Gene)(
+                            RNG.NextInteger(1, 6) _
+                                .Sequence _
+                                .Select(Function(any)
+                                            Return New Gene With {
+                                                .FunctionOntology = optionalGenes(RNG.NextInteger(0, optionalGenes.Count))
+                                            }
+                                        End Function))
+                    }
+
+                    cell.Plasmids.Add(plasmid)
+                Next
+            End If
 
             voxel.Occupant = cell
 
