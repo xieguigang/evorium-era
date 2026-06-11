@@ -436,7 +436,7 @@ Public Class NaturalEvolution
         For i As Integer = 1 To Config.InitCellNumbers
             Dim voxel As Voxel = RequestVoxel()
             Dim geneCount = RNG.NextInteger(Config.InitGenomeMinGenes, Config.InitGenomeMaxGenes + 1)
-            Dim genome = New Replicon With {
+            Dim genome = New Models.Replicon With {
                 .IsPlasmid = False,
                 .Genes = New List(Of Gene)
             }
