@@ -2,6 +2,7 @@
 Imports System.IO.Compression
 Imports EvoriumEra.Models
 Imports EvoriumEra.Models.Container
+Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Serialization.JSON
 
 Namespace Data
@@ -113,11 +114,19 @@ Namespace Data
                                 .DivisionCount = cell.DivisionCount,
                                 .GeneCounts = cell.GetTotalGenes,
                                 .Generation = cell.Generation,
-                                .Genome = cell.Genome.Clone,
+                                .Genome = New Replicon With {.Genes = cell.Genome.AsEnumerable.ToArray},
                                 .InternalIonStrength = cell.InternalIonStrength,
                                 .OsmoticState = cell.OsmoticState,
                                 .ParentID = cell.ParentID,
-                                .Plasmids = cell.Plasmids.Select(Function(r) r.Clone).ToArray,
+                                .Plasmids = cell.Plasmids _
+                                    .Select(Function(r)
+                                                Return New Replicon With {
+                                                    .Genes = r _
+                                                        .AsEnumerable _
+                                                        .ToArray
+                                                }
+                                            End Function) _
+                                    .ToArray,
                                 .ProteinActivityFactor = cell.ProteinActivityFactor,
                                 .Proteins = New Dictionary(Of GeneOntology, Integer)(cell.Proteins),
                                 .PH = cell.PH

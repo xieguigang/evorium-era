@@ -1,4 +1,6 @@
-﻿Namespace Models
+﻿Imports Microsoft.VisualBasic.Linq
+
+Namespace Models
 
     ''' <summary>
     ''' 基因：组成复制子的基础功能单元
@@ -25,7 +27,7 @@
     ''' <summary>
     ''' 复制子：一个复制子就是若干个基因的集合
     ''' </summary>
-    Public Class Replicon
+    Public Class Replicon : Implements Enumeration(Of String)
 
         Public Property Genes As New List(Of Gene)
         Public Property IsPlasmid As Boolean = False
@@ -57,6 +59,12 @@
         ''' <returns></returns>
         Public Overrides Function ToString() As String
             Return Genes.Select(Function(g) g.ToString).OrderBy(Function(s) s).JoinBy("; ")
+        End Function
+
+        Public Iterator Function GenericEnumerator() As IEnumerator(Of String) Implements Enumeration(Of String).GenericEnumerator
+            For Each gene As Gene In Genes
+                Yield gene.ToString
+            Next
         End Function
     End Class
 End Namespace
