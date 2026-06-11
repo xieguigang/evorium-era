@@ -32,7 +32,13 @@ Namespace Models
         Nucleotide
         DNA
         Protein
+        ''' <summary>
+        ''' 一种通用的代谢物，表示一切可以用作为碳源提供碳原子的代谢物
+        ''' </summary>
         CarbonSource
+        ''' <summary>
+        ''' 一种通用的代谢物，表示一切可以用作为氮源提供氮原子的代谢物
+        ''' </summary>
         NitrogenSource
 
         ' ===== 核心碳代谢 =====
